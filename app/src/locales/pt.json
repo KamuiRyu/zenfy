@@ -1,0 +1,35 @@
+{
+  "brand": {
+    "name": "ThriveStudios"
+  },
+  "login": {
+    "title": "Olá de novo!",
+    "welcome": "Bem vindo de volta",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Senha",
+    "loginButton": "Entrar",
+    "loggingIn": "Entrando...",
+    "forgot": "Esqueceu a senha?",
+    "errorTitle": "Erro de login",
+    "heroTitle": "Não é sobre o que você cria.",
+    "heroSubtitle": "É sobre o que você torna possível."
+  },
+  "field": {
+    "email": {
+        "label": "E-mail",
+        "placeholder": "Endereço de e-mail"
+    },
+    "password": {
+        "label": "Senha",
+        "placeholder": "Sua senha"
+    }
+  },
+  "server": {
+    "INVALID_CREDENTIALS": "Credenciais inválidas",
+    "VALIDATION_ERROR": "Houveram erros de validação na requisição."
+  },
+  "validation": {
+    "REQUIRED_FIELD": "Este campo é obrigatório",
+    "MIN_LENGTH": "Este campo deve ter ao menos %d caracteres"
+  }
+}
