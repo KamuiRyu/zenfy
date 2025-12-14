@@ -1,0 +1,36 @@
+{
+  "brand": {
+    "name": "ThriveStudios"
+  },
+  "login": {
+    "title": "Hello Again!",
+    "welcome": "Welcome Back",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Password",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "forgot": "Forgot Password?",
+    "errorTitle": "Login Error",
+    "heroTitle": "It’s not about what you make.",
+    "heroSubtitle": "It’s about what you make possible."
+  },
+  "field":{
+    "email": {
+        "label": "E-mail",
+        "placeholder": "Email address"
+    },
+    "password": {
+        "label": "Password",
+        "placeholder": "Your password"
+    }
+  },
+  "server": {
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "VALIDATION_ERROR": "There were validation errors with the request."
+  },
+  "validation": {
+    "REQUIRED_FIELD": "This field is required",
+    "MIN_LENGTH": "This field must be at least %d characters long",
+    "EMAIL_FORMAT": "Please enter a valid email address"
+  }
+}

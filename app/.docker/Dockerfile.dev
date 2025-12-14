@@ -1,0 +1,17 @@
+FROM oven/bun:latest
+
+WORKDIR /usr/src/app
+
+# Copy package files first to cache installs (use bun.lock when present)
+COPY package.json bun.lock ./
+
+# Install dependencies with bun
+RUN bun install
+
+# Copy app source
+COPY . .
+
+EXPOSE 3000
+
+# Use bun to run the dev script (falls back to npm script if needed)
+CMD ["bun", "run", "dev"]
