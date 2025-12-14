@@ -1,0 +1,21 @@
+FROM golang:1.25.5-alpine
+WORKDIR /src
+
+# Tools for development
+RUN apk add --no-cache git bash libc6-compat
+
+# Ensure go installed tools are available in PATH
+ENV PATH=/go/bin:$PATH
+
+# Copy modules manifests and download dependencies for faster rebuilds
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Install reflex for hot-reload (watches file changes and reruns command)
+RUN go install github.com/cespare/reflex@latest
+
+# Use a mounted volume for source in dev, expose port used by the app
+EXPOSE 3000
+
+# Default command: watch .go files and run the API
+CMD ["reflex", "-s", "-r", "\\.go$", "--", "sh", "-c", "go run ./cmd/api"]

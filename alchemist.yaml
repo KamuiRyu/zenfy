@@ -1,0 +1,20 @@
+version: 1
+project_name: zenfy-api
+debug: false
+path_structure: clean_architecture
+config:
+    file: .env
+    database:
+        driver: DB_DRIVER
+        host: DB_HOST
+        port: DB_PORT
+        user: DB_USER
+        password: DB_PASSWORD
+        name: DB_NAME
+        schema: DB_SCHEMA
+features:
+    microservice_architecture:
+        directory: ./modules
+        enabled: false
+        multiple_dbs: false
+        regex: .*service.*

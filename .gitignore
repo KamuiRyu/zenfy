@@ -1,0 +1,50 @@
+# Binaries for programs and plugins
+/bin/
+/build/
+/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Output of the go coverage tool
+coverage.out
+
+# Test binary
+*.test
+
+# Go build cache
+/pkg/
+
+# Dependency directories
+/vendor/
+
+# Environment files
+.env
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml
+docker-compose.*.yml
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Temporary files
+*.tmp
+tmp/
+*.swp
+
+# Generated files
+generated/
