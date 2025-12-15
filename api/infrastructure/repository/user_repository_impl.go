@@ -23,8 +23,8 @@ func NewUserRepository(db *bun.DB) repository.UserRepository {
 func (r *userRepoImpl) GetByID(id int) (*model.User, error) {
 	ctx := context.Background()
 	u := &model.User{}
-	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, verified FROM users WHERE id = ?", id)
-	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.Verified); err != nil {
+	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, verified, avatar_url FROM users WHERE id = ?", id)
+	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.Verified, &u.AvatarUrl); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -45,8 +45,8 @@ func (r *userRepoImpl) Create(u *model.User) error {
 func (r *userRepoImpl) GetByEmail(email string) (*model.User, error) {
 	ctx := context.Background()
 	u := &model.User{}
-	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, verified FROM users WHERE email = ?", email)
-	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.Verified); err != nil {
+	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, avatar_url, verified FROM users WHERE email = ?", email)
+	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.AvatarUrl, &u.Verified); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

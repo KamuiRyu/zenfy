@@ -9,6 +9,7 @@ type LoginResponseDTO struct {
 	Uuid      string    `json:"uuid"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
+	AvatarUrl string    `json:"avatar_url"`
 	TokenData TokenData `json:"token_data"`
 }
 

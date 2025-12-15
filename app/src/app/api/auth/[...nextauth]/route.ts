@@ -61,6 +61,7 @@ const authOptions: NextAuthOptions = {
             id: user.uuid,
             name: user.name,
             email: user.email,
+            image: user.avatar_url,
             accessToken: user.token_data?.token,
             refreshToken: user.token_data?.refresh,
           } as any;
@@ -77,6 +78,8 @@ const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.uuid = user.id;
+        // ensure avatar/image is persisted in token
+        token.image = user.image || user.avatar_url || token.image;
       }
       return token;
     },
@@ -88,6 +91,7 @@ const authOptions: NextAuthOptions = {
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
           uuid: token.uuid,
+          image: token.image,
         },
       } as any;
     },

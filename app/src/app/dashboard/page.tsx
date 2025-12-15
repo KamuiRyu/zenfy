@@ -1,20 +1,15 @@
 import LogoutButton from "@/components/auth/logout_button";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import DashboardHeader from "@/components/dashboard/dashboard_header";
 import StatCard from "@/components/dashboard/StatCard";
-import ChartCard from "@/components/dashboard/ChartCard";
-import ActivityCard from "@/components/dashboard/ActivityCard";
+import ChartCard from "@/components/dashboard/chart_card";
+import ActivityCard from "@/components/dashboard/activity_card";
 
 export default function DashboardPage() {
     return (
-        <div className="min-h-screen bg-surface p-6">
+        <div className="min-h-screen p-6">
             <div className="container-fluid w-full">
                 <div className="flex gap-6">
                     <main className="flex-1">
-                        <div className="flex items-center justify-between mb-6">
-                            <DashboardHeader />
-                            <LogoutButton />
-                        </div>
-
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <div className="lg:col-span-8">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
