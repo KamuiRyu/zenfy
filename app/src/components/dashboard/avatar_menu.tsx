@@ -13,6 +13,7 @@ import {
 import { Skeleton } from "../ui/skeleton";
 import { useI18n } from "@/i18n/useI18n";
 import { Button } from "../ui/button";
+import { ConfirmDialog } from "../base/confirm_dialog";
 
 export default function AvatarMenu({
   displayName,
@@ -21,9 +22,8 @@ export default function AvatarMenu({
   displayName: string | null;
   avatar: string | null;
 }) {
-
   const { t } = useI18n();
-  
+
   return (
     <DropdownMenu open={avatar !== null ? undefined : false}>
       <DropdownMenuTrigger asChild>
@@ -43,7 +43,9 @@ export default function AvatarMenu({
       <DropdownMenuContent sideOffset={6} align="end" className="w-48">
         <DropdownMenuLabel>
           <div className="text-sm font-semibold">{displayName}</div>
-          <div className="text-xs text-muted-foreground">{t("dashboard.account")}</div>
+          <div className="text-xs text-muted-foreground">
+            {t("dashboard.account")}
+          </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -53,8 +55,17 @@ export default function AvatarMenu({
           <Link href="/dashboard/settings">{t("dashboard.settings")}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <span onClick={() => signOut({ callbackUrl: "/" })}>{t("dashboard.logout")}</span>
+        <DropdownMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <ConfirmDialog
+            title={t("dashboard.logout.confirmation")}
+            description={t("dashboard.logout.description")}
+            onConfirm={() => signOut({ callbackUrl: "/" })}
+            trigger={t("dashboard.logout.title")}
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

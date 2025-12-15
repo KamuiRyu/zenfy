@@ -2,6 +2,11 @@
   "brand": {
     "name": "ThriveStudios"
   },
+  "action": {
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "loading": "Carregando..."
+  },
   "login": {
     "title": "Olá de novo!",
     "welcome": "Bem vindo de volta",
@@ -20,7 +25,11 @@
     "account": "Conta",
     "profile": "Perfil",
     "settings": "Configurações",
-    "logout": "Sair"
+    "logout": {
+        "title": "Sair",
+        "confirmation": "Confirmar saída",
+        "description": "Tem certeza de que deseja sair? Você sempre pode entrar novamente a qualquer momento."
+    }
   },
   "field": {
     "email": {
