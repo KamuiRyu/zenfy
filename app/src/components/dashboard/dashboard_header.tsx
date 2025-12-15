@@ -1,25 +1,33 @@
 "use client";
 
-import React from "react";
-import { Search, Bell, ChevronDown } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { useSession } from "next-auth/react";
-import LogoutButton from "../auth/logout_button";
 import AvatarMenu from "./avatar_menu";
+import { Skeleton } from "../ui/skeleton";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function DashboardHeader({ name }: { name?: string }) {
-  const { data: session } = useSession();
-  const displayName = name || session?.user?.name || "User";
-  const avatar = session?.user?.image || "/avatar.png";
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const displayName = name || session?.user?.name || null;
+  const avatar = session?.user?.image || null;
+  const { t } = useI18n();
+  
+  
 
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h2 className="text-3xl md:text-4xl font-semibold">
-          Hi, <span className="font-extrabold">{displayName}</span>
+        <h2 className="flex items-center text-3xl md:text-4xl font-semibold gap-3">
+          <span>{t("dashboard.greeting")}, </span>
+          {displayName ? (
+            <span className="font-extrabold">{displayName}</span>
+          ) : (
+            <Skeleton className="h-8 w-48 inline-block align-middle" />
+          )}
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Here is the update from your payment channels, that is really
-          important for you to catch up.
+          {t("dashboard.welcome_message")}
         </p>
       </div>
 
@@ -41,10 +49,15 @@ export default function DashboardHeader({ name }: { name?: string }) {
           </span>
         </button>
 
-        <AvatarMenu displayName={displayName} avatar={avatar} />
+        {isLoading ? (
+          <Skeleton className="w-10 h-10 rounded-full" />
+        ) : (
+          <AvatarMenu
+            displayName={displayName ?? ""}
+            avatar={avatar ?? "/avatar.png"}
+          />
+        )}
       </div>
     </div>
   );
-
-  
 }

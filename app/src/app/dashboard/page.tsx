@@ -1,6 +1,4 @@
-import LogoutButton from "@/components/auth/logout_button";
-import DashboardHeader from "@/components/dashboard/dashboard_header";
-import StatCard from "@/components/dashboard/StatCard";
+import StatCard from "@/components/dashboard/stat_card";
 import ChartCard from "@/components/dashboard/chart_card";
 import ActivityCard from "@/components/dashboard/activity_card";
 

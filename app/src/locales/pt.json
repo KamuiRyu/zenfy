@@ -14,14 +14,22 @@
     "heroTitle": "Não é sobre o que você cria.",
     "heroSubtitle": "É sobre o que você torna possível."
   },
+  "dashboard": {
+    "greeting": "Oi",
+    "welcome_message": "Aqui está a atualização dos seus canais de pagamento, que é muito importante para você se atualizar.",
+    "account": "Conta",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "logout": "Sair"
+  },
   "field": {
     "email": {
-        "label": "E-mail",
-        "placeholder": "Endereço de e-mail"
+      "label": "E-mail",
+      "placeholder": "Endereço de e-mail"
     },
     "password": {
-        "label": "Senha",
-        "placeholder": "Sua senha"
+      "label": "Senha",
+      "placeholder": "Sua senha"
     }
   },
   "server": {

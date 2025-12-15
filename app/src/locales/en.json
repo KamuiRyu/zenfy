@@ -14,6 +14,14 @@
     "heroTitle": "It’s not about what you make.",
     "heroSubtitle": "It’s about what you make possible."
   },
+  "dashboard": {
+    "greeting": "Hi",
+    "welcome_message": "Here is the update from your payment channels, that is really important for you to catch up.",
+    "account": "Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
   "field":{
     "email": {
         "label": "E-mail",

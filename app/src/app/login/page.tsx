@@ -2,7 +2,6 @@
 
 import LoginHero from "@/components/login/LoginHero";
 import LoginForm from "@/components/login/LoginForm";
-import { I18nProvider } from "@/i18n/I18nProvider";
 
 export default function LoginPage() {
   return (

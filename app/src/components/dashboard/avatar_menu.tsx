@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import LogoutButton from "../auth/logout_button";
+import { signOut } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,37 +10,51 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
+import { Skeleton } from "../ui/skeleton";
+import { useI18n } from "@/i18n/useI18n";
+import { Button } from "../ui/button";
 
 export default function AvatarMenu({
   displayName,
   avatar,
 }: {
-  displayName: string;
-  avatar: string;
+  displayName: string | null;
+  avatar: string | null;
 }) {
+
+  const { t } = useI18n();
+  
   return (
-    <DropdownMenu>
+    <DropdownMenu open={avatar !== null ? undefined : false}>
       <DropdownMenuTrigger asChild>
-          <button className="rounded-full p-0 bg-transparent hover:bg-transparent focus:outline-none focus:ring-0">
-            <img src={avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
-          </button>
+        <button className="rounded-full p-0 bg-transparent hover:bg-transparent focus:outline-none focus:ring-0">
+          {avatar ? (
+            <img
+              src={avatar}
+              alt="avatar"
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <Skeleton className="w-10 h-10 rounded-full" />
+          )}
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent sideOffset={6} align="end" className="w-48">
         <DropdownMenuLabel>
           <div className="text-sm font-semibold">{displayName}</div>
-          <div className="text-xs text-muted-foreground">Account</div>
+          <div className="text-xs text-muted-foreground">{t("dashboard.account")}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/profile">Profile</Link>
+          <Link href="/dashboard/profile">{t("dashboard.profile")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">Settings</Link>
+          <Link href="/dashboard/settings">{t("dashboard.settings")}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogoutButton />
+          <span onClick={() => signOut({ callbackUrl: "/" })}>{t("dashboard.logout")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
