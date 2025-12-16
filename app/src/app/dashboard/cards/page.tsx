@@ -1,4 +1,7 @@
 import { Metadata } from "next";
+import CardCarousel from "@/components/dashboard/cards/card_carousel";
+import TransactionHistory from "@/components/dashboard/cards/transaction_history";
+import RightSidebar from "@/components/dashboard/cards/right_sidebar";
 
 export const metadata: Metadata = {
   title: "Cards | Dashboard",
@@ -12,11 +15,16 @@ export default function CardsPage() {
         <h1 className="text-3xl font-bold">My Cards</h1>
         <p className="text-muted-foreground mt-1">Manage your payment cards</p>
       </div>
-      
-      <div className="grid gap-4">
-        <div className="rounded-lg border bg-card p-6">
-          <p className="text-sm text-muted-foreground">No cards added yet.</p>
-        </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <main className="lg:col-span-8 space-y-6">
+          <CardCarousel />
+          <TransactionHistory />
+        </main>
+
+        <aside className="lg:col-span-4">
+          <RightSidebar />
+        </aside>
       </div>
     </div>
   );
