@@ -64,13 +64,14 @@ func main() {
 	addCardUC := cardusecase.NewAddCardUseCase(cardRepo, validationSvc)
 	getCardsUC := cardusecase.NewGetCardsUseCase(cardRepo)
 	getCardUC := cardusecase.NewGetCardUseCase(cardRepo)
+	updateCardUC := cardusecase.NewUpdateCardUseCase(cardRepo, validationSvc)
 	deleteCardUC := cardusecase.NewDeleteCardUseCase(cardRepo)
 	setDefaultCardUC := cardusecase.NewSetDefaultCardUseCase(cardRepo)
 
 	// handlers (depend on use cases)
 	authHandler := handler.NewAuthHandler(loginUC, verifyEmailUC, resendUC, requestPasswordResetUC, resetPasswordUC, getMeUC, logoutUC, refreshUC)
 	userHandler := handler.NewUserHandler(createUserUC)
-	cardHandler := handler.NewCardHandler(addCardUC, getCardsUC, getCardUC, deleteCardUC, setDefaultCardUC)
+	cardHandler := handler.NewCardHandler(addCardUC, getCardsUC, getCardUC, updateCardUC, deleteCardUC, setDefaultCardUC)
 
 	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, tokenSvc)
 

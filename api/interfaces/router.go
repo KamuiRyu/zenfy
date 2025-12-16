@@ -59,6 +59,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	cards.Post("/", cardHandler.AddCard)
 	cards.Get("/", cardHandler.GetCards)
 	cards.Get("/:id", cardHandler.GetCard)
+	cards.Put("/:id", cardHandler.UpdateCard)
 	cards.Delete("/:id", cardHandler.DeleteCard)
 	cards.Patch("/:id/default", cardHandler.SetDefaultCard)
 

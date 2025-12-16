@@ -17,6 +17,7 @@ type CardHandler struct {
 	addCardUC        *usecase.AddCardUseCase
 	getCardsUC       *usecase.GetCardsUseCase
 	getCardUC        *usecase.GetCardUseCase
+	updateCardUC     *usecase.UpdateCardUseCase
 	deleteCardUC     *usecase.DeleteCardUseCase
 	setDefaultCardUC *usecase.SetDefaultCardUseCase
 }
@@ -25,6 +26,7 @@ func NewCardHandler(
 	addCardUC *usecase.AddCardUseCase,
 	getCardsUC *usecase.GetCardsUseCase,
 	getCardUC *usecase.GetCardUseCase,
+	updateCardUC *usecase.UpdateCardUseCase,
 	deleteCardUC *usecase.DeleteCardUseCase,
 	setDefaultCardUC *usecase.SetDefaultCardUseCase,
 ) *CardHandler {
@@ -32,6 +34,7 @@ func NewCardHandler(
 		addCardUC:        addCardUC,
 		getCardsUC:       getCardsUC,
 		getCardUC:        getCardUC,
+		updateCardUC:     updateCardUC,
 		deleteCardUC:     deleteCardUC,
 		setDefaultCardUC: setDefaultCardUC,
 	}
@@ -83,6 +86,31 @@ func (h *CardHandler) GetCard(c *fiber.Ctx) error {
 	}
 
 	return response.Success(c, fiber.StatusOK, card, messages.CardFetched)
+}
+
+// UpdateCard handles PUT /api/cards/:id
+func (h *CardHandler) UpdateCard(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int)
+
+	cardID, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return response.Error(c, fiber.StatusBadRequest, "INVALID_CARD_ID", "Invalid card ID", nil)
+	}
+
+	var req dto.UpdateCardRequest
+	if err := c.BodyParser(&req); err != nil {
+		return response.Error(c, fiber.StatusBadRequest, "INVALID_REQUEST", "Invalid request body", nil)
+	}
+
+	card, err := h.updateCardUC.Execute(userID, cardID, req)
+	if err != nil {
+		if _, ok := err.(validator.ValidationErrors); ok {
+			return resp.ValidationErrorResponse(c, fiber.StatusUnprocessableEntity, "VALIDATION_ERROR", messages.ValidationError, err, &req)
+		}
+		return response.Error(c, fiber.StatusBadRequest, "CARD_UPDATE_FAILED", err.Error(), nil)
+	}
+
+	return response.Success(c, fiber.StatusOK, card, messages.CardUpdated)
 }
 
 // DeleteCard handles DELETE /api/cards/:id
