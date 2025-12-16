@@ -19,14 +19,16 @@ export default function Sidebar() {
             const items = [
               { href: "/dashboard", Icon: Home, label: "Home" },
               { href: "/dashboard/analytics", Icon: BarChart3, label: "Analytics" },
-              { href: "/dashboard/wallet", Icon: Wallet, label: "Wallet" },
+              { href: "/dashboard/cards", Icon: Wallet, label: "Cards" },
               { href: "/dashboard/reports", Icon: Layers, label: "Reports" },
               { href: "/dashboard/calendar", Icon: Calendar, label: "Calendar" },
               { href: "/dashboard/settings", Icon: Settings, label: "Settings" },
             ];
 
             return items.map(({ href, Icon, label }) => {
-              const isActive = pathname === href || pathname.startsWith(href + "/");
+              const isActive = href === "/dashboard" 
+                ? pathname === "/dashboard"
+                : pathname === href || pathname.startsWith(href + "/");
               return (
                 <Link
                   key={href}
