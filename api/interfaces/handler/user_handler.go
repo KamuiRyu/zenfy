@@ -36,5 +36,5 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		}
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.UserCreatedSuccess, res)
+	return resp.Success(c, fiber.StatusOK, res, messages.UserCreatedSuccess)
 }

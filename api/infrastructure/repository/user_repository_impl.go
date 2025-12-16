@@ -1,4 +1,4 @@
-package repositoryimpl
+package repository
 
 import (
 	"context"
@@ -15,7 +15,6 @@ type userRepoImpl struct {
 	db *bun.DB
 }
 
-// NewUserRepository constructs a new repository implementation using the provided bun DB.
 func NewUserRepository(db *bun.DB) repository.UserRepository {
 	return &userRepoImpl{db: db}
 }
@@ -23,8 +22,11 @@ func NewUserRepository(db *bun.DB) repository.UserRepository {
 func (r *userRepoImpl) GetByID(id int) (*model.User, error) {
 	ctx := context.Background()
 	u := &model.User{}
-	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, verified, avatar_url FROM users WHERE id = ?", id)
-	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.Verified, &u.AvatarUrl); err != nil {
+	err := r.db.NewSelect().
+		Model(u).
+		Where("id = ?", id).
+		Scan(ctx)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -35,8 +37,11 @@ func (r *userRepoImpl) GetByID(id int) (*model.User, error) {
 
 func (r *userRepoImpl) Create(u *model.User) error {
 	ctx := context.Background()
-	row := r.db.QueryRowContext(ctx, "INSERT INTO users(name,email,password,uuid) VALUES(?, ?, ?, ?) RETURNING id", u.Name, u.Email, u.Password, u.Uuid)
-	if err := row.Scan(&u.ID); err != nil {
+	_, err := r.db.NewInsert().
+		Model(u).
+		Returning("id").
+		Exec(ctx)
+	if err != nil {
 		return fmt.Errorf("insert user: %w", err)
 	}
 	return nil
@@ -45,8 +50,11 @@ func (r *userRepoImpl) Create(u *model.User) error {
 func (r *userRepoImpl) GetByEmail(email string) (*model.User, error) {
 	ctx := context.Background()
 	u := &model.User{}
-	row := r.db.QueryRowContext(ctx, "SELECT id, uuid, name, email, password, created_at, avatar_url, verified FROM users WHERE email = ?", email)
-	if err := row.Scan(&u.ID, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt, &u.AvatarUrl, &u.Verified); err != nil {
+	err := r.db.NewSelect().
+		Model(u).
+		Where("email = ?", email).
+		Scan(ctx)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -57,7 +65,12 @@ func (r *userRepoImpl) GetByEmail(email string) (*model.User, error) {
 
 func (r *userRepoImpl) SetVerified(id int) error {
 	ctx := context.Background()
-	if _, err := r.db.ExecContext(ctx, "UPDATE users SET verified = TRUE WHERE id = ?", id); err != nil {
+	_, err := r.db.NewUpdate().
+		Model((*model.User)(nil)).
+		Set("verified = ?", true).
+		Where("id = ?", id).
+		Exec(ctx)
+	if err != nil {
 		return fmt.Errorf("set verified: %w", err)
 	}
 	return nil
@@ -65,7 +78,12 @@ func (r *userRepoImpl) SetVerified(id int) error {
 
 func (r *userRepoImpl) UpdatePassword(userID int, newHashedPassword string) error {
 	ctx := context.Background()
-	if _, err := r.db.ExecContext(ctx, "UPDATE users SET password = ? WHERE id = ?", newHashedPassword, userID); err != nil {
+	_, err := r.db.NewUpdate().
+		Model((*model.User)(nil)).
+		Set("password = ?", newHashedPassword).
+		Where("id = ?", userID).
+		Exec(ctx)
+	if err != nil {
 		return fmt.Errorf("update password: %w", err)
 	}
 	return nil

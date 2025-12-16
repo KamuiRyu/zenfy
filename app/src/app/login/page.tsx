@@ -1,7 +1,7 @@
 "use client";
 
-import LoginHero from "@/components/login/LoginHero";
-import LoginForm from "@/components/login/LoginForm";
+import LoginHero from "@/components/login/login_hero";
+import LoginForm from "@/components/login/login_form";
 
 export default function LoginPage() {
   return (

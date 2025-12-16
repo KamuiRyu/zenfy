@@ -5,11 +5,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
+	"zenfy-api/application/service"
 	"zenfy-api/config"
 	handlerpkg "zenfy-api/interfaces/handler"
+	"zenfy-api/interfaces/middleware"
 )
 
-func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler) *fiber.App {
+func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler, cardHandler *handlerpkg.CardHandler, tokenService service.TokenService) *fiber.App {
 	app := fiber.New()
 	cfg := config.Cfg
 	if cfg == nil {
@@ -49,6 +51,16 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 
 	users := api.Group("/users")
 	users.Post("/", userHandler.Create)
+
+	authMiddleware := middleware.AuthMiddleware(tokenService)
+
+	cards := api.Group("/cards")
+	cards.Use(authMiddleware)
+	cards.Post("/", cardHandler.AddCard)
+	cards.Get("/", cardHandler.GetCards)
+	cards.Get("/:id", cardHandler.GetCard)
+	cards.Delete("/:id", cardHandler.DeleteCard)
+	cards.Patch("/:id/default", cardHandler.SetDefaultCard)
 
 	return app
 }

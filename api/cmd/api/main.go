@@ -8,6 +8,7 @@ import (
 
 	"zenfy-api/application/service"
 	authusecase "zenfy-api/application/usecase/auth"
+	cardusecase "zenfy-api/application/usecase/card"
 	userusecase "zenfy-api/application/usecase/user"
 	"zenfy-api/config"
 	"zenfy-api/infrastructure/database"
@@ -42,6 +43,8 @@ func main() {
 	userRepo := repositoryimpl.NewUserRepository(bunDB)
 	verificationRepo := repositoryimpl.NewVerificationTokenRepository(bunDB)
 	passwordResetRepo := repositoryimpl.NewPasswordResetTokenRepository(bunDB)
+	refreshRepo := repositoryimpl.NewRefreshTokenRepository(bunDB)
+	cardRepo := repositoryimpl.NewCardRepository(bunDB)
 
 	// services
 	tokenSvc := service.NewTokenService()
@@ -49,7 +52,6 @@ func main() {
 	emailSvc := service.NewEmailService()
 
 	// use cases
-	refreshRepo := repositoryimpl.NewRefreshTokenRepository(bunDB)
 	loginUC := authusecase.NewLoginUseCase(userRepo, refreshRepo, tokenSvc, validationSvc)
 	verifyEmailUC := authusecase.NewVerifyEmailUseCase(verificationRepo, userRepo, tokenSvc)
 	resendUC := authusecase.NewResendVerificationUseCase(verificationRepo, userRepo, tokenSvc, emailSvc, validationSvc)
@@ -59,12 +61,18 @@ func main() {
 	getMeUC := authusecase.NewGetCurrentUserUseCase(tokenSvc, userRepo)
 	logoutUC := authusecase.NewLogoutUseCase(refreshRepo)
 	refreshUC := authusecase.NewRefreshTokenUseCase(tokenSvc, refreshRepo)
+	addCardUC := cardusecase.NewAddCardUseCase(cardRepo, validationSvc)
+	getCardsUC := cardusecase.NewGetCardsUseCase(cardRepo)
+	getCardUC := cardusecase.NewGetCardUseCase(cardRepo)
+	deleteCardUC := cardusecase.NewDeleteCardUseCase(cardRepo)
+	setDefaultCardUC := cardusecase.NewSetDefaultCardUseCase(cardRepo)
 
 	// handlers (depend on use cases)
 	authHandler := handler.NewAuthHandler(loginUC, verifyEmailUC, resendUC, requestPasswordResetUC, resetPasswordUC, getMeUC, logoutUC, refreshUC)
 	userHandler := handler.NewUserHandler(createUserUC)
+	cardHandler := handler.NewCardHandler(addCardUC, getCardsUC, getCardUC, deleteCardUC, setDefaultCardUC)
 
-	app := routerpkg.NewRouter(authHandler, userHandler)
+	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, tokenSvc)
 
 	addr := ":8080"
 	if config.Cfg != nil && config.Cfg.AppPort != "" {
