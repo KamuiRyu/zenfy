@@ -3,6 +3,7 @@ package dto
 type AddCardRequest struct {
 	LastFour    string `json:"last_four" validate:"required,numeric,len=4"`
 	Brand       string `json:"brand" validate:"required,min=2"`
+	Bank        string `json:"bank" validate:"omitempty,min=2"`
 	HolderName  string `json:"holder_name" validate:"required,min=3"`
 	Nickname    string `json:"nickname" validate:"omitempty,min=2,max=50"`
 	ExpiryMonth int    `json:"expiry_month" validate:"required,min=1,max=12"`
@@ -15,6 +16,7 @@ type AddCardRequest struct {
 type UpdateCardRequest struct {
 	LastFour    string `json:"last_four" validate:"required,numeric,len=4"`
 	Brand       string `json:"brand" validate:"required,min=2"`
+	Bank        string `json:"bank" validate:"omitempty,min=2"`
 	HolderName  string `json:"holder_name" validate:"required,min=3"`
 	Nickname    string `json:"nickname" validate:"omitempty,min=2,max=50"`
 	ExpiryMonth int    `json:"expiry_month" validate:"required,min=1,max=12"`
@@ -28,6 +30,7 @@ type CardResponse struct {
 	ID          int    `json:"id"`
 	LastFour    string `json:"last_four"`
 	Brand       string `json:"brand"`
+	Bank        string `json:"bank"`
 	CardType    string `json:"card_type"`
 	HolderName  string `json:"holder_name"`
 	Nickname    string `json:"nickname"`

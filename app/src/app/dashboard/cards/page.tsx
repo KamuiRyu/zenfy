@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import CardCarousel from "@/components/dashboard/cards/card_carousel";
+import CardCarousel from "@/components/dashboard/cards/my_cards/card_carousel";
 import TransactionHistory from "@/components/dashboard/cards/transaction_history";
 import RightSidebar from "@/components/dashboard/cards/right_sidebar";
 

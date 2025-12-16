@@ -16,6 +16,7 @@ type Card struct {
 	UserID      int       `json:"user_id" bun:"user_id,notnull"`
 	LastFour    string    `json:"last_four" bun:"last_four,notnull"`
 	Brand       string    `json:"brand" bun:"brand,notnull"` // visa, mastercard, amex, etc
+	Bank        string    `json:"bank" bun:"bank"`
 	CardType    CardType  `json:"card_type" bun:"card_type,notnull"`
 	HolderName  string    `json:"holder_name" bun:"holder_name,notnull"`
 	Nickname    string    `json:"nickname" bun:"nickname"`
@@ -33,6 +34,7 @@ func NewCard(userID int, lastFour, brand string, cardType CardType, holderName, 
 		UserID:      userID,
 		LastFour:    lastFour,
 		Brand:       brand,
+		Bank:        "",
 		CardType:    cardType,
 		HolderName:  holderName,
 		Nickname:    nickname,

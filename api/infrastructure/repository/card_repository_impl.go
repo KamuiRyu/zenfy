@@ -75,7 +75,7 @@ func (r *cardRepositoryImpl) Update(card *model.Card) error {
 	ctx := context.Background()
 	result, err := r.db.NewUpdate().
 		Model(card).
-		Column("holder_name", "expiry_month", "expiry_year", "is_default", "updated_at").
+		Column("last_four", "brand", "bank", "card_type", "holder_name", "nickname", "expiry_month", "expiry_year", "billing_day", "is_default", "updated_at").
 		Where("id = ?", card.ID).
 		Exec(ctx)
 

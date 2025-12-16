@@ -4,11 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import CardItem from "./card_item";
 
 export default function CardCarousel() {
-  // placeholder data; replace with props or hook later
   const items = [
-    { lastFour: "4329", expiry: "09/28", variant: "default", brand: "MASTERCARD" },
-    { lastFour: "8502", expiry: "12/29", variant: "light", brand: "VISA" },
-    { lastFour: "9285", expiry: "06/30", variant: "dark" },
+    { lastFour: "4329", expiry: "09/28", brand: "MASTERCARD", bank: "nubank" },
+    { lastFour: "8502", expiry: "12/29", brand: "VISA", bank: "bb" },
+    { lastFour: "9285", expiry: "06/30" },
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -45,10 +44,10 @@ export default function CardCarousel() {
         {items.map((it, idx) => (
           <CardItem
             key={idx}
-            variant={it.variant as any}
             lastFour={it.lastFour}
             expiry={it.expiry}
             brand={it.brand}
+            bank={it.bank}
             selected={idx === selectedIndex}
             onClick={() => selectIndex(idx)}
             ref={(el: any) => (itemRefs.current[idx] = el)}

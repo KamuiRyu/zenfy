@@ -65,6 +65,10 @@ func (uc *AddCardUseCase) Execute(userID int, input dto.AddCardRequest) (*dto.Ca
 		input.BillingDay,
 		isDefault,
 	)
+	// set optional bank if provided
+	if input.Bank != "" {
+		card.Bank = input.Bank
+	}
 
 	// Save to database
 	if err := uc.cardRepo.Create(card); err != nil {
@@ -76,6 +80,7 @@ func (uc *AddCardUseCase) Execute(userID int, input dto.AddCardRequest) (*dto.Ca
 		ID:          card.ID,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
+		Bank:        card.Bank,
 		CardType:    string(card.CardType),
 		HolderName:  card.HolderName,
 		Nickname:    card.Nickname,

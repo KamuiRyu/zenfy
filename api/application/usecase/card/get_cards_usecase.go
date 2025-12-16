@@ -29,6 +29,7 @@ func (uc *GetCardsUseCase) Execute(userID int) ([]dto.CardResponse, error) {
 			ID:          card.ID,
 			LastFour:    card.LastFour,
 			Brand:       card.Brand,
+			Bank:        card.Bank,
 			CardType:    string(card.CardType),
 			HolderName:  card.HolderName,
 			Nickname:    card.Nickname,

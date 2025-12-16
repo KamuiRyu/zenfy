@@ -48,6 +48,7 @@ func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardReq
 	// Update card fields
 	card.LastFour = input.LastFour
 	card.Brand = input.Brand
+	card.Bank = input.Bank
 	card.CardType = model.CardType(input.CardType)
 	card.HolderName = input.HolderName
 	card.Nickname = input.Nickname
@@ -88,6 +89,7 @@ func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardReq
 		ID:          card.ID,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
+		Bank:        card.Bank,
 		CardType:    string(card.CardType),
 		HolderName:  card.HolderName,
 		Nickname:    card.Nickname,
