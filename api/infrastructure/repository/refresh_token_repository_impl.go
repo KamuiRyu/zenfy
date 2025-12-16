@@ -8,6 +8,7 @@ import (
 
 	"github.com/uptrace/bun"
 
+	"zenfy-api/domain/model"
 	"zenfy-api/domain/repository"
 )
 
@@ -21,11 +22,13 @@ func NewRefreshTokenRepository(db *bun.DB) repository.RefreshTokenRepository {
 
 func (r *refreshTokenRepoImpl) Create(token string, userID int, expiresAt time.Time) error {
 	ctx := context.Background()
+	refreshToken := &model.RefreshToken{
+		Token:     token,
+		UserID:    userID,
+		ExpiresAt: expiresAt,
+	}
 	_, err := r.db.NewInsert().
-		TableExpr("refresh_tokens").
-		Value("token", "?", token).
-		Value("user_id", "?", userID).
-		Value("expires_at", "?", expiresAt).
+		Model(refreshToken).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("create refresh token: %w", err)

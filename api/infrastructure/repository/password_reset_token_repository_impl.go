@@ -8,6 +8,7 @@ import (
 
 	"github.com/uptrace/bun"
 
+	"zenfy-api/domain/model"
 	"zenfy-api/domain/repository"
 )
 
@@ -21,11 +22,13 @@ func NewPasswordResetTokenRepository(db *bun.DB) repository.PasswordResetTokenRe
 
 func (r *passwordResetTokenRepoImpl) Create(token string, userID int, expiresAt time.Time) error {
 	ctx := context.Background()
+	passwordResetToken := &model.PasswordResetToken{
+		Token:     token,
+		UserID:    userID,
+		ExpiresAt: expiresAt,
+	}
 	_, err := r.db.NewInsert().
-		TableExpr("password_reset_tokens").
-		Value("token", "?", token).
-		Value("user_id", "?", userID).
-		Value("expires_at", "?", expiresAt).
+		Model(passwordResetToken).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("create password reset token: %w", err)
