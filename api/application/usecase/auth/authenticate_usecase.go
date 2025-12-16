@@ -59,5 +59,5 @@ func (uc *LoginUseCase) Execute(input dto.LoginRequestDTO) (*dto.LoginResponseDT
 		return nil, err
 	}
 
-	return &dto.LoginResponseDTO{Uuid: user.Uuid, Name: user.Name, Email: user.Email, TokenData: dto.TokenData{Token: token, Refresh: refreshToken, ExpiresAt: expiresAt.Unix()}}, nil
+	return &dto.LoginResponseDTO{Uuid: user.Uuid, Name: user.Name, Email: user.Email, AvatarUrl: user.AvatarUrl, TokenData: dto.TokenData{Token: token, Refresh: refreshToken, ExpiresAt: expiresAt.Unix()}}, nil
 }

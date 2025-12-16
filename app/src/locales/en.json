@@ -2,6 +2,11 @@
   "brand": {
     "name": "ThriveStudios"
   },
+  "action":{
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "loading": "Loading..."
+  },
   "login": {
     "title": "Hello Again!",
     "welcome": "Welcome Back",
@@ -13,6 +18,18 @@
     "errorTitle": "Login Error",
     "heroTitle": "It’s not about what you make.",
     "heroSubtitle": "It’s about what you make possible."
+  },
+  "dashboard": {
+    "greeting": "Hi",
+    "welcome_message": "Here is the update from your payment channels, that is really important for you to catch up.",
+    "account": "Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": {
+        "title": "Logout",
+        "confirmation": "Confirm Logout",
+        "description": "Are you sure you want to log out? You can always log back in at any time."
+    }
   },
   "field":{
     "email": {

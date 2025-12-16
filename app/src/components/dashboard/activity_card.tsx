@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function ActivityCard() {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">

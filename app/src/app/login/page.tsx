@@ -2,11 +2,9 @@
 
 import LoginHero from "@/components/login/LoginHero";
 import LoginForm from "@/components/login/LoginForm";
-import { I18nProvider } from "@/i18n/I18nProvider";
 
 export default function LoginPage() {
   return (
-    <I18nProvider defaultLocale="en">
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
         <div className="max-w-7xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-12">
           <div className="col-span-5 bg-white p-12 flex items-center justify-center">
@@ -20,6 +18,5 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </I18nProvider>
   );
 }
