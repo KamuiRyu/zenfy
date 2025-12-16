@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 export default function CardFooter({ holderName, expiry }: { holderName?: string; expiry: string }) {
   const name = holderName ?? "CARD HOLDER";
   return (
