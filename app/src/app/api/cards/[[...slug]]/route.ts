@@ -15,7 +15,19 @@ export async function POST(
   { params }: { params: Promise<{ slug?: string[] }> }
 ) {
   const { slug } = await params;
-  return forwardRequest(req, "cards", slug);
+  const response = await forwardRequest(req, "cards", slug);
+
+  if (response.status >= 200 && response.status < 300) {
+    return setFlash(response, {
+      type: "success",
+      message: "CARD_CREATED_SUCCESSFULLY",
+    });
+  } else {
+    return setFlash(response, {
+      type: "error",
+      message: "CARD_CREATION_FAILED",
+    });
+  }
 }
 
 export async function PUT(
@@ -23,7 +35,19 @@ export async function PUT(
   { params }: { params: Promise<{ slug?: string[] }> }
 ) {
   const { slug } = await params;
-  return forwardRequest(req, "cards", slug);
+  const response = await forwardRequest(req, "cards", slug);
+
+   if (response.status >= 200 && response.status < 300) {
+    return setFlash(response, {
+      type: "success",
+      message: "CARD_UPDATED_SUCCESSFULLY",
+    });
+  } else {
+    return setFlash(response, {
+      type: "error",
+      message: "CARD_UPDATE_FAILED",
+    });
+  }
 }
 
 export async function DELETE(
@@ -32,13 +56,13 @@ export async function DELETE(
 ) {
   const { slug } = await params;
   const response = await forwardRequest(req, "cards", slug);
-  
+
   if (response.status >= 200 && response.status < 300) {
     return setFlash(response, {
       type: "success",
       message: "CARD_DELETED_SUCCESSFULLY",
     });
-  }else{
+  } else {
     return setFlash(response, {
       type: "error",
       message: "CARD_DELETED_FAILED",

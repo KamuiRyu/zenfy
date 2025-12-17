@@ -1,23 +1,13 @@
-"use client";
-
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
-interface CardAddProps {
-  onClick: () => void;
-}
-
-export default function CardAdd({ onClick }: CardAddProps) {
+export default function CardAdd() {
   return (
-    <div
-      onClick={onClick}
+    <Link
       role="button"
+      href="/dashboard/cards/add"
+      scroll={false}
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      }}
       className="min-w-[100px] h-64 rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300 bg-card text-card-foreground hover:bg-muted hover:text-primary cursor-pointer border-2 border-dashed border-muted"
     >
       <div className="flex flex-col items-center gap-3">
@@ -25,6 +15,6 @@ export default function CardAdd({ onClick }: CardAddProps) {
           <Plus className="w-7 h-7 text-primary" />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

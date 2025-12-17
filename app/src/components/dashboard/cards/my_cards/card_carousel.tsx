@@ -24,6 +24,7 @@ export default function CardCarousel() {
     handleDelete,
   } = useCardsCarousel();
 
+
   return (
     <div className="relative">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 z-30">
@@ -68,7 +69,7 @@ export default function CardCarousel() {
           scrollbarWidth: "none",
         }}
       >
-        <CardAdd onClick={() => alert("Add card")} />
+        <CardAdd  />
 
         {loading
           ? [0, 1, 2].map((i) => (

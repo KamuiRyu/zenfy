@@ -1,18 +1,11 @@
 "use client";
 
-import { Edit, Trash2 } from "lucide-react";
-import React from "react";
-
 export default function CardFooter({
   holderName,
   expiry,
-  onEdit,
-  onDelete,
 }: {
   holderName?: string;
   expiry: string;
-  onEdit?: () => void;
-  onDelete?: () => void;
 }) {
   const name = holderName ?? "CARD HOLDER";
 

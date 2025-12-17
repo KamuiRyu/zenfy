@@ -18,9 +18,7 @@ export function CardBrand({ brand }: { brand: string }) {
       return <VisaIcon className="absolute w-full h-full object-contain" />;
     case "mastercard":
     case "mc":
-      return (
-        <MastercardIcon className="absolute w-full h-full object-contain" />
-      );
+      return  <MastercardIcon className="absolute w-full h-full object-contain" />;
     case "alipay":
       return <AlipayIcon className="absolute w-full h-full object-contain" />;
     case "amex":
@@ -32,9 +30,8 @@ export function CardBrand({ brand }: { brand: string }) {
     case "elo":
       return <EloIcon className="absolute w-full h-full object-contain" />;
     case "hipercard":
-      return (
-        <HipercardIcon className="absolute w-full h-full object-contain" />
-      );
+      return <HipercardIcon className="absolute w-full h-full object-contain" />;
+      
     case "jcb":
       return <JcbIcon className="absolute w-full h-full object-contain" />;
     case "maestro":

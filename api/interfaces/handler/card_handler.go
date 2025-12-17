@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -99,6 +100,8 @@ func (h *CardHandler) UpdateCard(c *fiber.Ctx) error {
 
 	var req dto.UpdateCardRequest
 	if err := c.BodyParser(&req); err != nil {
+		fmt.Printf("Error parsing body: %v\n", err)
+		fmt.Printf("Request body: %s\n", string(c.Body()))
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_REQUEST", "Invalid request body", nil)
 	}
 

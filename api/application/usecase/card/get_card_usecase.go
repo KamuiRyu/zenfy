@@ -33,6 +33,7 @@ func (uc *GetCardUseCase) Execute(userID, cardID int) (*dto.CardResponse, error)
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
 		CardType:    string(card.CardType),
+		Bank:        card.Bank,
 		HolderName:  card.HolderName,
 		Nickname:    card.Nickname,
 		ExpiryMonth: card.ExpiryMonth,

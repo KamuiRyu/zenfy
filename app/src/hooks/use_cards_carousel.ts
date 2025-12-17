@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import cardService from "@/services/card_service";
 import { toast } from "sonner";
 
@@ -31,6 +31,14 @@ export default function useCardsCarousel() {
   const startX = useRef(0);
   const startScroll = useRef(0);
   const [dragging, setDragging] = useState(false);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/dashboard/cards") {
+      fetchCards();
+    }
+  }, [pathname]);
 
   function mapPayloadToItems(payload: any): CardItem[] {
     let cardsArray: any[] = [];
@@ -165,7 +173,7 @@ export default function useCardsCarousel() {
 
   function handleEdit(id?: string | number | null) {
     if (!id) return;
-    router.push(`/dashboard/cards/${id}/edit`);
+    router.push(`/dashboard/cards/edit/${id}`);
   }
 
   return {

@@ -48,7 +48,11 @@
   },
   "toast": {
     "CARD_DELETED_SUCCESSFULLY": "Cartão excluído com sucesso",
-    "CARD_DELETED_FAILED": "Falha ao excluir o cartão"
+    "CARD_DELETED_FAILED": "Falha ao excluir o cartão",
+    "CARD_CREATED_SUCCESSFULLY": "Cartão criado com sucesso",
+    "CARD_CREATION_FAILED": "Falha ao criar o cartão",
+    "CARD_UPDATED_SUCCESSFULLY": "Cartão atualizado com sucesso",
+    "CARD_UPDATE_FAILED": "Falha ao atualizar o cartão"
   },
   "server": {
     "INVALID_CREDENTIALS": "Credenciais inválidas",

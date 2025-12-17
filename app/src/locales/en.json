@@ -48,7 +48,11 @@
   },
   "toast": {
     "CARD_DELETED_SUCCESSFULLY": "Card deleted successfully",
-    "CARD_DELETED_FAILED": "Failed to delete card"
+    "CARD_DELETED_FAILED": "Failed to delete card",
+    "CARD_CREATED_SUCCESSFULLY": "Card created successfully",
+    "CARD_CREATION_FAILED": "Failed to create card",
+    "CARD_UPDATED_SUCCESSFULLY": "Card updated successfully",
+    "CARD_UPDATE_FAILED": "Failed to update card"
   },
   "server": {
     "INVALID_CREDENTIALS": "Invalid credentials",

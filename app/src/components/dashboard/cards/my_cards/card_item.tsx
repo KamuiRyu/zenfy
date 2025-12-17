@@ -92,36 +92,40 @@ const CardItem = React.forwardRef<
         }
       >
         <div className="flex items-center gap-3 absolute z-10 top-2 left-4">
-          <span
-            role="button"
-            tabIndex={0}
-            onClick={handleEdit}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleEdit(e as any);
+          {onEdit && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={handleEdit}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleEdit(e as any);
+                }
+              }}
+              aria-label="Edit card"
+              className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
+            >
+              <Edit2 className="w-4 h-4" />
+            </span>
+          )}
+          {onDelete && (
+            <ConfirmDialog
+              onConfirm={() => onDelete?.()}
+              title={t("dashboard.cards.confirm_delete")}
+              description={t("dashboard.cards.delete_description")}
+              trigger={
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Delete card"
+                  className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </span>
               }
-            }}
-            aria-label="Edit card"
-            className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
-          >
-            <Edit2 className="w-4 h-4" />
-          </span>
-          <ConfirmDialog
-            onConfirm={() => onDelete?.()}
-            title={t("dashboard.cards.confirm_delete")}
-            description={t("dashboard.cards.delete_description")}
-            trigger={
-              <span
-                role="button"
-                tabIndex={0}
-                aria-label="Delete card"
-                className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
-              >
-                <Trash2 className="w-4 h-4" />
-              </span>
-            }
-          />
+            />
+          )}
           {nickname && (
             <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-md text-sm font-medium">
               {nickname}
@@ -148,12 +152,7 @@ const CardItem = React.forwardRef<
             </div>
 
             <div>
-              <CardFooter
-                holderName={name}
-                expiry={expiry}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+              <CardFooter holderName={name} expiry={expiry} />
             </div>
           </div>
         </div>
