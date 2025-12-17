@@ -1,15 +1,30 @@
 "use client";
 
-import React from "react";
+import { Plus } from "lucide-react";
 
-export default function CardAdd({ onClick }: { onClick?: () => void }) {
+interface CardAddProps {
+  onClick: () => void;
+}
+
+export default function CardAdd({ onClick }: CardAddProps) {
   return (
-    <button
+    <div
       onClick={onClick}
-      className="min-w-[120px] h-48 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-white/20 text-gray-500"
-      aria-label="Add card"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className="min-w-[100px] h-64 rounded-2xl p-4 flex flex-col items-center justify-center transition-all duration-300 bg-card text-card-foreground hover:bg-muted hover:text-primary cursor-pointer border-2 border-dashed border-muted"
     >
-      <span className="text-4xl leading-none">+</span>
-    </button>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+          <Plus className="w-7 h-7 text-primary" />
+        </div>
+      </div>
+    </div>
   );
 }

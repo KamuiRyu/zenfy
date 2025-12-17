@@ -29,6 +29,11 @@
         "title": "Sair",
         "confirmation": "Confirmar saída",
         "description": "Tem certeza de que deseja sair? Você sempre pode entrar novamente a qualquer momento."
+    },
+    "cards": {
+        "my_cards": "Meus Cartões",
+        "confirm_delete": "Confirmar Exclusão",
+        "delete_description": "Tem certeza de que deseja excluir este cartão? Esta ação não pode ser desfeita."
     }
   },
   "field": {
@@ -40,6 +45,10 @@
       "label": "Senha",
       "placeholder": "Sua senha"
     }
+  },
+  "toast": {
+    "CARD_DELETED_SUCCESSFULLY": "Cartão excluído com sucesso",
+    "CARD_DELETED_FAILED": "Falha ao excluir o cartão"
   },
   "server": {
     "INVALID_CREDENTIALS": "Credenciais inválidas",
