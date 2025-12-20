@@ -4,46 +4,29 @@ import { Search, Bell } from "lucide-react";
 import { useSession } from "next-auth/react";
 import AvatarMenu from "./avatar_menu";
 import { Skeleton } from "../ui/skeleton";
-import { useI18n } from "@/i18n/useI18n";
+import { ThemeToggleButton } from "./theme_toggle_button";
 
 export default function DashboardHeader({ name }: { name?: string }) {
   const { data: session, status } = useSession();
   const isLoading = status === "loading";
   const displayName = name || session?.user?.name || null;
   const avatar = session?.user?.image || null;
-  const { t } = useI18n();
-  
-  
 
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h2 className="flex items-center text-3xl md:text-4xl font-semibold gap-3">
-          <span>{t("dashboard.greeting")}, </span>
-          {displayName ? (
-            <span className="font-extrabold">{displayName}</span>
-          ) : (
-            <Skeleton className="h-8 w-48 inline-block align-middle" />
-          )}
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          {t("dashboard.welcome_message")}
-        </p>
-      </div>
-
-      <div className="flex items-center gap-4">
+    <div className="w-full">
+      <div className="flex items-center justify-end gap-5">
         <button
           aria-label="Search"
-          className="p-3 bg-white/60 rounded-lg  hover:bg-white"
+          className="p-3 rounded-lg transition-colors duration-200  text-card-foreground hover:bg-muted hover:text-primary"
         >
-          <Search size={20} />
+          <Search size={20} className="transition-colors duration-200 hover:text-primary" />
         </button>
-
+        <ThemeToggleButton />
         <button
           aria-label="Notifications"
-          className="relative p-3 bg-white/60 rounded-lg hover:bg-white"
+          className="relative p-3 rounded-lg transition-colors duration-200  text-card-foreground hover:bg-muted hover:text-primary"
         >
-          <Bell size={20} />
+          <Bell size={20} className="transition-colors duration-200 hover:text-primary"/>
           <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 rounded-full bg-pink-500 text-white text-[10px]">
             1
           </span>

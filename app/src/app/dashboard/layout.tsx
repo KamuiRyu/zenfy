@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "@/components/dashboard/sidebar";
-import DashboardHeader from "@/components/dashboard/dashboard_header";
+import Sidebar from "@/components/layout/sidebar";
+import DashboardHeader from "@/components/layout/dashboard_header";
 
 export default function DashboardLayout({
   children,
@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <div className="flex gap-6">
         <Sidebar />
         <div className="flex-1">
-          <div className="p-6">
+          <div className="px-6 pt-6">
             <DashboardHeader />
           </div>
           {children}

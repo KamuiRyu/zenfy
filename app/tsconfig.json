@@ -21,7 +21,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@ui/*": ["./src/components/ui/*"]
+      "@ui/*": ["./src/components/ui/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@services/*": ["./src/services/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "lib/*": ["./src/lib/*"]
     }
   },
   "include": [

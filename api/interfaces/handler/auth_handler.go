@@ -45,7 +45,7 @@ func (h *AuthHandler) Me(c *fiber.Ctx) error {
 	if user == nil {
 		return resp.Error(c, fiber.StatusNotFound, "USER_NOT_FOUND", messages.UserNotFound, nil)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.UserFound, user)
+	return resp.Success(c, fiber.StatusOK, user, messages.UserFound)
 }
 
 func (h *AuthHandler) Logout(c *fiber.Ctx) error {
@@ -62,7 +62,7 @@ func (h *AuthHandler) Logout(c *fiber.Ctx) error {
 	if err := h.logoutUC.Execute(token); err != nil {
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.LogoutSuccessful, nil)
+	return resp.Success(c, fiber.StatusOK, nil, messages.LogoutSuccessful)
 }
 
 func (h *AuthHandler) Login(c *fiber.Ctx) error {
@@ -81,7 +81,7 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		}
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.LoginSuccessful, res)
+	return resp.Success(c, fiber.StatusOK, res, messages.LoginSuccessful)
 }
 
 func (h *AuthHandler) Verify(c *fiber.Ctx) error {
@@ -94,7 +94,7 @@ func (h *AuthHandler) Verify(c *fiber.Ctx) error {
 		return resp.Error(c, fiber.StatusBadRequest, "INVALID_TOKEN", messages.InvalidToken, err)
 	}
 
-	return resp.Success(c, fiber.StatusOK, "OK", messages.EmailVerified, nil)
+	return resp.Success(c, fiber.StatusOK, nil, messages.EmailVerified)
 }
 
 func (h *AuthHandler) Resend(c *fiber.Ctx) error {
@@ -115,7 +115,7 @@ func (h *AuthHandler) Resend(c *fiber.Ctx) error {
 		}
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.VerificationEmailSent, nil)
+	return resp.Success(c, fiber.StatusOK, nil, messages.VerificationEmailSent)
 }
 
 func (h *AuthHandler) RequestPasswordReset(c *fiber.Ctx) error {
@@ -130,7 +130,7 @@ func (h *AuthHandler) RequestPasswordReset(c *fiber.Ctx) error {
 		}
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.PasswordResetEmailSent, nil)
+	return resp.Success(c, fiber.StatusOK, nil, messages.PasswordResetEmailSent)
 }
 
 func (h *AuthHandler) ResetPassword(c *fiber.Ctx) error {
@@ -148,7 +148,7 @@ func (h *AuthHandler) ResetPassword(c *fiber.Ctx) error {
 		}
 		return resp.Error(c, fiber.StatusInternalServerError, "INTERNAL_ERROR", messages.InternalServerError, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.PasswordResetSuccessful, nil)
+	return resp.Success(c, fiber.StatusOK, nil, messages.PasswordResetSuccessful)
 }
 
 func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
@@ -167,7 +167,7 @@ func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
 	if err != nil {
 		return resp.Error(c, fiber.StatusUnauthorized, "INVALID_TOKEN", messages.InvalidToken, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.TokenRefreshed, map[string]string{"token": accessToken, "refresh_token": newRefresh})
+	return resp.Success(c, fiber.StatusOK, map[string]string{"token": accessToken, "refresh_token": newRefresh}, messages.TokenRefreshed)
 }
 
 func (h *AuthHandler) Validate(c *fiber.Ctx) error {
@@ -186,5 +186,5 @@ func (h *AuthHandler) Validate(c *fiber.Ctx) error {
 	if err != nil {
 		return resp.Error(c, fiber.StatusUnauthorized, "INVALID_TOKEN", messages.InvalidToken, err)
 	}
-	return resp.Success(c, fiber.StatusOK, "OK", messages.UserFound, user)
+	return resp.Success(c, fiber.StatusOK, user, messages.UserFound)
 }

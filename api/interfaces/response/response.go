@@ -25,14 +25,18 @@ func Error(c *fiber.Ctx, status int, code string, message string, err error) err
 	return c.Status(status).JSON(resp)
 }
 
-func Success(c *fiber.Ctx, status int, code string, message string, data interface{}) error {
+func Success(c *fiber.Ctx, status int, data interface{}, message string) error {
 	resp := SuccessResponse{
 		Type:    "success",
-		Code:    code,
+		Code:    "SUCCESS",
 		Message: message,
 		Data:    data,
 	}
 	return c.Status(status).JSON(resp)
+}
+
+func ValidationError(c *fiber.Ctx, err error) error {
+	return ValidationErrorResponse(c, fiber.StatusBadRequest, "VALIDATION_ERROR", "Validation failed", err, nil)
 }
 
 func ValidationErrorResponse(c *fiber.Ctx, status int, code string, message string, err error, obj interface{}) error {

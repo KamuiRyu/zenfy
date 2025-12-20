@@ -29,6 +29,11 @@
         "title": "Logout",
         "confirmation": "Confirm Logout",
         "description": "Are you sure you want to log out? You can always log back in at any time."
+    },
+    "cards": {
+        "my_cards": "My Cards",
+        "confirm_delete": "Confirm Delete",
+        "delete_description": "Are you sure you want to delete this card? This action cannot be undone."
     }
   },
   "field":{
@@ -40,6 +45,14 @@
         "label": "Password",
         "placeholder": "Your password"
     }
+  },
+  "toast": {
+    "CARD_DELETED_SUCCESSFULLY": "Card deleted successfully",
+    "CARD_DELETED_FAILED": "Failed to delete card",
+    "CARD_CREATED_SUCCESSFULLY": "Card created successfully",
+    "CARD_CREATION_FAILED": "Failed to create card",
+    "CARD_UPDATED_SUCCESSFULLY": "Card updated successfully",
+    "CARD_UPDATE_FAILED": "Failed to update card"
   },
   "server": {
     "INVALID_CREDENTIALS": "Invalid credentials",

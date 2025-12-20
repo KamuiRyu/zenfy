@@ -1,4 +1,4 @@
-package repositoryimpl
+package repository
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/uptrace/bun"
 
+	"zenfy-api/domain/model"
 	"zenfy-api/domain/repository"
 )
 
@@ -21,7 +22,14 @@ func NewRefreshTokenRepository(db *bun.DB) repository.RefreshTokenRepository {
 
 func (r *refreshTokenRepoImpl) Create(token string, userID int, expiresAt time.Time) error {
 	ctx := context.Background()
-	_, err := r.db.ExecContext(ctx, "INSERT INTO refresh_tokens(token, user_id, expires_at) VALUES(?, ?, ?)", token, userID, expiresAt)
+	refreshToken := &model.RefreshToken{
+		Token:     token,
+		UserID:    userID,
+		ExpiresAt: expiresAt,
+	}
+	_, err := r.db.NewInsert().
+		Model(refreshToken).
+		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("create refresh token: %w", err)
 	}
@@ -31,8 +39,9 @@ func (r *refreshTokenRepoImpl) Create(token string, userID int, expiresAt time.T
 func (r *refreshTokenRepoImpl) Consume(token string) (int, error) {
 	ctx := context.Background()
 	var userID int
-	row := r.db.QueryRowContext(ctx, `DELETE FROM refresh_tokens WHERE token = ? AND expires_at > now() RETURNING user_id`, token)
-	if err := row.Scan(&userID); err != nil {
+	err := r.db.NewRaw("DELETE FROM refresh_tokens WHERE token = ? AND expires_at > now() RETURNING user_id", token).
+		Scan(ctx, &userID)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, fmt.Errorf("invalid or expired token")
 		}
