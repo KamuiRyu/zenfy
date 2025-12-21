@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -41,6 +42,32 @@ func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, 
 
 func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error) {
 	transactions, err := uc.transactionRepo.ListByUser(userID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	responses := make([]dto.TransactionResponse, len(transactions))
+	for i, transaction := range transactions {
+		responses[i] = *uc.toResponse(transaction)
+	}
+
+	return responses, nil
+}
+
+func (uc *ListTransactionsUseCase) ExecuteByUserAndCard(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error) {
+	// First get the card to verify ownership and get the ID
+	card, err := uc.cardRepo.FindByUUID(cardUUID)
+	if err != nil {
+		return nil, err
+	}
+	if card == nil {
+		return nil, fmt.Errorf("CARD_NOT_FOUND")
+	}
+	if card.UserID != userID {
+		return nil, fmt.Errorf("CARD_DOES_NOT_BELONG_TO_USER")
+	}
+
+	transactions, err := uc.transactionRepo.ListByCard(card.ID, limit, offset)
 	if err != nil {
 		return nil, err
 	}

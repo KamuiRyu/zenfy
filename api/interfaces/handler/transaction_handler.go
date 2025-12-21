@@ -163,6 +163,17 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 		offset = 0
 	}
 
+	// Check if card_uuid is provided for filtering
+	cardUUID := c.Query("card_uuid")
+	if cardUUID != "" {
+		// Filter transactions by card UUID
+		transactions, err := h.listTransactionsUC.ExecuteByUserAndCard(userID, cardUUID, limit, offset)
+		if err != nil {
+			return response.Error(c, fiber.StatusInternalServerError, "FETCH_TRANSACTIONS_FAILED", "Failed to fetch transactions", nil)
+		}
+		return response.Success(c, fiber.StatusOK, transactions, "Transactions fetched successfully")
+	}
+
 	transactions, err := h.listTransactionsUC.ExecuteByUser(userID, limit, offset)
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_TRANSACTIONS_FAILED", "Failed to fetch transactions", nil)

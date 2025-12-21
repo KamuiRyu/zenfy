@@ -1,10 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { FlashMessage } from "@/lib/flash-message";
 
+type State = {
+  flash: FlashMessage | null;
+};
+
+type Action = { type: "SET_FLASH"; payload: FlashMessage | null } | { type: "CLEAR_FLASH" };
+
+function flashReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "SET_FLASH":
+      return { flash: action.payload };
+    case "CLEAR_FLASH":
+      return { flash: null };
+    default:
+      return state;
+  }
+}
+
 export function useFlashMessage() {
-  const [flash, setFlash] = useState<FlashMessage | null>(null);
+  const [state, dispatch] = useReducer(flashReducer, { flash: null });
 
   useEffect(() => {
     const cookie = document.cookie
@@ -16,14 +33,14 @@ export function useFlashMessage() {
         const value = cookie.split("=")[1];
         const decoded = atob(value);
         const message = JSON.parse(decoded) as FlashMessage;
-        setFlash(message);
+        dispatch({ type: "SET_FLASH", payload: message });
         
         document.cookie = "flash=; path=/; max-age=0";
         
-        setTimeout(() => setFlash(null), 5000);
+        setTimeout(() => dispatch({ type: "CLEAR_FLASH" }), 5000);
       } catch {}
     }
   }, []);
 
-  return flash;
+  return state.flash;
 }

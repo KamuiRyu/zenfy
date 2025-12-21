@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,17 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CardFormSchema } from "./card_form.schema";
 import { Controller, UseFormReturn } from "react-hook-form";
 
-export function CardForm({
-  control,
-  handleSubmit,
-  setValue,
-  watch,
-  formState,
-  loading = false,
-  onSubmit,
-  submitLabel = "Salvar",
-  renderPreview,
-}: {
+type CardFormProps = {
   control: UseFormReturn<CardFormSchema>["control"];
   handleSubmit: UseFormReturn<CardFormSchema>["handleSubmit"];
   setValue: UseFormReturn<CardFormSchema>["setValue"];
@@ -42,7 +33,19 @@ export function CardForm({
   onSubmit?: (values: CardFormSchema) => void;
   submitLabel?: string;
   renderPreview?: (values: Partial<CardFormSchema>) => React.ReactNode;
-}) {
+};
+
+export const CardForm = React.memo(function CardForm({
+  control,
+  handleSubmit,
+  setValue,
+  watch,
+  formState,
+  loading = false,
+  onSubmit,
+  submitLabel = "Salvar",
+  renderPreview,
+}: CardFormProps) {
   const [openExpiry, setOpenExpiry] = useState(false);
   const [openBillingDay, setOpenBillingDay] = useState(false);
   const errors = formState.errors;
@@ -398,4 +401,4 @@ export function CardForm({
       </form>
     </>
   );
-}
+});

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import cardService from "@/services/card_service";
 import { toast } from "sonner";
+import { useSelectedCard } from "@/providers/selected_card_provider";
 
 type CardItem = {
   id?: string | number | null;
@@ -16,14 +17,49 @@ type CardItem = {
   isDefault?: boolean;
 };
 
+type CarouselState = {
+  items: CardItem[];
+  loading: boolean;
+  error: string | null;
+  selectedIndex: number;
+};
+
+type CarouselAction =
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_ITEMS'; payload: CardItem[] }
+  | { type: 'SET_SELECTED_INDEX'; payload: number }
+  | { type: 'RESET' };
+
+const initialState: CarouselState = {
+  items: [],
+  loading: true,
+  error: null,
+  selectedIndex: 0,
+};
+
+function carouselReducer(state: CarouselState, action: CarouselAction): CarouselState {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'SET_ITEMS':
+      return { ...state, items: action.payload };
+    case 'SET_SELECTED_INDEX':
+      return { ...state, selectedIndex: action.payload };
+    case 'RESET':
+      return initialState;
+    default:
+      return state;
+  }
+}
+
 export default function useCardsCarousel() {
   const router = useRouter();
+  const { setSelectedCard } = useSelectedCard();
 
-  const [items, setItems] = useState<CardItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [state, dispatch] = useReducer(carouselReducer, initialState);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -72,8 +108,10 @@ export default function useCardsCarousel() {
   }
 
   async function fetchCards() {
-    setError(null);
+    dispatch({ type: 'SET_ERROR', payload: null });
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
+      console.log("Fetching cards");
       const resp = await cardService.getCards();
       const payload =
         resp && typeof resp === "object" && "data" in resp
@@ -81,35 +119,28 @@ export default function useCardsCarousel() {
           : resp;
       const mapped = mapPayloadToItems(payload);
       const defaultIndex = mapped.findIndex((m) => m.isDefault);
+      const initialIndex = defaultIndex >= 0 ? defaultIndex : 0;
       React.startTransition(() => {
-        setItems(mapped);
-        setSelectedIndex(defaultIndex >= 0 ? defaultIndex : 0);
-        setLoading(false);
+        dispatch({ type: 'SET_ITEMS', payload: mapped });
+        dispatch({ type: 'SET_SELECTED_INDEX', payload: initialIndex });
+        updateSelectedCard(initialIndex);
+        dispatch({ type: 'SET_LOADING', payload: false });
       });
     } catch (err: any) {
       console.error("Failed to load cards", err);
       React.startTransition(() => {
-        setError(err?.message || "Failed to load cards");
-        setLoading(false);
+        dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load cards" });
+        dispatch({ type: 'SET_LOADING', payload: false });
       });
     }
   }
 
   useEffect(() => {
-    let mounted = true;
-    if (!mounted) return;
-    fetchCards();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    dispatch({ type: 'SET_SELECTED_INDEX', payload: state.items.length ? Math.min(state.selectedIndex, state.items.length - 1) : 0 });
+  }, [state.items.length]);
 
   useEffect(() => {
-    setSelectedIndex((s) => (items.length ? Math.min(s, items.length - 1) : 0));
-  }, [items.length]);
-
-  useEffect(() => {
-    const el = itemRefs.current[selectedIndex + 1];
+    const el = itemRefs.current[state.selectedIndex + 1];
     if (el && containerRef.current) {
       el.scrollIntoView({
         behavior: "smooth",
@@ -117,7 +148,11 @@ export default function useCardsCarousel() {
         block: "nearest",
       });
     }
-  }, [selectedIndex]);
+  }, [state.selectedIndex]);
+
+  useEffect(() => {
+    updateSelectedCard(state.selectedIndex);
+  }, [state.selectedIndex, state.items]);
 
   function onPointerDown(e: React.PointerEvent) {
     if (!containerRef.current) return;
@@ -142,31 +177,42 @@ export default function useCardsCarousel() {
     } catch {}
   }
 
+  function updateSelectedCard(index: number) {
+    const selectedCard = state.items[index];
+    React.startTransition(() => {
+      if (selectedCard && selectedCard.id) {
+        setSelectedCard(selectedCard.id.toString(), selectedCard.lastFour, selectedCard.brand);
+      } else {
+        setSelectedCard(null, null, null);
+      }
+    });
+  }
+
   function selectIndex(i: number) {
-    setSelectedIndex(i);
+    dispatch({ type: 'SET_SELECTED_INDEX', payload: i });
   }
 
   function prev() {
-    setSelectedIndex((s) => Math.max(0, s - 1));
+    dispatch({ type: 'SET_SELECTED_INDEX', payload: Math.max(0, state.selectedIndex - 1) });
   }
 
   function next() {
-    setSelectedIndex((s) => Math.min(items.length - 1, s + 1));
+    dispatch({ type: 'SET_SELECTED_INDEX', payload: Math.min(state.items.length - 1, state.selectedIndex + 1) });
   }
 
   async function handleDelete(id?: string | number | null) {
     if (!id) return;
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       await cardService.deleteCard(String(id));
 
       React.startTransition(() => {
-        setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-        setLoading(false);
+        dispatch({ type: 'SET_ITEMS', payload: state.items.filter((item) => item.id !== id) });
+        dispatch({ type: 'SET_LOADING', payload: false });
       });
     } catch (err) {
       console.error("delete failed", err);
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
       toast.error("Failed to delete card");
     }
   }
@@ -177,10 +223,10 @@ export default function useCardsCarousel() {
   }
 
   return {
-    items,
-    loading,
-    error,
-    selectedIndex,
+    items: state.items,
+    loading: state.loading,
+    error: state.error,
+    selectedIndex: state.selectedIndex,
     selectIndex,
     prev,
     next,
