@@ -12,7 +12,8 @@ const (
 
 // Card represents a user's payment card
 type Card struct {
-	ID          int       `json:"id" bun:"id,pk,autoincrement"`
+	ID          int       `json:"-" bun:"id,pk,autoincrement"`
+	Uuid        string    `json:"uuid" bun:"uuid,unique,notnull"`
 	UserID      int       `json:"user_id" bun:"user_id,notnull"`
 	LastFour    string    `json:"last_four" bun:"last_four,notnull"`
 	Brand       string    `json:"brand" bun:"brand,notnull"` // visa, mastercard, amex, etc
@@ -29,9 +30,10 @@ type Card struct {
 }
 
 // NewCard creates a new card instance
-func NewCard(userID int, lastFour, brand string, cardType CardType, holderName, nickname string, expiryMonth, expiryYear, billingDay int, isDefault bool) *Card {
+func NewCard(userID int, Uuid string, lastFour, brand string, cardType CardType, holderName, nickname string, expiryMonth, expiryYear, billingDay int, isDefault bool) *Card {
 	return &Card{
 		UserID:      userID,
+		Uuid:        Uuid,
 		LastFour:    lastFour,
 		Brand:       brand,
 		Bank:        "",

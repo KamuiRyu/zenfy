@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -25,7 +26,7 @@ func NewUpdateCardUseCase(
 	}
 }
 
-func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardRequest) (*dto.CardResponse, error) {
+func (uc *UpdateCardUseCase) Execute(userID int, cardUUID string, input dto.UpdateCardRequest) (*dto.CardResponse, error) {
 	if err := uc.validator.Validate(&input); err != nil {
 		return nil, err
 	}
@@ -36,9 +37,14 @@ func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardReq
 	}
 
 	// Check if card exists and belongs to user
-	card, err := uc.cardRepo.FindByID(cardID)
+	card, err := uc.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return nil, fmt.Errorf("card not found")
+		if idInt, perr := strconv.Atoi(cardUUID); perr == nil {
+			card, err = uc.cardRepo.FindByID(idInt)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("card not found")
+		}
 	}
 
 	if card.UserID != userID {
@@ -65,7 +71,7 @@ func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardReq
 		}
 
 		for _, c := range existingCards {
-			if c.IsDefault && c.ID != cardID {
+			if c.IsDefault && c.ID != card.ID {
 				c.IsDefault = false
 				if err := uc.cardRepo.Update(c); err != nil {
 					return nil, fmt.Errorf("failed to unset current default card: %w", err)
@@ -86,7 +92,7 @@ func (uc *UpdateCardUseCase) Execute(userID, cardID int, input dto.UpdateCardReq
 
 	// Return response
 	return &dto.CardResponse{
-		ID:          card.ID,
+		Uuid:        card.Uuid,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
 		Bank:        card.Bank,

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -18,10 +19,16 @@ func NewGetCardUseCase(cardRepo repository.CardRepository) *GetCardUseCase {
 	}
 }
 
-func (uc *GetCardUseCase) Execute(userID, cardID int) (*dto.CardResponse, error) {
-	card, err := uc.cardRepo.FindByID(cardID)
+func (uc *GetCardUseCase) Execute(userID int, cardUUID string) (*dto.CardResponse, error) {
+	card, err := uc.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return nil, err
+		// fallback: if client passed numeric ID as string, try FindByID
+		if idInt, perr := strconv.Atoi(cardUUID); perr == nil {
+			card, err = uc.cardRepo.FindByID(idInt)
+		}
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if card.UserID != userID {
@@ -29,7 +36,7 @@ func (uc *GetCardUseCase) Execute(userID, cardID int) (*dto.CardResponse, error)
 	}
 
 	return &dto.CardResponse{
-		ID:          card.ID,
+		Uuid:        card.Uuid,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
 		CardType:    string(card.CardType),

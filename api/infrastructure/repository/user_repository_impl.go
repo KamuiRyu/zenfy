@@ -39,7 +39,7 @@ func (r *userRepoImpl) Create(u *model.User) error {
 	ctx := context.Background()
 	_, err := r.db.NewInsert().
 		Model(u).
-		Returning("id").
+		Returning("*").
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("insert user: %w", err)

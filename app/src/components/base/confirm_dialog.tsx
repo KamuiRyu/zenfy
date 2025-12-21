@@ -46,15 +46,15 @@ export function ConfirmDialog({
   }
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
-      <AlertDialogTrigger asChild>
-        <button
-          type="button"
-          aria-haspopup="dialog"
-          className="inline-flex items-center"
-        >
-          {trigger}
-        </button>
-      </AlertDialogTrigger>
+      {trigger ? (
+        <AlertDialogTrigger asChild>{trigger as React.ReactElement}</AlertDialogTrigger>
+      ) : (
+        <AlertDialogTrigger asChild>
+          <button type="button" aria-haspopup="dialog" className="inline-flex items-center">
+            {t("action.confirm")}
+          </button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

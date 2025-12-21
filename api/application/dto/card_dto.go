@@ -27,7 +27,7 @@ type UpdateCardRequest struct {
 }
 
 type CardResponse struct {
-	ID          int    `json:"id"`
+	Uuid        string `json:"uuid"`
 	LastFour    string `json:"last_four"`
 	Brand       string `json:"brand"`
 	Bank        string `json:"bank"`

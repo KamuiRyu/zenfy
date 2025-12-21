@@ -42,6 +42,21 @@ func (r *cardRepositoryImpl) FindByID(id int) (*model.Card, error) {
 	return card, err
 }
 
+func (r *cardRepositoryImpl) FindByUUID(uuid string) (*model.Card, error) {
+	ctx := context.Background()
+	card := &model.Card{}
+	err := r.db.NewSelect().
+		Model(card).
+		Where("uuid = ?", uuid).
+		Scan(ctx)
+
+	if err == sql.ErrNoRows {
+		return nil, fmt.Errorf("card not found")
+	}
+
+	return card, err
+}
+
 func (r *cardRepositoryImpl) FindByUserID(userID int) ([]*model.Card, error) {
 	ctx := context.Background()
 	var cards []*model.Card
@@ -77,6 +92,29 @@ func (r *cardRepositoryImpl) Update(card *model.Card) error {
 		Model(card).
 		Column("last_four", "brand", "bank", "card_type", "holder_name", "nickname", "expiry_month", "expiry_year", "billing_day", "is_default", "updated_at").
 		Where("id = ?", card.ID).
+		Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("card not found")
+	}
+
+	return nil
+}
+
+func (r *cardRepositoryImpl) DeleteByUUID(uuid string) error {
+	ctx := context.Background()
+	result, err := r.db.NewDelete().
+		Model((*model.Card)(nil)).
+		Where("uuid = ?", uuid).
 		Exec(ctx)
 
 	if err != nil {

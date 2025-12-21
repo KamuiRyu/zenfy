@@ -10,15 +10,15 @@ import (
 
 // User represents a system user.
 type User struct {
-	ID        int       `json:"id"`
-	Uuid      string    `json:"uuid"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	AvatarUrl string    `json:"avatar_url"`
-	Verified  bool      `json:"verified"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        int       `bun:"id,pk,autoincrement" json:"-"`
+	Uuid      string    `bun:"uuid" json:"uuid"`
+	Name      string    `bun:"name" json:"name"`
+	Email     string    `bun:"email" json:"email"`
+	Password  string    `bun:"password" json:"-"`
+	AvatarUrl string    `bun:"avatar_url" json:"avatar_url"`
+	Verified  bool      `bun:"verified" json:"verified"`
+	CreatedAt time.Time `bun:"created_at" json:"created_at"`
+	UpdatedAt time.Time `bun:"updated_at" json:"updated_at"`
 }
 
 func NewUser(name, email, password string) *User {

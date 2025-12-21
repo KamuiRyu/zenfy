@@ -33,7 +33,9 @@ func (uc *LoginUseCase) Execute(input dto.LoginRequestDTO) (*dto.LoginResponseDT
 	}
 
 	user, err := uc.userRepo.GetByEmail(input.Email)
+
 	if err != nil {
+
 		return nil, err
 	}
 	if user == nil {

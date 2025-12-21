@@ -59,7 +59,7 @@ export default function useCardsCarousel() {
       const month = expiryMonth ? String(expiryMonth).padStart(2, "0") : "00";
       const year = expiryYear ? String(expiryYear).slice(-2) : "00";
       return {
-        id: c.id ?? c.card_id ?? null,
+        id: c.uuid ?? c.card_id ?? null,
         lastFour: c.last_four ?? c.lastFour ?? "",
         expiry: `${month}/${year}`,
         holderName: c.holder_name ?? c.holderName ?? c.name ?? "",

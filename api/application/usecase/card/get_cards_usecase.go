@@ -26,7 +26,7 @@ func (uc *GetCardsUseCase) Execute(userID int) ([]dto.CardResponse, error) {
 	responses := make([]dto.CardResponse, len(cards))
 	for i, card := range cards {
 		responses[i] = dto.CardResponse{
-			ID:          card.ID,
+			Uuid:        card.Uuid,
 			LastFour:    card.LastFour,
 			Brand:       card.Brand,
 			Bank:        card.Bank,

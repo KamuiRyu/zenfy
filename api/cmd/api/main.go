@@ -9,6 +9,8 @@ import (
 	"zenfy-api/application/service"
 	authusecase "zenfy-api/application/usecase/auth"
 	cardusecase "zenfy-api/application/usecase/card"
+	categoryusecase "zenfy-api/application/usecase/category"
+	transactionusecase "zenfy-api/application/usecase/transaction"
 	userusecase "zenfy-api/application/usecase/user"
 	"zenfy-api/config"
 	"zenfy-api/infrastructure/database"
@@ -45,6 +47,8 @@ func main() {
 	passwordResetRepo := repositoryimpl.NewPasswordResetTokenRepository(bunDB)
 	refreshRepo := repositoryimpl.NewRefreshTokenRepository(bunDB)
 	cardRepo := repositoryimpl.NewCardRepository(bunDB)
+	transactionRepo := repositoryimpl.NewTransactionRepository(bunDB)
+	categoryRepo := repositoryimpl.NewCategoryRepository(bunDB)
 
 	// services
 	tokenSvc := service.NewTokenService()
@@ -67,13 +71,25 @@ func main() {
 	updateCardUC := cardusecase.NewUpdateCardUseCase(cardRepo, validationSvc)
 	deleteCardUC := cardusecase.NewDeleteCardUseCase(cardRepo)
 	setDefaultCardUC := cardusecase.NewSetDefaultCardUseCase(cardRepo)
+	createTransactionUC := transactionusecase.NewCreateTransactionUseCase(transactionRepo, userRepo, cardRepo, categoryRepo, validationSvc)
+	getTransactionUC := transactionusecase.NewGetTransactionUseCase(transactionRepo, userRepo, categoryRepo, cardRepo)
+	updateTransactionUC := transactionusecase.NewUpdateTransactionUseCase(transactionRepo, userRepo, categoryRepo, cardRepo, validationSvc)
+	deleteTransactionUC := transactionusecase.NewDeleteTransactionUseCase(transactionRepo)
+	listTransactionsUC := transactionusecase.NewListTransactionsUseCase(transactionRepo, userRepo, categoryRepo, cardRepo)
+	getTransactionSummaryUC := transactionusecase.NewGetTransactionSummaryUseCase(transactionRepo, categoryRepo)
+	createCategoryUC := categoryusecase.NewCreateCategoryUseCase(categoryRepo, validationSvc)
+	getCategoriesUC := categoryusecase.NewGetCategoriesUseCase(categoryRepo)
+	updateCategoryUC := categoryusecase.NewUpdateCategoryUseCase(categoryRepo, validationSvc)
+	deleteCategoryUC := categoryusecase.NewDeleteCategoryUseCase(categoryRepo)
 
 	// handlers (depend on use cases)
 	authHandler := handler.NewAuthHandler(loginUC, verifyEmailUC, resendUC, requestPasswordResetUC, resetPasswordUC, getMeUC, logoutUC, refreshUC)
 	userHandler := handler.NewUserHandler(createUserUC)
 	cardHandler := handler.NewCardHandler(addCardUC, getCardsUC, getCardUC, updateCardUC, deleteCardUC, setDefaultCardUC)
+	transactionHandler := handler.NewTransactionHandler(createTransactionUC, getTransactionUC, updateTransactionUC, deleteTransactionUC, listTransactionsUC, getTransactionSummaryUC)
+	categoryHandler := handler.NewCategoryHandler(createCategoryUC, getCategoriesUC, updateCategoryUC, deleteCategoryUC)
 
-	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, tokenSvc)
+	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, transactionHandler, categoryHandler, tokenSvc)
 
 	addr := ":8080"
 	if config.Cfg != nil && config.Cfg.AppPort != "" {

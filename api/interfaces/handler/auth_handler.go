@@ -26,7 +26,6 @@ func NewAuthHandler(u *usecase.LoginUseCase, v *usecase.VerifyEmailUseCase, r *u
 }
 
 func (h *AuthHandler) Me(c *fiber.Ctx) error {
-	// Expect Authorization: Bearer <token>
 	auth := c.Get("Authorization")
 	if auth == "" {
 		return resp.Error(c, fiber.StatusUnauthorized, "UNAUTHORIZED", messages.Unauthorized, nil)

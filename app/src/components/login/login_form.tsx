@@ -80,7 +80,7 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8">
+    <div className="rounded-2xl p-8">
       <div className="mb-6">
         <div className="flex items-center gap-3">
           <div>
