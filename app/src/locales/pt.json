@@ -33,7 +33,39 @@
     "cards": {
         "my_cards": "Meus Cartões",
         "confirm_delete": "Confirmar Exclusão",
-        "delete_description": "Tem certeza de que deseja excluir este cartão? Esta ação não pode ser desfeita."
+        "delete_description": "Tem certeza de que deseja excluir este cartão? Esta ação não pode ser desfeita.",
+        "page_title": "Meus cartões - Zenfy",
+        "page_description": "Gerencie seus cartões",
+        "heading": "Meus Cartões",
+        "subheading": "Gerencie seus cartões de pagamento"
+    },
+    "transaction_history": {
+        "title": "Histórico de Transações",
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "last_week": "Semana passada",
+        "last_month": "Mês passado",
+        "older": "Mais antigo",
+        "error": "Erro",
+        "previous": "Anterior",
+        "next": "Próximo",
+        "page": "Página",
+        "filters": "Filtros",
+        "clear": "Limpar",
+        "search": "Buscar",
+        "search_placeholder": "Buscar transações...",
+        "from_date": "Data de início",
+        "to_date": "Data de fim",
+        "select_date": "Selecionar data",
+        "category": "Categoria",
+        "all_categories": "Todas as categorias",
+        "type": "Tipo",
+        "all_types": "Todos os tipos",
+        "income": "Receita",
+        "expense": "Despesa",
+        "investment": "Investimento",
+        "no_transactions_found": "Nenhuma transação encontrada",
+        "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão."
     }
   },
   "field": {

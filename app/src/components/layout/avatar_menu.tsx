@@ -55,18 +55,22 @@ export default function AvatarMenu({
           <Link href="/dashboard/settings">{t("dashboard.settings")}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <ConfirmDialog
-            title={t("dashboard.logout.confirmation")}
-            description={t("dashboard.logout.description")}
-            onConfirm={() => signOut({ callbackUrl: "/" })}
-            trigger={t("dashboard.logout.title")}
-          />
-        </DropdownMenuItem>
+        <ConfirmDialog
+          title={t("dashboard.logout.confirmation")}
+          description={t("dashboard.logout.description")}
+          onConfirm={() => signOut({ callbackUrl: "/" })}
+          trigger={
+            <DropdownMenuItem
+              asChild
+              className="w-full p-0"
+              onSelect={(e: any) => {
+                e.preventDefault();
+              }}
+            >
+              <button className="w-full text-left px-3 py-2">{t("dashboard.logout.title")}</button>
+            </DropdownMenuItem>
+          }
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

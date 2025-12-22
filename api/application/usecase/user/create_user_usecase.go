@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -54,6 +55,7 @@ func (uc *CreateUserUseCase) Execute(input dto.CreateUserRequestDTO) (*dto.UserR
 	}
 
 	if err := uc.userRepo.Create(user); err != nil {
+		fmt.Printf("Erro ao criar usuario: %v\n", user)
 		return nil, errors.New("INTERNAL_ERROR")
 	}
 

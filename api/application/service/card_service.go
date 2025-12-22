@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"zenfy-api/application/dto"
 	"zenfy-api/domain/model"
 	"zenfy-api/domain/repository"
@@ -51,8 +53,12 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 		}
 	}
 
+	// generate uuid for card
+	cardUuid := uuid.New().String()
+
 	card := model.NewCard(
 		userID,
+		cardUuid,
 		req.LastFour,
 		req.Brand,
 		model.CardType(req.CardType),
@@ -69,7 +75,7 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 	}
 
 	return &dto.CardResponse{
-		ID:          card.ID,
+		Uuid:        card.Uuid,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
 		CardType:    string(card.CardType),
@@ -92,7 +98,6 @@ func (s *cardService) GetUserCards(userID int) ([]dto.CardResponse, error) {
 	responses := make([]dto.CardResponse, len(cards))
 	for i, card := range cards {
 		responses[i] = dto.CardResponse{
-			ID:          card.ID,
 			LastFour:    card.LastFour,
 			Brand:       card.Brand,
 			CardType:    string(card.CardType),
@@ -120,7 +125,6 @@ func (s *cardService) GetCardByID(userID, cardID int) (*dto.CardResponse, error)
 	}
 
 	return &dto.CardResponse{
-		ID:          card.ID,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
 		CardType:    string(card.CardType),

@@ -11,7 +11,7 @@ import (
 	"zenfy-api/interfaces/middleware"
 )
 
-func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler, cardHandler *handlerpkg.CardHandler, tokenService service.TokenService) *fiber.App {
+func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler, cardHandler *handlerpkg.CardHandler, transactionHandler *handlerpkg.TransactionHandler, categoryHandler *handlerpkg.CategoryHandler, tokenService service.TokenService) *fiber.App {
 	app := fiber.New()
 	cfg := config.Cfg
 	if cfg == nil {
@@ -62,6 +62,24 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	cards.Put("/:id", cardHandler.UpdateCard)
 	cards.Delete("/:id", cardHandler.DeleteCard)
 	cards.Patch("/:id/default", cardHandler.SetDefaultCard)
+
+	transactions := api.Group("/transactions")
+	transactions.Use(authMiddleware)
+	transactions.Post("/", transactionHandler.CreateTransaction)
+	transactions.Get("/", transactionHandler.ListTransactionsByUser)
+	transactions.Get("/:id", transactionHandler.GetTransaction)
+	transactions.Put("/:id", transactionHandler.UpdateTransaction)
+	transactions.Delete("/:id", transactionHandler.DeleteTransaction)
+
+	categories := api.Group("/categories")
+	categories.Use(authMiddleware)
+	categories.Post("/", categoryHandler.CreateCategory)
+	categories.Get("/", categoryHandler.GetCategories)
+	categories.Put("/:uuid", categoryHandler.UpdateCategory)
+	categories.Delete("/:uuid", categoryHandler.DeleteCategory)
+
+	cards.Get("/:cardId/transactions", transactionHandler.ListTransactionsByCard)
+	cards.Get("/:cardId/transactions/summary", transactionHandler.GetTransactionSummaryByCard)
 
 	return app
 }

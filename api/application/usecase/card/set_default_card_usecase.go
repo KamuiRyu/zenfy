@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"strconv"
 
 	"zenfy-api/domain/repository"
 )
@@ -16,15 +17,24 @@ func NewSetDefaultCardUseCase(cardRepo repository.CardRepository) *SetDefaultCar
 	}
 }
 
-func (uc *SetDefaultCardUseCase) Execute(userID, cardID int) error {
-	card, err := uc.cardRepo.FindByID(cardID)
+func (uc *SetDefaultCardUseCase) Execute(userID int, cardUUID string) error {
+	card, err := uc.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return err
+		if idInt, perr := strconv.Atoi(cardUUID); perr == nil {
+			card, err = uc.cardRepo.FindByID(idInt)
+		}
+		if err != nil {
+			return err
+		}
+		if card.UserID != userID {
+			return fmt.Errorf("UNAUTHORIZED_ACTION")
+		}
+		return uc.cardRepo.SetDefault(userID, card.ID)
 	}
 
 	if card.UserID != userID {
 		return fmt.Errorf("UNAUTHORIZED_ACTION")
 	}
 
-	return uc.cardRepo.SetDefault(userID, cardID)
+	return uc.cardRepo.SetDefault(userID, card.ID)
 }

@@ -1,6 +1,6 @@
 "use client";
 import { format } from "date-fns";
-import CardItem from "../my_cards/card_item";
+import CardItem from "../card_item";
 
 export default function CardPreview({
   lastFour = "",

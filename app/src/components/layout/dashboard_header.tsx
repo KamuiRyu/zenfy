@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import AvatarMenu from "./avatar_menu";
 import { Skeleton } from "../ui/skeleton";
 import { ThemeToggleButton } from "./theme_toggle_button";
+import { LanguageSwitcher } from "./language_switcher";
 
 export default function DashboardHeader({ name }: { name?: string }) {
   const { data: session, status } = useSession();
@@ -22,6 +23,7 @@ export default function DashboardHeader({ name }: { name?: string }) {
           <Search size={20} className="transition-colors duration-200 hover:text-primary" />
         </button>
         <ThemeToggleButton />
+        <LanguageSwitcher />
         <button
           aria-label="Notifications"
           className="relative p-3 rounded-lg transition-colors duration-200  text-card-foreground hover:bg-muted hover:text-primary"

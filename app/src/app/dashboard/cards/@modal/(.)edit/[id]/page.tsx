@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useParams } from "next/navigation";
-import EditCardDialog from "@/components/dashboard/cards/edit/edit_card_dialog";
+import EditCardDialog from "@/components/dashboard/cards/my_cards/edit/edit_card_dialog";
 import { toast } from "sonner";
 
 export default function EditCardModal() {

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -76,12 +75,12 @@ func (h *CardHandler) GetCards(c *fiber.Ctx) error {
 func (h *CardHandler) GetCard(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
-	cardID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
+	cardUUID := c.Params("id")
+	if cardUUID == "" {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_CARD_ID", "Invalid card ID", nil)
 	}
 
-	card, err := h.getCardUC.Execute(userID, cardID)
+	card, err := h.getCardUC.Execute(userID, cardUUID)
 	if err != nil {
 		return response.Error(c, fiber.StatusNotFound, "CARD_NOT_FOUND", err.Error(), nil)
 	}
@@ -93,8 +92,8 @@ func (h *CardHandler) GetCard(c *fiber.Ctx) error {
 func (h *CardHandler) UpdateCard(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
-	cardID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
+	cardUUID := c.Params("id")
+	if cardUUID == "" {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_CARD_ID", "Invalid card ID", nil)
 	}
 
@@ -105,7 +104,7 @@ func (h *CardHandler) UpdateCard(c *fiber.Ctx) error {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_REQUEST", "Invalid request body", nil)
 	}
 
-	card, err := h.updateCardUC.Execute(userID, cardID, req)
+	card, err := h.updateCardUC.Execute(userID, cardUUID, req)
 	if err != nil {
 		if _, ok := err.(validator.ValidationErrors); ok {
 			return resp.ValidationErrorResponse(c, fiber.StatusUnprocessableEntity, "VALIDATION_ERROR", messages.ValidationError, err, &req)
@@ -119,13 +118,12 @@ func (h *CardHandler) UpdateCard(c *fiber.Ctx) error {
 // DeleteCard handles DELETE /api/cards/:id
 func (h *CardHandler) DeleteCard(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
-
-	cardID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
+	cardUUID := c.Params("id")
+	if cardUUID == "" {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_CARD_ID", "Invalid card ID", nil)
 	}
 
-	if err := h.deleteCardUC.Execute(userID, cardID); err != nil {
+	if err := h.deleteCardUC.Execute(userID, cardUUID); err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "CARD_DELETE_FAILED", err.Error(), nil)
 	}
 
@@ -135,13 +133,12 @@ func (h *CardHandler) DeleteCard(c *fiber.Ctx) error {
 // SetDefaultCard handles PATCH /api/cards/:id/default
 func (h *CardHandler) SetDefaultCard(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
-
-	cardID, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
+	cardUUID := c.Params("id")
+	if cardUUID == "" {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_CARD_ID", "Invalid card ID", nil)
 	}
 
-	if err := h.setDefaultCardUC.Execute(userID, cardID); err != nil {
+	if err := h.setDefaultCardUC.Execute(userID, cardUUID); err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "SET_DEFAULT_FAILED", err.Error(), nil)
 	}
 
