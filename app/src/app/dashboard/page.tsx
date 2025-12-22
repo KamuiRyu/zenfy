@@ -46,11 +46,10 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <ChartCard title="Sale">
-                    <div className="h-full bg-gradient-to-b from-blue-50 to-transparent rounded-lg" />
-                  </ChartCard>
                   <ChartCard title="Payments">
-                    <div className="h-full bg-gradient-to-b from-yellow-50 to-transparent rounded-lg" />
+                    <div className="h-full bg-gradient-to-b from-yellow-50 to-transparent rounded-lg flex items-center justify-center">
+                      <span className="text-muted-foreground">Payment chart coming soon</span>
+                    </div>
                   </ChartCard>
                 </div>
               </div>

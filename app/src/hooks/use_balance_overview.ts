@@ -7,7 +7,11 @@ interface BalanceOverview {
   total_expense: number;
   last_payment_amount?: number;
   last_payment_date?: string;
-  statistics?: any;
+  monthly_stats?: Array<{
+    month: string;
+    total_income: number;
+    total_expense: number;
+  }>;
 }
 
 export default function useBalanceOverview(cardUuid?: string) {

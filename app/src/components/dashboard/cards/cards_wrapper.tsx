@@ -1,10 +1,10 @@
 "use client";
 
-import RightSidebar from "@/components/dashboard/cards/balance_overview/right_sidebar";
 import { SelectedCardProvider } from "@/providers/selected_card_provider";
 import TransactionHistoryWrapper from "@/components/dashboard/cards/transaction_history_wrapper";
 import MyCardsWrapper from "@/components/dashboard/cards/my_cards_wrapper";
 import { useI18n } from "@/i18n/useI18n";
+import RightSideBarWrapper from "./right_sidebar_wrapper";
 
 export default function CardsWrapper() {
   const { t } = useI18n();
@@ -23,7 +23,7 @@ export default function CardsWrapper() {
           </main>
 
           <aside className="lg:col-span-4">
-            <RightSidebar />
+            <RightSideBarWrapper />
           </aside>
         </div>
       </div>
