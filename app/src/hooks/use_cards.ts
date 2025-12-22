@@ -55,7 +55,7 @@ function carouselReducer(state: CarouselState, action: CarouselAction): Carousel
   }
 }
 
-export default function useCardsCarousel() {
+export default function useCards() {
   const router = useRouter();
   const { setSelectedCard } = useSelectedCard();
 

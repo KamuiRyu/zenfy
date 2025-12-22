@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import CardItem from "./card_item";
 import CardAdd from "./card_add";
 import { Skeleton } from "@ui/skeleton";
-import useCardsCarousel from "@/hooks/use_cards_carousel";
+import useCards from "@/hooks/use_cards";
 
 export default function CardCarousel() {
   const {
@@ -22,7 +22,7 @@ export default function CardCarousel() {
     onPointerUp,
     handleEdit,
     handleDelete,
-  } = useCardsCarousel();
+  } = useCards();
 
 
   return (
