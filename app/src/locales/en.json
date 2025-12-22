@@ -37,7 +37,28 @@
         "page_title": "My cards - Zenfy",
         "page_description": "Manage your cards",
         "heading": "My Cards",
-        "subheading": "Manage your payment cards"
+        "subheading": "Manage your payment cards",
+        "card_holder": "Card Holder",
+        "previous_card": "Previous card",
+        "next_card": "Next card",
+        "edit_card": "Edit card",
+        "delete_card": "Delete card",
+        "add_card": "Add Card",
+        "new_card": "New Card",
+        "holder_name": "Cardholder Name",
+        "last_four": "Last 4 digits",
+        "expiry": "Expiry (MM/YY)",
+        "brand": "Brand",
+        "bank": "Bank",
+        "nickname": "Nickname (optional)",
+        "saving": "Saving...",
+        "add": "Add",
+        "save": "Save",
+        "card_not_found": "Card not found",
+        "error_loading_card": "Error loading card",
+        "error_adding_card": "Error adding card",
+        "error_updating_card": "Error updating card",
+        "loading_card": "Loading card..."
     },
     "transaction_history": {
         "title": "Transaction History",
@@ -69,7 +90,28 @@
         "no_transactions_found": "No transactions found",
         "no_transactions_description": "Try adjusting your filters or select another card.",
         "select_card_title": "Select a card",
-        "select_card_message": "Choose a card to view transaction history."
+        "select_card_message": "Choose a card to view transaction history.",
+        "transaction": "Transaction",
+        "transactions": "Transactions",
+        "general": "General"
+    },
+    "balance_overview": {
+        "title": "Balance Overview",
+        "total_incomes": "Total incomes this month",
+        "total_expenses": "Total expenses this month",
+        "last_payment_details": "Last Payment Details",
+        "amount_paid": "Amount Paid",
+        "payment_date": "Payment Date",
+        "error_loading": "Error loading balance",
+        "no_payments": "No payments yet"
+    },
+    "statistics": {
+        "title": "Statistics",
+        "no_data": "No data available",
+        "financial_overview": "Financial overview",
+        "last_6_months": "Last 6 months",
+        "income": "Income",
+        "expense": "Expense"
     }
   },
   "field":{

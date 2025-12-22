@@ -15,12 +15,14 @@ import { CardForm } from "../form/card_form";
 import { useForm } from "react-hook-form";
 import { cardFormSchema, CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function EditCardDialog({
   cardId,
 }: {
   cardId: string | number;
 }) {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [card, setCard] = useState<any>(null);
   const [fetching, setFetching] = useState(true);
@@ -33,13 +35,13 @@ export default function EditCardDialog({
       try {
         const fetchedCard = await cardService.getCard(cardId);
         if (!fetchedCard) {
-          toast.error("Cartão não encontrado");
+          toast.error(t("dashboard.cards.card_not_found"));
           router.back();
           return;
         }
         setCard(fetchedCard);
       } catch (error) {
-        toast.error("Falha ao carregar o cartão.");
+        toast.error(t("dashboard.cards.error_loading_card"));
         router.back();
       } finally {
         setFetching(false);
@@ -96,7 +98,7 @@ export default function EditCardDialog({
 
   async function handleSubmit(data: CardFormSchema) {
     if (!card) {
-      toast.error("Cartão não encontrado");
+      toast.error(t("dashboard.cards.card_not_found"));
       return;
     }
 
@@ -120,7 +122,7 @@ export default function EditCardDialog({
       });
       router.back();
     } catch (err: any) {
-      toast.error("Erro ao atualizar cartão");
+      toast.error(t("dashboard.cards.error_updating_card"));
     } finally {
       setLoading(false);
     }
@@ -140,12 +142,12 @@ export default function EditCardDialog({
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle>Editar Cartão</DialogTitle>
+          <DialogTitle>{t("dashboard.cards.edit_card")}</DialogTitle>
         </DialogHeader>
         {fetching ? (
           <div className="flex items-center justify-center min-h-[200px] gap-2">
             <Spinner className="w-6 h-6" />
-            <span>Carregando cartão...</span>
+            <span>{t("dashboard.cards.loading_card")}</span>
           </div>
         ) : (
           card && (
@@ -157,7 +159,7 @@ export default function EditCardDialog({
               formState={form.formState}
               loading={loading}
               onSubmit={handleSubmit}
-              submitLabel="Salvar"
+              submitLabel={t("dashboard.cards.save")}
               renderPreview={(values) => (
                 <CardPreview
                   lastFour={values.lastFour || ""}

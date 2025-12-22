@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { request } from "@/services/service_base";
 
-interface BalanceOverview {
+export interface BalanceOverview {
   balance: number;
   total_income: number;
   total_expense: number;

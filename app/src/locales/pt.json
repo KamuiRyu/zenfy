@@ -37,7 +37,28 @@
         "page_title": "Meus cartões - Zenfy",
         "page_description": "Gerencie seus cartões",
         "heading": "Meus Cartões",
-        "subheading": "Gerencie seus cartões de pagamento"
+        "subheading": "Gerencie seus cartões de pagamento",
+        "card_holder": "Titular do Cartão",
+        "previous_card": "Cartão anterior",
+        "next_card": "Próximo cartão",
+        "delete_card": "Excluir cartão",
+        "add_card": "Adicionar Cartão",
+        "edit_card": "Editar Cartão",
+        "new_card": "Novo Cartão",
+        "holder_name": "Nome do Titular",
+        "last_four": "Últimos 4 dígitos",
+        "expiry": "Validade (MM/AA)",
+        "brand": "Bandeira",
+        "bank": "Banco",
+        "nickname": "Apelido (opcional)",
+        "saving": "Salvando...",
+        "add": "Adicionar",
+        "save": "Salvar",
+        "card_not_found": "Cartão não encontrado",
+        "error_loading_card": "Erro ao carregar cartão",
+        "error_adding_card": "Erro ao adicionar cartão",
+        "error_updating_card": "Erro ao atualizar cartão",
+        "loading_card": "Carregando cartão..."
     },
     "transaction_history": {
         "title": "Histórico de Transações",
@@ -69,7 +90,28 @@
         "no_transactions_found": "Nenhuma transação encontrada",
         "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão.",
         "select_card_title": "Selecione um cartão",
-        "select_card_message": "Escolha um cartão para visualizar o histórico de transações."
+        "select_card_message": "Escolha um cartão para visualizar o histórico de transações.",
+        "transaction": "Transação",
+        "transactions": "Transações",
+        "general": "Geral"
+    },
+    "balance_overview": {
+        "title": "Visão Geral do Saldo",
+        "total_incomes": "Total de receitas este mês",
+        "total_expenses": "Total de despesas este mês",
+        "last_payment_details": "Detalhes do Último Pagamento",
+        "amount_paid": "Valor Pago",
+        "payment_date": "Data do Pagamento",
+        "error_loading": "Erro ao carregar saldo",
+        "no_payments": "Nenhum pagamento ainda"
+    },
+    "statistics": {
+        "title": "Estatísticas",
+        "no_data": "Nenhum dado disponível",
+        "financial_overview": "Visão financeira",
+        "last_6_months": "Últimos 6 meses",
+        "income": "Receita",
+        "expense": "Despesa"
     }
   },
   "field": {

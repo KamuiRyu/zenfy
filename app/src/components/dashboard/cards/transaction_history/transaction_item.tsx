@@ -2,6 +2,7 @@ import * as React from "react";
 import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
 import { CardBrand } from "../my_cards/card_brand";
+import { useI18n } from "@/i18n/useI18n";
 
 const TransactionItem = React.memo(function TransactionItem({
   title,
@@ -25,6 +26,7 @@ const TransactionItem = React.memo(function TransactionItem({
   selectedCardLastFour?: string | null;
   selectedCardBrand?: string | null;
 }) {
+  const { t } = useI18n();
   const isIncome = categoryType == "income";
   const amountColor = isIncome ? "text-green-600" : "text-red-600";
 
@@ -83,7 +85,7 @@ const TransactionItem = React.memo(function TransactionItem({
 
       <div className="hidden lg:flex justify-center flex-shrink-0">
         <span className="px-3 py-1 rounded-full text-sm font-medium border truncate w-[120px] text-center ">
-          {subtitle || "General"}
+          {subtitle || t("dashboard.transaction_history.general")}
         </span>
       </div>
 

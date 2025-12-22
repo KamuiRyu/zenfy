@@ -1,5 +1,6 @@
 import MoneyDisplay from "@/components/ui/money_display";
 import { DollarSign, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { useI18n } from "@/i18n/useI18n";
 
 interface BalanceOverviewData {
   balance: number;
@@ -16,6 +17,7 @@ interface BalanceOverviewProps {
 }
 
 export default function BalanceOverview({ balanceOverview, loading, error }: BalanceOverviewProps) {
+  const { t } = useI18n();
   const balance = balanceOverview?.balance || 0;
   const isPositive = balance >= 0;
 
@@ -25,7 +27,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
         <div className="p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-md font-medium uppercase tracking-wide">
-              Balance Overview
+              {t('dashboard.balance_overview.title')}
             </h3>
             <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
               <DollarSign className="w-4 h-4 text-muted-foreground/50" />
@@ -46,7 +48,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
                   <TrendingUp className="w-4 h-4 text-green-600/50 dark:text-green-400/50" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Total incomes this month</div>
+                  <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.total_incomes')}</div>
                   <div className="space-y-1">
                     <div className="h-5 bg-gradient-to-r from-green-100/50 via-green-100 to-green-100/50 dark:from-green-800/50 dark:via-green-800 dark:to-green-800/50 rounded animate-pulse"></div>
                     <div className="h-3 bg-gradient-to-r from-green-100/30 via-green-100/50 to-green-100/30 dark:from-green-800/30 dark:via-green-800/50 dark:to-green-800/30 rounded animate-pulse w-2/3"></div>
@@ -61,7 +63,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
                   <TrendingDown className="w-4 h-4 text-red-600/50 dark:text-red-400/50" />
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Total expenses this month</div>
+                  <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.total_expenses')}</div>
                   <div className="space-y-1">
                     <div className="h-5 bg-gradient-to-r from-red-100/50 via-red-100 to-red-100/50 dark:from-red-800/50 dark:via-red-800 dark:to-red-800/50 rounded animate-pulse"></div>
                     <div className="h-3 bg-gradient-to-r from-red-100/30 via-red-100/50 to-red-100/30 dark:from-red-800/30 dark:via-red-800/50 dark:to-red-800/30 rounded animate-pulse w-2/3"></div>
@@ -83,7 +85,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Amount Paid</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.amount_paid')}</div>
                 <div className="space-y-2">
                   <div className="h-6 bg-gradient-to-r from-muted/50 via-muted to-muted/50 rounded animate-pulse"></div>
                   <div className="h-4 bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 rounded animate-pulse w-1/2"></div>
@@ -91,7 +93,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
               </div>
 
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Payment Date</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.payment_date')}</div>
                 <div className="space-y-1">
                   <div className="h-4 bg-gradient-to-r from-muted/50 via-muted to-muted/50 rounded animate-pulse w-full"></div>
                   <div className="h-3 bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 rounded animate-pulse w-3/4"></div>
@@ -109,7 +111,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-md font-medium uppercase tracking-wide">
-            Balance Overview
+            {t('dashboard.balance_overview.title')}
           </h3>
           <div className="w-8 h-8 rounded-full flex items-center justify-center">
             <DollarSign className="w-4 h-4 text-muted-foreground" />
@@ -118,7 +120,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
 
         <div className={`text-4xl font-bold mb-6 ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
           {error ? (
-            <span className="text-destructive text-xl">Error loading balance</span>
+            <span className="text-destructive text-xl">{t('dashboard.balance_overview.error_loading')}</span>
           ) : (
             <span className={isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
                 <MoneyDisplay amount={balance} size="4xl" className="font-medium"/>
@@ -133,7 +135,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
                 <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Total incomes this month</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.balance_overview.total_incomes')}</div>
                 <div className="text-lg font-bold text-green-600 dark:text-green-400">
                   <MoneyDisplay amount={balanceOverview?.total_income || 0} size="lg" className="font-medium" />
                 </div>
@@ -147,7 +149,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
                 <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Total expenses this month</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.balance_overview.total_expenses')}</div>
                 <div className="text-lg font-bold text-red-600 dark:text-red-400">
                   <MoneyDisplay amount={balanceOverview?.total_expense || 0} size="lg" className="font-medium"/>
                 </div>
@@ -159,7 +161,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
         <div className="border-t border-border pt-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-md font-medium uppercase tracking-wide">
-              Last Payment Details
+              {t('dashboard.balance_overview.last_payment_details')}
             </h3>
             <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
               <Clock className="w-4 h-4 text-muted-foreground" />
@@ -168,18 +170,18 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Amount Paid</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.amount_paid')}</div>
               <div className="text-2xl font-bold text-foreground">
                 {balanceOverview?.last_payment_amount ? (
                     <MoneyDisplay amount={balanceOverview.last_payment_amount} size="2xl" className="font-medium" />
                 ) : (
-                  <span className="text-muted-foreground text-lg">No payments yet</span>
+                  <span className="text-muted-foreground text-lg">{t('dashboard.balance_overview.no_payments')}</span>
                 )}
               </div>
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Payment Date</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('dashboard.balance_overview.payment_date')}</div>
               <div className="text-sm font-medium">
                 {balanceOverview?.last_payment_date ? (
                   <span className="inline-flex items-center py-0.5 rounded-full text-sm font-medium">
@@ -191,7 +193,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
                     })}
                   </span>
                 ) : (
-                  <span className="text-muted-foreground">No payments yet</span>
+                  <span className="text-muted-foreground">{t('dashboard.balance_overview.no_payments')}</span>
                 )}
               </div>
             </div>

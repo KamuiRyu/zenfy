@@ -42,7 +42,7 @@ const CardItem = React.forwardRef<
     ref
   ) => {
     const coloredBaseDefault = "bg-gray-800 text-white";
-
+    const { t } = useI18n();
     const selectedClasses = selected
       ? "ring-primary/40 shadow-lg"
       : "opacity-60";
@@ -50,14 +50,14 @@ const CardItem = React.forwardRef<
     const bankStyles = bankStylesFor(bank);
     const base = bankStyles?.gradient ?? coloredBaseDefault;
 
-    const name = holderName ?? "CARD HOLDER";
+    const name = holderName ?? t('dashboard.cards.card_holder');
 
     function handleEdit(e: React.MouseEvent) {
       e.stopPropagation();
       onEdit?.();
     }
 
-    const { t } = useI18n();
+    
 
     return (
       <div
@@ -103,7 +103,7 @@ const CardItem = React.forwardRef<
                   handleEdit(e as any);
                 }
               }}
-              aria-label="Edit card"
+              aria-label={t("dashboard.cards.edit_card")}
               className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
             >
               <Edit2 className="w-4 h-4" />
@@ -118,7 +118,7 @@ const CardItem = React.forwardRef<
                 <span
                   role="button"
                   tabIndex={0}
-                  aria-label="Delete card"
+                  aria-label={t("dashboard.cards.delete_card")}
                   className="p-1 rounded-md hover:bg-white/20 focus:outline-none cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />

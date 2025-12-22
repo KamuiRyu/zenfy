@@ -5,6 +5,7 @@ import CardItem from "./card_item";
 import CardAdd from "./card_add";
 import { Skeleton } from "@ui/skeleton";
 import useCards from "@/hooks/use_cards";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function CardCarousel() {
   const {
@@ -23,6 +24,7 @@ export default function CardCarousel() {
     handleEdit,
     handleDelete,
   } = useCards();
+    const { t } = useI18n();
 
 
   return (
@@ -30,7 +32,7 @@ export default function CardCarousel() {
       <div className="absolute left-4 top-1/2 -translate-y-1/2 z-30">
         <button
           onClick={prev}
-          aria-label="Previous card"
+          aria-label={t('dashboard.cards.previous_card')}
           disabled={selectedIndex <= 0}
           className={`flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
             selectedIndex <= 0 ? "opacity-40 pointer-events-none" : ""
@@ -42,7 +44,7 @@ export default function CardCarousel() {
 
       <button
         onClick={next}
-        aria-label="Next card"
+        aria-label={t('dashboard.cards.next_card')}
         disabled={selectedIndex >= items.length - 1}
         className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
           selectedIndex >= items.length - 1

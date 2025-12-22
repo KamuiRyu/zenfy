@@ -14,8 +14,10 @@ import { CardForm } from "../form/card_form";
 import { useForm } from "react-hook-form";
 import { cardFormSchema, CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function AddCardDialog() {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm<CardFormSchema>({
@@ -56,7 +58,7 @@ export default function AddCardDialog() {
       });
       router.back();
     } catch (err: any) {
-      toast.error("Erro ao adicionar cartão");
+      toast.error(t("dashboard.cards.error_adding_card"));
     } finally {
       setLoading(false);
     }
@@ -76,7 +78,7 @@ export default function AddCardDialog() {
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle>Novo Cartão</DialogTitle>
+          <DialogTitle>{t("dashboard.cards.new_card")}</DialogTitle>
         </DialogHeader>
         <CardForm
           control={form.control}
@@ -86,7 +88,7 @@ export default function AddCardDialog() {
           formState={form.formState}
           loading={loading}
           onSubmit={handleSubmit}
-          submitLabel="Adicionar"
+          submitLabel={t("dashboard.cards.add")}
           renderPreview={(values) => (
             <CardPreview
               lastFour={values.lastFour || ""}
