@@ -11,7 +11,6 @@ type Category struct {
 	Description *string   `json:"description" bun:"description"`
 	Color       *string   `json:"color" bun:"color"`
 	Icon        *string   `json:"icon" bun:"icon"`
-	Image       *string   `json:"image" bun:"image"`                         // Image URL or path
 	Type        string    `json:"type" bun:"type,notnull,default:'expense'"` // expense, income, investment, transfer
 	IsDefault   bool      `json:"is_default" bun:"is_default,notnull,default:false"`
 	CreatedAt   time.Time `json:"created_at" bun:"created_at,notnull,default:current_timestamp"`
@@ -19,7 +18,7 @@ type Category struct {
 }
 
 // NewCategory creates a new category instance
-func NewCategory(userID *int, uuid, name, categoryType string, description, color, icon, image *string, isDefault bool) *Category {
+func NewCategory(userID *int, uuid, name, categoryType string, description, color, icon *string, isDefault bool) *Category {
 	return &Category{
 		UserID:      userID,
 		Uuid:        uuid,
@@ -28,7 +27,6 @@ func NewCategory(userID *int, uuid, name, categoryType string, description, colo
 		Description: description,
 		Color:       color,
 		Icon:        icon,
-		Image:       image,
 		IsDefault:   isDefault,
 	}
 }

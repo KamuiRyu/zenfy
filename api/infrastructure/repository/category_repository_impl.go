@@ -88,7 +88,7 @@ func (r *categoryRepositoryImpl) Update(category *model.Category) error {
 	ctx := context.Background()
 	result, err := r.db.NewUpdate().
 		Model(category).
-		Column("name", "type", "description", "color", "icon", "image", "updated_at").
+		Column("name", "type", "description", "color", "icon", "updated_at").
 		Where("id = ?", category.ID).
 		Exec(ctx)
 
