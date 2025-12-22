@@ -63,6 +63,7 @@
         "all_types": "All types",
         "income": "Income",
         "expense": "Expense",
+        "investment": "Investment",
         "no_transactions_found": "No transactions found",
         "no_transactions_description": "Try adjusting your filters or select another card."
     }

@@ -215,6 +215,7 @@ export default function TransactionFilters({
               <SelectItem value="all">{t('dashboard.transaction_history.all_types')}</SelectItem>
               <SelectItem value="income">{t('dashboard.transaction_history.income')}</SelectItem>
               <SelectItem value="expense">{t('dashboard.transaction_history.expense')}</SelectItem>
+              <SelectItem value="investment">{t('dashboard.transaction_history.investment')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

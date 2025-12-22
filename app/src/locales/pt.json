@@ -63,6 +63,7 @@
         "all_types": "Todos os tipos",
         "income": "Receita",
         "expense": "Despesa",
+        "investment": "Investimento",
         "no_transactions_found": "Nenhuma transação encontrada",
         "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão."
     }
