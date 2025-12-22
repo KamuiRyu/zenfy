@@ -10,6 +10,7 @@ import { useSelectedCard } from "@/providers/selected_card_provider";
 import useTransactions from "@/hooks/use_transactions";
 import NoTransactions from "./no_transactions";
 import { request } from "@/services/service_base";
+import { useI18n } from "@/i18n/useI18n";
 
 function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("pt-BR", {
@@ -26,49 +27,8 @@ function formatTime(dateString: string): string {
   });
 }
 
-function groupTransactionsByDate(transactions: any[]) {
-  const groups: Record<string, any[]> = {};
-
-  const today = new Date().toLocaleDateString("pt-BR", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toLocaleDateString("pt-BR", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  transactions.forEach((transaction) => {
-    const date = new Date(transaction.occurred_at);
-    let dateKey = date.toLocaleDateString("pt-BR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    if (dateKey === today) dateKey = "Today";
-    else if (dateKey === yesterdayStr) dateKey = "Yesterday";
-    else {
-      dateKey = date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
-    }
-
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
-    groups[dateKey].push(transaction);
-  });
-
-  return groups;
-}
-
 export default function TransactionHistory() {
+  const { t } = useI18n();
   const { selectedCardUuid, selectedCardLastFour, selectedCardBrand } = useSelectedCard();
   const [page, setPage] = useState(0);
   const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; search?: string }>({});
@@ -130,21 +90,55 @@ export default function TransactionHistory() {
     }
   };
 
+  const groupedTransactions = useMemo(() => {
+    const groups: Record<string, any[]> = {};
 
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
 
-  const groupedTransactions = groupTransactionsByDate(transactions);
+    transactions.forEach((transaction) => {
+      const date = new Date(transaction.occurred_at);
+      const transactionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      let dateKey: string;
+
+      if (transactionDate >= today) {
+        dateKey = t('dashboard.transaction_history.today');
+      } else if (transactionDate >= yesterday) {
+        dateKey = t('dashboard.transaction_history.yesterday');
+      } else if (transactionDate >= lastWeek) {
+        dateKey = t('dashboard.transaction_history.last_week');
+      } else if (transactionDate >= lastMonth) {
+        dateKey = t('dashboard.transaction_history.last_month');
+      } else {
+        dateKey = t('dashboard.transaction_history.older');
+      }
+
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(transaction);
+    });
+
+    return groups;
+  }, [transactions, t]);
 
   if (!mounted) {
     return (
       <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
         <div className="p-6 sm:p-8 ">
-          <TransactionHistoryHeader title="Transaction History" onRefresh={() => {}} countdown={null} />
+          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} countdown={null} />
           <div suppressHydrationWarning>
             <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={[]} />
           </div>
           <div className="space-y-10 max-h-160 overflow-y-auto">
             <TransactionGroup
-              date="Today"
+              date={t('dashboard.transaction_history.today')}
               transactions={[]}
               formatTime={formatTime}
               formatCurrency={formatCurrency}
@@ -161,13 +155,13 @@ export default function TransactionHistory() {
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
       <div className="p-6 sm:p-8 ">
-        <TransactionHistoryHeader title="Transaction History" onRefresh={handleRefresh} countdown={countdown} />
+        <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} countdown={countdown} />
 
         <div suppressHydrationWarning>
           <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={categories} />
         </div>
 
-        {error && <div className="text-center py-12 max-h-130 text-destructive">Error: {error}</div>}
+        {error && <div className="text-center py-12 max-h-130 text-destructive">{t('dashboard.transaction_history.error')}: {error}</div>}
 
         {!loading && !error && (
           <>
@@ -199,7 +193,7 @@ export default function TransactionHistory() {
         {loading && (
           <div className="space-y-10 max-h-160 overflow-y-auto">
             <TransactionGroup
-              date="Today"
+              date={t('dashboard.transaction_history.today')}
               transactions={[]}
               formatTime={formatTime}
               formatCurrency={formatCurrency}
@@ -208,7 +202,7 @@ export default function TransactionHistory() {
               loading={true}
             />
             <TransactionGroup
-              date="Yesterday"
+              date={t('dashboard.transaction_history.yesterday')}
               transactions={[]}
               formatTime={formatTime}
               formatCurrency={formatCurrency}

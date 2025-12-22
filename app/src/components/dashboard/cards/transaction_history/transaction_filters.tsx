@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { format } from "date-fns";
+import { useI18n } from "@/i18n/useI18n";
 
 interface TransactionFiltersProps {
   filters: {
@@ -42,6 +43,7 @@ export default function TransactionFilters({
   onFiltersChange,
   categories,
 }: TransactionFiltersProps) {
+  const { t } = useI18n();
   const [openDateFrom, setOpenDateFrom] = useState(false);
   const [openDateTo, setOpenDateTo] = useState(false);
   const [searchValue, setSearchValue] = useState(filters.search || "");
@@ -81,26 +83,26 @@ export default function TransactionFilters({
     <div className="mb-8 p-4 ">
       <div className="flex items-center gap-2 mb-3">
         <Filter className="w-4 h-4" />
-        <span className="font-medium">Filters</span>
+        <span className="font-medium">{t('dashboard.transaction_history.filters')}</span>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="w-4 h-4 mr-1" />
-            Clear
+            {t('dashboard.transaction_history.clear')}
           </Button>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
-          <label className="text-sm font-medium">Search</label>
+          <label className="text-sm font-medium">{t('dashboard.transaction_history.search')}</label>
           <Input
-            placeholder="Search transactions..."
+            placeholder={t('dashboard.transaction_history.search_placeholder')}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
         <div>
-          <label className="text-sm font-medium">From Date</label>
+          <label className="text-sm font-medium">{t('dashboard.transaction_history.from_date')}</label>
           <Popover open={openDateFrom} onOpenChange={setOpenDateFrom}>
             <PopoverTrigger asChild>
               <Button
@@ -110,7 +112,7 @@ export default function TransactionFilters({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filters.dateFrom
                   ? format(new Date(filters.dateFrom), "PPP")
-                  : "Select date"}
+                  : t('dashboard.transaction_history.select_date')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -134,7 +136,7 @@ export default function TransactionFilters({
 
         {/* Date To */}
         <div>
-          <label className="text-sm font-medium">To Date</label>
+          <label className="text-sm font-medium">{t('dashboard.transaction_history.to_date')}</label>
           <Popover open={openDateTo} onOpenChange={setOpenDateTo}>
             <PopoverTrigger asChild>
               <Button
@@ -144,7 +146,7 @@ export default function TransactionFilters({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filters.dateTo
                   ? format(new Date(filters.dateTo), "PPP")
-                  : "Select date"}
+                  : t('dashboard.transaction_history.select_date')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -163,7 +165,7 @@ export default function TransactionFilters({
 
         {/* Category */}
         <div>
-          <label className="text-sm font-medium">Category</label>
+          <label className="text-sm font-medium">{t('dashboard.transaction_history.category')}</label>
           <Select
             value={filters.categoryId ? filters.categoryId.toString() : "all"}
             onValueChange={(value) =>
@@ -174,7 +176,7 @@ export default function TransactionFilters({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="All categories" />
+              <SelectValue placeholder={t('dashboard.transaction_history.all_categories')} />
             </SelectTrigger>
             <SelectContent
               side="bottom"
@@ -182,7 +184,7 @@ export default function TransactionFilters({
               position="popper"
               className="max-h-70"
             >
-              <SelectItem value="all">All categories</SelectItem>
+              <SelectItem value="all">{t('dashboard.transaction_history.all_categories')}</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id.toString()}>
                   {cat.name}
@@ -194,7 +196,7 @@ export default function TransactionFilters({
 
         {/* Type */}
         <div>
-          <label className="text-sm font-medium">Type</label>
+          <label className="text-sm font-medium">{t('dashboard.transaction_history.type')}</label>
           <Select
             value={filters.type || "all"}
             onValueChange={(value) =>
@@ -202,7 +204,7 @@ export default function TransactionFilters({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="All types" />
+              <SelectValue placeholder={t('dashboard.transaction_history.all_types')} />
             </SelectTrigger>
             <SelectContent
               side="bottom"
@@ -210,14 +212,13 @@ export default function TransactionFilters({
               position="popper"
               className="max-h-70"
             >
-              <SelectItem value="all">All types</SelectItem>
-              <SelectItem value="income">Income</SelectItem>
-              <SelectItem value="expense">Expense</SelectItem>
+              <SelectItem value="all">{t('dashboard.transaction_history.all_types')}</SelectItem>
+              <SelectItem value="income">{t('dashboard.transaction_history.income')}</SelectItem>
+              <SelectItem value="expense">{t('dashboard.transaction_history.expense')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        {/* Search */}
       </div>
     </div>
   );

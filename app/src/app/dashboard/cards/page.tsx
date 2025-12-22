@@ -1,8 +1,8 @@
 import { Metadata } from "next";
-import CardCarousel from "@/components/dashboard/cards/my_cards/card_carousel";
 import RightSidebar from "@/components/dashboard/cards/right_sidebar";
 import { SelectedCardProvider } from "@/providers/selected_card_provider";
 import TransactionHistoryWrapper from "@/components/dashboard/cards/transaction_history_wrapper";
+import MyCardsWrapper from "@/components/dashboard/cards/my_cards_wrapper";
 
 export const metadata: Metadata = {
   title: "My cards - Zenfy",
@@ -20,7 +20,7 @@ export default function CardsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <main className="lg:col-span-8 space-y-6">
-            <CardCarousel />
+            <MyCardsWrapper />
             <TransactionHistoryWrapper />
           </main>
 
