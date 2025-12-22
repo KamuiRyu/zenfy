@@ -29,10 +29,9 @@ func (uc *CreateCategoryUseCase) Execute(userID int, req dto.CreateCategoryReque
 		return nil, err
 	}
 
-	// Check if category with same name already exists for this user
 	existing, err := uc.categoryRepo.FindByNameAndUserID(req.Name, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to check existing category: %w", err)
+		return nil, fmt.Errorf("FAILED_TO_CHECK_EXISTING_CATEGORY")
 	}
 	if existing != nil {
 		return nil, fmt.Errorf("CATEGORY_ALREADY_EXISTS")
@@ -48,7 +47,6 @@ func (uc *CreateCategoryUseCase) Execute(userID int, req dto.CreateCategoryReque
 		Description: req.Description,
 		Color:       req.Color,
 		Icon:        req.Icon,
-		Image:       req.Image,
 		IsDefault:   false,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
@@ -66,7 +64,6 @@ func (uc *CreateCategoryUseCase) Execute(userID int, req dto.CreateCategoryReque
 		Description: category.Description,
 		Color:       category.Color,
 		Icon:        category.Icon,
-		Image:       category.Image,
 		IsDefault:   category.IsDefault,
 		CreatedAt:   category.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   category.UpdatedAt.Format(time.RFC3339),

@@ -9,6 +9,7 @@ import (
 
 	"zenfy-api/application/dto"
 	usecase "zenfy-api/application/usecase/transaction"
+	"zenfy-api/domain/repository"
 	"zenfy-api/interfaces/response"
 	resp "zenfy-api/interfaces/response"
 	"zenfy-api/interfaces/response/messages"
@@ -21,6 +22,7 @@ type TransactionHandler struct {
 	deleteTransactionUC     *usecase.DeleteTransactionUseCase
 	listTransactionsUC      *usecase.ListTransactionsUseCase
 	getTransactionSummaryUC *usecase.GetTransactionSummaryUseCase
+	cardRepo                repository.CardRepository
 }
 
 func NewTransactionHandler(
@@ -30,6 +32,7 @@ func NewTransactionHandler(
 	deleteTransactionUC *usecase.DeleteTransactionUseCase,
 	listTransactionsUC *usecase.ListTransactionsUseCase,
 	getTransactionSummaryUC *usecase.GetTransactionSummaryUseCase,
+	cardRepo repository.CardRepository,
 ) *TransactionHandler {
 	return &TransactionHandler{
 		createTransactionUC:     createTransactionUC,
@@ -38,6 +41,7 @@ func NewTransactionHandler(
 		deleteTransactionUC:     deleteTransactionUC,
 		listTransactionsUC:      listTransactionsUC,
 		getTransactionSummaryUC: getTransactionSummaryUC,
+		cardRepo:                cardRepo,
 	}
 }
 
@@ -163,18 +167,60 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 		offset = 0
 	}
 
-	// Check if card_uuid is provided for filtering
-	cardUUID := c.Query("card_uuid")
-	if cardUUID != "" {
-		// Filter transactions by card UUID
-		transactions, err := h.listTransactionsUC.ExecuteByUserAndCard(userID, cardUUID, limit, offset)
-		if err != nil {
-			return response.Error(c, fiber.StatusInternalServerError, "FETCH_TRANSACTIONS_FAILED", "Failed to fetch transactions", nil)
+	var filters *usecase.TransactionFilters
+	dateFromStr := c.Query("date_from")
+	dateToStr := c.Query("date_to")
+	categoryIDStr := c.Query("category_id")
+	kindStr := c.Query("kind")
+	searchStr := c.Query("search")
+	typeStr := c.Query("type")
+
+	if dateFromStr != "" || dateToStr != "" || categoryIDStr != "" || kindStr != "" || searchStr != "" || typeStr != "" {
+		filters = &usecase.TransactionFilters{}
+		if dateFromStr != "" {
+			if parsed, err := time.Parse(time.RFC3339, dateFromStr); err == nil {
+				filters.DateFrom = &parsed
+			}
 		}
-		return response.Success(c, fiber.StatusOK, transactions, "Transactions fetched successfully")
+		if dateToStr != "" {
+			if parsed, err := time.Parse(time.RFC3339, dateToStr); err == nil {
+				filters.DateTo = &parsed
+			}
+		}
+		if categoryIDStr != "" {
+			if parsed, err := strconv.Atoi(categoryIDStr); err == nil {
+				filters.CategoryID = &parsed
+			}
+		}
+		if kindStr != "" {
+			filters.Kind = &kindStr
+		}
+		if searchStr != "" {
+			filters.Search = &searchStr
+		}
+		if typeStr != "" {
+			filters.Type = &typeStr
+		}
 	}
 
-	transactions, err := h.listTransactionsUC.ExecuteByUser(userID, limit, offset)
+	// Handle card_uuid
+	cardUUID := c.Query("card_uuid")
+	if cardUUID != "" {
+		// Find card by UUID
+		card, err := h.cardRepo.FindByUUID(cardUUID)
+		if err != nil || card == nil {
+			return response.Error(c, fiber.StatusNotFound, "CARD_NOT_FOUND", "Card not found", nil)
+		}
+		if card.UserID != userID {
+			return response.Error(c, fiber.StatusForbidden, "CARD_DOES_NOT_BELONG_TO_USER", "Card does not belong to user", nil)
+		}
+		if filters == nil {
+			filters = &usecase.TransactionFilters{}
+		}
+		filters.CardID = &card.ID
+	}
+
+	transactions, err := h.listTransactionsUC.ExecuteByUser(userID, limit, offset, filters)
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_TRANSACTIONS_FAILED", "Failed to fetch transactions", nil)
 	}

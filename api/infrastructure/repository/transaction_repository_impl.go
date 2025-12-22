@@ -78,15 +78,40 @@ func (r *transactionRepositoryImpl) ListByCard(cardID int, limit, offset int) ([
 	return transactions, err
 }
 
-func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int) ([]*model.Transaction, error) {
+func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
 	ctx := context.Background()
 	var transactions []*model.Transaction
-	err := r.db.NewSelect().
+	query := r.db.NewSelect().
 		Model(&transactions).
+		ModelTableExpr("transactions as transaction").
 		Relation("Category").
 		Relation("Card").
-		Where("user_id = ?", userID).
-		Order("occurred_at DESC").
+		Where("transaction.user_id = ?", userID)
+
+	if dateFrom != nil {
+		query = query.Where("transaction.occurred_at >= ?", *dateFrom)
+	}
+	if dateTo != nil {
+		query = query.Where("transaction.occurred_at <= ?", *dateTo)
+	}
+	if categoryID != nil {
+		query = query.Where("transaction.category_id = ?", *categoryID)
+	}
+	if kind != nil {
+		query = query.Where("transaction.kind = ?", *kind)
+	}
+	if search != nil {
+		query = query.Where("transaction.description ILIKE ? OR transaction.merchant ILIKE ?", "%"+*search+"%", "%"+*search+"%")
+	}
+	if cardID != nil {
+		query = query.Where("transaction.card_id = ?", *cardID)
+	}
+	if typeStr != nil {
+		query = query.Where("category.type = ?", *typeStr)
+	}
+
+	err := query.
+		Order("transaction.occurred_at DESC").
 		Limit(limit).
 		Offset(offset).
 		Scan(ctx)

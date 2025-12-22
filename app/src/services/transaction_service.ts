@@ -18,7 +18,7 @@ type Transaction = {
   };
   amount: number;
   currency: string;
-  kind: string;
+  type: string;
   merchant?: string;
   description?: string;
   metadata?: Record<string, any>;
@@ -37,11 +37,16 @@ type Transaction = {
 
 const base = "/transactions";
 
-export async function getTransactions(limit?: number, offset?: number, cardUuid?: string) {
+export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string) {
   const params = new URLSearchParams();
   if (limit) params.append("limit", limit.toString());
   if (offset) params.append("offset", offset.toString());
   if (cardUuid) params.append("card_uuid", cardUuid);
+  if (dateFrom) params.append("date_from", dateFrom);
+  if (dateTo) params.append("date_to", dateTo);
+  if (categoryId) params.append("category_id", categoryId.toString());
+  if (type) params.append("type", type);
+  if (search) params.append("search", search);
   return request(base, `?${params.toString()}`);
 }
 

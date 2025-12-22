@@ -6,7 +6,6 @@ type CreateCategoryRequest struct {
 	Description *string `json:"description" validate:"omitempty,max=500"`
 	Color       *string `json:"color" validate:"omitempty,len=7"` // Hex color like #FF5733
 	Icon        *string `json:"icon" validate:"omitempty,max=50"` // Icon name or emoji
-	Image       *string `json:"image" validate:"omitempty,url"`   // Image URL
 }
 
 type UpdateCategoryRequest struct {
@@ -15,10 +14,10 @@ type UpdateCategoryRequest struct {
 	Description *string `json:"description" validate:"omitempty,max=500"`
 	Color       *string `json:"color" validate:"omitempty,len=7"`
 	Icon        *string `json:"icon" validate:"omitempty,max=50"`
-	Image       *string `json:"image" validate:"omitempty,url"`
 }
 
 type CategoryResponse struct {
+	ID          int     `json:"id"`
 	Uuid        string  `json:"uuid"`
 	UserID      *int    `json:"user_id"`
 	Name        string  `json:"name"`
@@ -26,7 +25,6 @@ type CategoryResponse struct {
 	Description *string `json:"description"`
 	Color       *string `json:"color"`
 	Icon        *string `json:"icon"`
-	Image       *string `json:"image"`
 	IsDefault   bool    `json:"is_default"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`

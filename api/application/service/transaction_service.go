@@ -310,7 +310,7 @@ func (s *transactionService) ListTransactionsByCard(userID int, cardID int, limi
 }
 
 func (s *transactionService) ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error) {
-	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset)
+	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

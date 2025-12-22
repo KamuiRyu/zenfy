@@ -16,6 +16,16 @@ type ListTransactionsUseCase struct {
 	cardRepo        repository.CardRepository
 }
 
+type TransactionFilters struct {
+	DateFrom   *time.Time
+	DateTo     *time.Time
+	CategoryID *int
+	Kind       *string
+	Search     *string
+	CardID     *int
+	Type       *string
+}
+
 func NewListTransactionsUseCase(transactionRepo repository.TransactionRepository, userRepo repository.UserRepository, categoryRepo repository.CategoryRepository, cardRepo repository.CardRepository) *ListTransactionsUseCase {
 	return &ListTransactionsUseCase{
 		transactionRepo: transactionRepo,
@@ -26,7 +36,6 @@ func NewListTransactionsUseCase(transactionRepo repository.TransactionRepository
 }
 
 func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error) {
-	// Note: Card ownership verification should be done in service layer
 	transactions, err := uc.transactionRepo.ListByCard(cardID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -40,9 +49,26 @@ func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, 
 	return responses, nil
 }
 
-func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error) {
-	transactions, err := uc.transactionRepo.ListByUser(userID, limit, offset)
+func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, filters *TransactionFilters) ([]dto.TransactionResponse, error) {
+	var dateFrom, dateTo *time.Time
+	var categoryID *int
+	var kind *string
+	var search *string
+	var cardID *int
+	var typeStr *string
+	if filters != nil {
+		dateFrom = filters.DateFrom
+		dateTo = filters.DateTo
+		categoryID = filters.CategoryID
+		kind = filters.Kind
+		search = filters.Search
+		cardID = filters.CardID
+		typeStr = filters.Type
+
+	}
+	transactions, err := uc.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryID, kind, search, cardID, typeStr)
 	if err != nil {
+		fmt.Printf("Error fetching transactions: %v\n", err)
 		return nil, err
 	}
 
@@ -115,6 +141,7 @@ func (uc *ListTransactionsUseCase) toResponse(transaction *model.Transaction) *d
 			Uuid:        transaction.Category.Uuid,
 			UserID:      transaction.Category.UserID,
 			Name:        transaction.Category.Name,
+			Type:        transaction.Category.Type,
 			Description: transaction.Category.Description,
 			Color:       transaction.Category.Color,
 			Icon:        transaction.Category.Icon,

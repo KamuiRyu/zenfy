@@ -86,7 +86,7 @@ func main() {
 	authHandler := handler.NewAuthHandler(loginUC, verifyEmailUC, resendUC, requestPasswordResetUC, resetPasswordUC, getMeUC, logoutUC, refreshUC)
 	userHandler := handler.NewUserHandler(createUserUC)
 	cardHandler := handler.NewCardHandler(addCardUC, getCardsUC, getCardUC, updateCardUC, deleteCardUC, setDefaultCardUC)
-	transactionHandler := handler.NewTransactionHandler(createTransactionUC, getTransactionUC, updateTransactionUC, deleteTransactionUC, listTransactionsUC, getTransactionSummaryUC)
+	transactionHandler := handler.NewTransactionHandler(createTransactionUC, getTransactionUC, updateTransactionUC, deleteTransactionUC, listTransactionsUC, getTransactionSummaryUC, cardRepo)
 	categoryHandler := handler.NewCategoryHandler(createCategoryUC, getCategoriesUC, updateCategoryUC, deleteCategoryUC)
 
 	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, transactionHandler, categoryHandler, tokenSvc)

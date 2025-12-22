@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 // TransactionKind represents the type of transaction (debit or credit)
@@ -24,20 +26,21 @@ const (
 
 // Transaction represents a financial transaction
 type Transaction struct {
-	ID          int                    `json:"id" bun:"id,pk,autoincrement"`
-	Uuid        string                 `json:"uuid" bun:"uuid,unique,notnull"`
-	CardID      int                    `json:"card_id" bun:"card_id,notnull"`
-	UserID      int                    `json:"user_id" bun:"user_id,notnull"`
-	CategoryID  int                    `json:"category_id" bun:"category_id,notnull"`
-	Amount      int64                  `json:"amount" bun:"amount,notnull"` // cents
-	Currency    string                 `json:"currency" bun:"currency,notnull,default:'BRL'"`
-	Kind        TransactionKind        `json:"kind" bun:"kind,notnull"`
-	Merchant    *string                `json:"merchant" bun:"merchant"`
-	Description *string                `json:"description" bun:"description"`
-	Metadata    map[string]interface{} `json:"metadata" bun:"metadata,type:jsonb"`
-	OccurredAt  time.Time              `json:"occurred_at" bun:"occurred_at,notnull,default:current_timestamp"`
-	CreatedAt   time.Time              `json:"created_at" bun:"created_at,notnull,default:current_timestamp"`
-	UpdatedAt   time.Time              `json:"updated_at" bun:"updated_at,notnull,default:current_timestamp"`
+	bun.BaseModel `bun:"table:transactions"`
+	ID            int                    `json:"id" bun:"id,pk,autoincrement"`
+	Uuid          string                 `json:"uuid" bun:"uuid,unique,notnull"`
+	CardID        int                    `json:"card_id" bun:"card_id,notnull"`
+	UserID        int                    `json:"user_id" bun:"user_id,notnull"`
+	CategoryID    int                    `json:"category_id" bun:"category_id,notnull"`
+	Amount        int64                  `json:"amount" bun:"amount,notnull"` // cents
+	Currency      string                 `json:"currency" bun:"currency,notnull,default:'BRL'"`
+	Kind          TransactionKind        `json:"type" bun:"kind,notnull"`
+	Merchant      *string                `json:"merchant" bun:"merchant"`
+	Description   *string                `json:"description" bun:"description"`
+	Metadata      map[string]interface{} `json:"metadata" bun:"metadata,type:jsonb"`
+	OccurredAt    time.Time              `json:"occurred_at" bun:"occurred_at,notnull,default:current_timestamp"`
+	CreatedAt     time.Time              `json:"created_at" bun:"created_at,notnull,default:current_timestamp"`
+	UpdatedAt     time.Time              `json:"updated_at" bun:"updated_at,notnull,default:current_timestamp"`
 
 	// Relations (for joins)
 	Category *Category `json:"category,omitempty" bun:"rel:belongs-to,join:category_id=id"`

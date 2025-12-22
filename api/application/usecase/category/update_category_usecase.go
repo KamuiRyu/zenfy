@@ -58,9 +58,6 @@ func (uc *UpdateCategoryUseCase) Execute(userID int, categoryUUID string, req dt
 	if req.Icon != nil {
 		category.Icon = req.Icon
 	}
-	if req.Image != nil {
-		category.Image = req.Image
-	}
 	category.UpdatedAt = time.Now()
 
 	// Update in database
@@ -76,7 +73,6 @@ func (uc *UpdateCategoryUseCase) Execute(userID int, categoryUUID string, req dt
 		Description: category.Description,
 		Color:       category.Color,
 		Icon:        category.Icon,
-		Image:       category.Image,
 		IsDefault:   category.IsDefault,
 		CreatedAt:   category.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:   category.UpdatedAt.Format(time.RFC3339),

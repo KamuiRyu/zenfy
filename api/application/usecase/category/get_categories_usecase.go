@@ -26,6 +26,7 @@ func (uc *GetCategoriesUseCase) Execute(userID int) ([]dto.CategoryResponse, err
 	responses := make([]dto.CategoryResponse, len(categories))
 	for i, category := range categories {
 		responses[i] = dto.CategoryResponse{
+			ID:          category.ID,
 			Uuid:        category.Uuid,
 			UserID:      category.UserID,
 			Name:        category.Name,
@@ -33,7 +34,6 @@ func (uc *GetCategoriesUseCase) Execute(userID int) ([]dto.CategoryResponse, err
 			Description: category.Description,
 			Color:       category.Color,
 			Icon:        category.Icon,
-			Image:       category.Image,
 			IsDefault:   category.IsDefault,
 			CreatedAt:   category.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   category.UpdatedAt.Format(time.RFC3339),

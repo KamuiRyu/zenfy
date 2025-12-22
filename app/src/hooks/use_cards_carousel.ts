@@ -111,7 +111,6 @@ export default function useCardsCarousel() {
     dispatch({ type: 'SET_ERROR', payload: null });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      console.log("Fetching cards");
       const resp = await cardService.getCards();
       const payload =
         resp && typeof resp === "object" && "data" in resp

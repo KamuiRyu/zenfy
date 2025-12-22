@@ -21,7 +21,7 @@ type Transaction = {
   };
   amount: number;
   currency: string;
-  kind: string;
+  type: string;
   merchant?: string;
   description?: string;
   metadata?: Record<string, any>;
@@ -44,11 +44,19 @@ type TransactionsState = {
   error: string | null;
 };
 
+type TransactionFilters = {
+  dateFrom?: string;
+  dateTo?: string;
+  categoryId?: number;
+  type?: string;
+  cardUuid?: string;
+  search?: string;
+};
+
 type TransactionsAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_TRANSACTIONS'; payload: Transaction[] }
-  | { type: 'RESET' };
+  | { type: 'SET_TRANSACTIONS'; payload: Transaction[] };
 
 const initialState: TransactionsState = {
   transactions: [],
@@ -64,32 +72,38 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
       return { ...state, error: action.payload };
     case 'SET_TRANSACTIONS':
       return { ...state, transactions: action.payload };
-    case 'RESET':
-      return initialState;
     default:
       return state;
   }
 }
 
-export default function useTransactions(limit?: number, offset?: number, cardUuid?: string) {
+export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean) {
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
 
   useEffect(() => {
-    if (cardUuid) {
+    if (mounted && filters?.cardUuid) {
       fetchTransactions();
-    } else {
+    } else if (mounted) {
       dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
-      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_LOADING', payload: true });
     }
-  }, [cardUuid, limit, offset]);
+  }, [filters, limit, offset, mounted]);
 
   async function fetchTransactions() {
     dispatch({ type: 'SET_ERROR', payload: null });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      console.log("Fetching transactions with cardUuid:", cardUuid);
-      const resp = await transactionService.getTransactions(limit, offset, cardUuid);
+      const params: any = {};
+      if (limit) params.limit = limit;
+      if (offset) params.offset = offset;
+      if (filters?.dateFrom) params.date_from = filters.dateFrom;
+      if (filters?.dateTo) params.date_to = filters.dateTo;
+      if (filters?.categoryId) params.category_id = filters.categoryId;
+      if (filters?.type) params.type = filters.type;
+      if (filters?.cardUuid) params.card_uuid = filters.cardUuid;
+      if (filters?.search) params.search = filters.search;
 
+      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search);
       const payload =
         resp && typeof resp === "object" && "data" in resp
           ? (resp as any).data
