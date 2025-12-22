@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -49,4 +50,65 @@ func (uc *GetTransactionSummaryUseCase) ExecuteByCard(userID int, cardID int, st
 	}
 
 	return responses, nil
+}
+
+func (uc *GetTransactionSummaryUseCase) ExecuteBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error) {
+	now := time.Now()
+	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+	endOfMonth := startOfMonth.AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+
+	transactions, err := uc.transactionRepo.ListByUser(userID, 10000, 0, &startOfMonth, &endOfMonth, nil, nil, nil, cardID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var totalIncome int64
+	var totalExpense int64
+	var lastPaymentAmount *int64
+	var lastPaymentDate *time.Time
+
+	for _, tx := range transactions {
+		fmt.Println(tx.Category.Type)
+		if tx.Category != nil {
+			switch tx.Category.Type {
+			case "income":
+				totalIncome += tx.Amount
+			case "expense":
+				totalExpense += tx.Amount
+				if lastPaymentDate == nil || tx.OccurredAt.After(*lastPaymentDate) {
+					lastPaymentAmount = &tx.Amount
+					lastPaymentDate = &tx.OccurredAt
+				}
+			case "investment", "transfer":
+				totalExpense += tx.Amount
+			}
+		} else {
+			switch tx.Kind {
+			case "income":
+				totalIncome += tx.Amount
+			case "expense":
+				totalExpense += tx.Amount
+				if lastPaymentDate == nil || tx.OccurredAt.After(*lastPaymentDate) {
+					lastPaymentAmount = &tx.Amount
+					lastPaymentDate = &tx.OccurredAt
+				}
+			}
+		}
+	}
+
+	balance := totalIncome - totalExpense
+
+	var lastPaymentDateStr *string
+	if lastPaymentDate != nil {
+		dateStr := lastPaymentDate.Format(time.RFC3339)
+		lastPaymentDateStr = &dateStr
+	}
+
+	return &dto.BalanceOverviewResponse{
+		Balance:           balance,
+		TotalIncome:       totalIncome,
+		TotalExpense:      totalExpense,
+		LastPaymentAmount: lastPaymentAmount,
+		LastPaymentDate:   lastPaymentDateStr,
+	}, nil
 }

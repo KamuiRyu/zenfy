@@ -46,6 +46,7 @@ func main() {
 	verificationRepo := repositoryimpl.NewVerificationTokenRepository(bunDB)
 	passwordResetRepo := repositoryimpl.NewPasswordResetTokenRepository(bunDB)
 	refreshRepo := repositoryimpl.NewRefreshTokenRepository(bunDB)
+	invalidTokenRepo := repositoryimpl.NewInvalidTokenRepository(bunDB)
 	cardRepo := repositoryimpl.NewCardRepository(bunDB)
 	transactionRepo := repositoryimpl.NewTransactionRepository(bunDB)
 	categoryRepo := repositoryimpl.NewCategoryRepository(bunDB)
@@ -62,8 +63,8 @@ func main() {
 	resetPasswordUC := authusecase.NewResetPasswordUseCase(passwordResetRepo, userRepo, validationSvc)
 	requestPasswordResetUC := authusecase.NewRequestPasswordResetUseCase(passwordResetRepo, userRepo, tokenSvc, emailSvc, validationSvc)
 	createUserUC := userusecase.NewCreateUserUseCase(userRepo, verificationRepo, emailSvc, tokenSvc, validationSvc)
-	getMeUC := authusecase.NewGetCurrentUserUseCase(tokenSvc, userRepo)
-	logoutUC := authusecase.NewLogoutUseCase(refreshRepo)
+	getMeUC := authusecase.NewGetCurrentUserUseCase(tokenSvc, userRepo, invalidTokenRepo)
+	logoutUC := authusecase.NewLogoutUseCase(refreshRepo, invalidTokenRepo, tokenSvc)
 	refreshUC := authusecase.NewRefreshTokenUseCase(tokenSvc, refreshRepo)
 	addCardUC := cardusecase.NewAddCardUseCase(cardRepo, validationSvc)
 	getCardsUC := cardusecase.NewGetCardsUseCase(cardRepo)
@@ -89,7 +90,7 @@ func main() {
 	transactionHandler := handler.NewTransactionHandler(createTransactionUC, getTransactionUC, updateTransactionUC, deleteTransactionUC, listTransactionsUC, getTransactionSummaryUC, cardRepo)
 	categoryHandler := handler.NewCategoryHandler(createCategoryUC, getCategoriesUC, updateCategoryUC, deleteCategoryUC)
 
-	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, transactionHandler, categoryHandler, tokenSvc)
+	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, transactionHandler, categoryHandler, tokenSvc, invalidTokenRepo)
 
 	addr := ":8080"
 	if config.Cfg != nil && config.Cfg.AppPort != "" {

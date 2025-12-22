@@ -103,6 +103,7 @@ func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, da
 	if search != nil {
 		query = query.Where("transaction.description ILIKE ? OR transaction.merchant ILIKE ?", "%"+*search+"%", "%"+*search+"%")
 	}
+
 	if cardID != nil {
 		query = query.Where("transaction.card_id = ?", *cardID)
 	}

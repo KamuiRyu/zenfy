@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning >
       <body
-        className={`${geistSans.variable} antialiased`}
+        className="font-sans antialiased"
       >
         <Providers>
           {children}

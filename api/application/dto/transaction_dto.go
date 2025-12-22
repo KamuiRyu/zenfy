@@ -75,3 +75,11 @@ type TransactionSummaryResponse struct {
 	Category     *CategoryResponse `json:"category,omitempty"`
 	Total        int64             `json:"total"`
 }
+
+type BalanceOverviewResponse struct {
+	Balance           int64   `json:"balance"`
+	TotalIncome       int64   `json:"total_income"`
+	TotalExpense      int64   `json:"total_expense"`
+	LastPaymentAmount *int64  `json:"last_payment_amount,omitempty"`
+	LastPaymentDate   *string `json:"last_payment_date,omitempty"`
+}

@@ -85,7 +85,7 @@ export default function useTransactions(limit?: number, offset?: number, filters
       fetchTransactions();
     } else if (mounted) {
       dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
-      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, [filters, limit, offset, mounted]);
 

@@ -1,17 +1,21 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"zenfy-api/application/service"
 	"zenfy-api/config"
+	"zenfy-api/domain/repository"
 	handlerpkg "zenfy-api/interfaces/handler"
 	"zenfy-api/interfaces/middleware"
 )
 
-func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler, cardHandler *handlerpkg.CardHandler, transactionHandler *handlerpkg.TransactionHandler, categoryHandler *handlerpkg.CategoryHandler, tokenService service.TokenService) *fiber.App {
+func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.UserHandler, cardHandler *handlerpkg.CardHandler, transactionHandler *handlerpkg.TransactionHandler, categoryHandler *handlerpkg.CategoryHandler, tokenService service.TokenService, invalidTokenRepo repository.InvalidTokenRepository) *fiber.App {
 	app := fiber.New()
 	cfg := config.Cfg
 	if cfg == nil {
@@ -39,6 +43,20 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	api := app.Group("/api")
 
 	auth := api.Group("/auth")
+	auth.Use(limiter.New(limiter.Config{
+		Max:        5,
+		Expiration: 15 * time.Minute,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP() + c.Get("X-Forwarded-For")
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"success": false,
+				"code":    "RATE_LIMIT_EXCEEDED",
+				"message": "Too many login attempts. Please try again later.",
+			})
+		},
+	}))
 	auth.Post("/login", authHandler.Login)
 	auth.Get("/verify", authHandler.Verify)
 	auth.Post("/resend", authHandler.Resend)
@@ -52,7 +70,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	users := api.Group("/users")
 	users.Post("/", userHandler.Create)
 
-	authMiddleware := middleware.AuthMiddleware(tokenService)
+	authMiddleware := middleware.AuthMiddleware(tokenService, invalidTokenRepo)
 
 	cards := api.Group("/cards")
 	cards.Use(authMiddleware)
@@ -66,6 +84,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	transactions := api.Group("/transactions")
 	transactions.Use(authMiddleware)
 	transactions.Post("/", transactionHandler.CreateTransaction)
+	transactions.Get("/balance-overview", transactionHandler.GetBalanceOverview)
 	transactions.Get("/", transactionHandler.ListTransactionsByUser)
 	transactions.Get("/:id", transactionHandler.GetTransaction)
 	transactions.Put("/:id", transactionHandler.UpdateTransaction)
@@ -77,9 +96,6 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	categories.Get("/", categoryHandler.GetCategories)
 	categories.Put("/:uuid", categoryHandler.UpdateCategory)
 	categories.Delete("/:uuid", categoryHandler.DeleteCategory)
-
-	cards.Get("/:cardId/transactions", transactionHandler.ListTransactionsByCard)
-	cards.Get("/:cardId/transactions/summary", transactionHandler.GetTransactionSummaryByCard)
 
 	return app
 }

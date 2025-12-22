@@ -65,7 +65,9 @@
         "expense": "Expense",
         "investment": "Investment",
         "no_transactions_found": "No transactions found",
-        "no_transactions_description": "Try adjusting your filters or select another card."
+        "no_transactions_description": "Try adjusting your filters or select another card.",
+        "select_card_title": "Select a card",
+        "select_card_message": "Choose a card to view transaction history."
     }
   },
   "field":{

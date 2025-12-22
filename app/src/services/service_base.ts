@@ -57,7 +57,7 @@ export async function request(
   opts: AxiosRequestConfig = {}
 ) {
   try {
-    const fullPath = path.startsWith("/") ? path : `${base}/${path}`;
+    const fullPath = path ? (path.startsWith("/") ? path : `${base}/${path}`) : base;
     const response = await apiClient.request({
       url: fullPath,
       ...opts,

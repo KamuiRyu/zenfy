@@ -65,7 +65,9 @@
         "expense": "Despesa",
         "investment": "Investimento",
         "no_transactions_found": "Nenhuma transação encontrada",
-        "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão."
+        "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão.",
+        "select_card_title": "Selecione um cartão",
+        "select_card_message": "Escolha um cartão para visualizar o histórico de transações."
     }
   },
   "field": {

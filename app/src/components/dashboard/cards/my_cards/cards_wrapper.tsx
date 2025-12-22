@@ -1,6 +1,6 @@
 "use client";
 
-import RightSidebar from "@/components/dashboard/cards/right_sidebar";
+import RightSidebar from "@/components/dashboard/cards/balance_overview/right_sidebar";
 import { SelectedCardProvider } from "@/providers/selected_card_provider";
 import TransactionHistoryWrapper from "@/components/dashboard/cards/transaction_history_wrapper";
 import MyCardsWrapper from "@/components/dashboard/cards/my_cards_wrapper";

@@ -20,6 +20,7 @@ type TransactionService interface {
 	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
 	ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error)
 	GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error)
+	GetBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error)
 }
 
 type transactionService struct {
@@ -352,6 +353,51 @@ func (s *transactionService) GetTransactionSummaryByCard(userID int, cardID int,
 	responses := make([]dto.TransactionSummaryResponse, 0, len(summaries))
 
 	return responses, nil
+}
+
+func (s *transactionService) GetBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error) {
+	if cardID != nil {
+		card, err := s.cardRepo.FindByID(*cardID)
+
+		if err != nil {
+			return nil, err
+		}
+		if card == nil {
+			return nil, fmt.Errorf("card not found")
+		}
+		if card.UserID != userID {
+			return nil, fmt.Errorf("card does not belong to user")
+		}
+	}
+
+	now := time.Now()
+	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+	endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Second)
+
+	transactions, err := s.transactionRepo.ListByUser(userID, 0, 0, &startOfMonth, &endOfMonth, nil, nil, nil, cardID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var totalIncome, totalExpense int64
+	for _, transaction := range transactions {
+		switch transaction.Category.Type {
+		case "income":
+			totalIncome += transaction.Amount
+		case "expense":
+			totalExpense += transaction.Amount
+		case "investment", "transfer":
+			totalExpense += transaction.Amount
+		}
+	}
+
+	balance := totalIncome - totalExpense
+
+	return &dto.BalanceOverviewResponse{
+		TotalIncome:  totalIncome,
+		TotalExpense: totalExpense,
+		Balance:      balance,
+	}, nil
 }
 
 func (s *transactionService) toResponse(transaction *model.Transaction) *dto.TransactionResponse {

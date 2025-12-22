@@ -130,7 +130,7 @@ export default function TransactionHistory() {
 
   if (!mounted) {
     return (
-      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+      <div className="rounded-2xl overflow-hidden">
         <div className="p-6 sm:p-8 ">
           <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} countdown={null} />
           <div suppressHydrationWarning>
@@ -153,7 +153,7 @@ export default function TransactionHistory() {
   }
 
   return (
-    <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+    <div className="rounded-2xl overflow-hidden">
       <div className="p-6 sm:p-8 ">
         <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} countdown={countdown} />
 
@@ -163,7 +163,16 @@ export default function TransactionHistory() {
 
         {error && <div className="text-center py-12 max-h-130 text-destructive">{t('dashboard.transaction_history.error')}: {error}</div>}
 
-        {!loading && !error && (
+        {!selectedCardUuid && !loading && !error && (
+          <div className="max-h-160 overflow-y-auto">
+            <TransactionHistoryEmpty
+              title={t('dashboard.transaction_history.select_card_title')}
+              message={t('dashboard.transaction_history.select_card_message')}
+            />
+          </div>
+        )}
+
+        {selectedCardUuid && !loading && !error && (
           <>
             <div className="space-y-10 max-h-160 overflow-y-auto">
               {Object.entries(groupedTransactions).map(([date, dayTransactions]) => (
@@ -190,7 +199,7 @@ export default function TransactionHistory() {
           </>
         )}
 
-        {loading && (
+        {loading && selectedCardUuid && (
           <div className="space-y-10 max-h-160 overflow-y-auto">
             <TransactionGroup
               date={t('dashboard.transaction_history.today')}
