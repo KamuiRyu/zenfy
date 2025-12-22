@@ -54,7 +54,7 @@ const TransactionItem = React.memo(function TransactionItem({
   }, [icon]);
 
   return (
-    <div className="group grid grid-cols-[7fr_1fr_1fr_1fr] items-center gap-4 p-4 hover:bg-muted/80 rounded-xl transition-all duration-200">
+    <div className="group grid grid-cols-[5fr_1fr_1fr_1fr] items-center gap-4 p-4 hover:bg-muted/80 rounded-xl transition-all duration-200">
       <div className="flex items-center gap-4 min-w-0">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform flex-shrink-0"
@@ -88,7 +88,7 @@ const TransactionItem = React.memo(function TransactionItem({
       </div>
 
       <div
-        className={`font-bold text-md flex-shrink-0 text-center ${amountColor}`}
+        className={`font-medium text-md flex-shrink-0 text-center ${amountColor}`}
       >
         {isIncome ? "+" : "-"} {amount}
       </div>

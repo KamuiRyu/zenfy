@@ -1,3 +1,5 @@
+"use client";
+
 import StatCard from "@/components/dashboard/stat_card";
 import ChartCard from "@/components/dashboard/chart_card";
 import { WelcomeMessage } from "@/components/dashboard/welcome_message";

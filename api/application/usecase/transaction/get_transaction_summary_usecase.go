@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"time"
 
 	"zenfy-api/application/dto"
@@ -57,6 +56,7 @@ func (uc *GetTransactionSummaryUseCase) ExecuteBalanceOverview(userID int, cardI
 	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 	endOfMonth := startOfMonth.AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
 
+	// Get current month transactions for balance calculation
 	transactions, err := uc.transactionRepo.ListByUser(userID, 10000, 0, &startOfMonth, &endOfMonth, nil, nil, nil, cardID, nil)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,6 @@ func (uc *GetTransactionSummaryUseCase) ExecuteBalanceOverview(userID int, cardI
 	var lastPaymentDate *time.Time
 
 	for _, tx := range transactions {
-		fmt.Println(tx.Category.Type)
 		if tx.Category != nil {
 			switch tx.Category.Type {
 			case "income":
@@ -104,11 +103,53 @@ func (uc *GetTransactionSummaryUseCase) ExecuteBalanceOverview(userID int, cardI
 		lastPaymentDateStr = &dateStr
 	}
 
+	monthlyStats := make([]dto.MonthlyStats, 0, 12)
+	for i := 11; i >= 0; i-- {
+		monthStart := time.Date(now.Year(), now.Month()-time.Month(i), 1, 0, 0, 0, 0, now.Location())
+		monthEnd := monthStart.AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
+
+		monthTransactions, err := uc.transactionRepo.ListByUser(userID, 10000, 0, &monthStart, &monthEnd, nil, nil, nil, cardID, nil)
+		if err != nil {
+			continue
+		}
+
+		var monthIncome int64
+		var monthExpense int64
+
+		for _, tx := range monthTransactions {
+			if tx.Category != nil {
+				switch tx.Category.Type {
+				case "income":
+					monthIncome += tx.Amount
+				case "expense":
+					monthExpense += tx.Amount
+				case "investment", "transfer":
+					monthExpense += tx.Amount
+				}
+			} else {
+				switch tx.Kind {
+				case "income":
+					monthIncome += tx.Amount
+				case "expense":
+					monthExpense += tx.Amount
+				}
+			}
+		}
+
+		monthlyStats = append(monthlyStats, dto.MonthlyStats{
+			Month:        monthStart.Format("January"),
+			Year:         monthStart.Year(),
+			TotalIncome:  monthIncome,
+			TotalExpense: monthExpense,
+		})
+	}
+
 	return &dto.BalanceOverviewResponse{
 		Balance:           balance,
 		TotalIncome:       totalIncome,
 		TotalExpense:      totalExpense,
 		LastPaymentAmount: lastPaymentAmount,
 		LastPaymentDate:   lastPaymentDateStr,
+		MonthlyStats:      monthlyStats,
 	}, nil
 }

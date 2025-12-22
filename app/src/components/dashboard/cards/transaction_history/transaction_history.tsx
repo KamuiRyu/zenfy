@@ -11,6 +11,7 @@ import useTransactions from "@/hooks/use_transactions";
 import NoTransactions from "./no_transactions";
 import { request } from "@/services/service_base";
 import { useI18n } from "@/i18n/useI18n";
+import TransactionHistoryLoading from "./transaction_history_loading";
 
 function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("pt-BR", {
@@ -200,26 +201,7 @@ export default function TransactionHistory() {
         )}
 
         {loading && selectedCardUuid && (
-          <div className="space-y-10 max-h-160 overflow-y-auto">
-            <TransactionGroup
-              date={t('dashboard.transaction_history.today')}
-              transactions={[]}
-              formatTime={formatTime}
-              formatCurrency={formatCurrency}
-              selectedCardLastFour={selectedCardLastFour}
-              selectedCardBrand={selectedCardBrand}
-              loading={true}
-            />
-            <TransactionGroup
-              date={t('dashboard.transaction_history.yesterday')}
-              transactions={[]}
-              formatTime={formatTime}
-              formatCurrency={formatCurrency}
-              selectedCardLastFour={selectedCardLastFour}
-              selectedCardBrand={selectedCardBrand}
-              loading={true}
-            />
-          </div>
+          <TransactionHistoryLoading />
         )}
       </div>
     </div>

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
 
 interface TransactionFiltersProps {
@@ -44,9 +44,37 @@ export default function TransactionFilters({
   categories,
 }: TransactionFiltersProps) {
   const { t } = useI18n();
-  const [openDateFrom, setOpenDateFrom] = useState(false);
-  const [openDateTo, setOpenDateTo] = useState(false);
+  const [openDateRange, setOpenDateRange] = useState(false);
   const [searchValue, setSearchValue] = useState(filters.search || "");
+
+  const currentMonth = new Date();
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+
+  useEffect(() => {
+    let needsUpdate = false;
+    const newFilters = { ...filters };
+
+    if (filters.dateFrom) {
+      const dateFrom = new Date(filters.dateFrom);
+      if (dateFrom < monthStart || dateFrom > monthEnd) {
+        delete newFilters.dateFrom;
+        needsUpdate = true;
+      }
+    }
+
+    if (filters.dateTo) {
+      const dateTo = new Date(filters.dateTo);
+      if (dateTo < monthStart || dateTo > monthEnd) {
+        delete newFilters.dateTo;
+        needsUpdate = true;
+      }
+    }
+
+    if (needsUpdate) {
+      onFiltersChange(newFilters);
+    }
+  }, [filters.dateFrom, filters.dateTo, monthStart, monthEnd, onFiltersChange]);
 
   const updateFilter = (key: string, value: any) => {
     const newFilters = { ...filters };
@@ -55,15 +83,24 @@ export default function TransactionFilters({
     } else {
       delete newFilters[key as keyof typeof newFilters];
     }
-    if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
-      onFiltersChange(newFilters);
+
+    if (key === "dateFrom" || key === "dateTo") {
+      const hasDateFrom = newFilters.dateFrom !== undefined;
+      const hasDateTo = newFilters.dateTo !== undefined;
+
+      if ((hasDateFrom && !hasDateTo) || (!hasDateFrom && hasDateTo)) {
+        return;
+      }
     }
+
+    onFiltersChange(newFilters);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchValue !== filters.search) {
-        updateFilter("search", searchValue || undefined);
+      const newSearchValue = searchValue || undefined;
+      if (newSearchValue !== filters.search) {
+        updateFilter("search", newSearchValue);
       }
     }, 500);
 
@@ -83,89 +120,82 @@ export default function TransactionFilters({
     <div className="mb-8 p-4 ">
       <div className="flex items-center gap-2 mb-3">
         <Filter className="w-4 h-4" />
-        <span className="font-medium">{t('dashboard.transaction_history.filters')}</span>
+        <span className="font-medium">
+          {t("dashboard.transaction_history.filters")}
+        </span>
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+          {format(currentMonth, "MMMM yyyy")}
+        </span>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="w-4 h-4 mr-1" />
-            {t('dashboard.transaction_history.clear')}
+            {t("dashboard.transaction_history.clear")}
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label className="text-sm font-medium">{t('dashboard.transaction_history.search')}</label>
+          <label className="text-sm font-medium">
+            {t("dashboard.transaction_history.search")}
+          </label>
           <Input
-            placeholder={t('dashboard.transaction_history.search_placeholder')}
+            placeholder={t("dashboard.transaction_history.search_placeholder")}
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
           />
         </div>
         <div>
-          <label className="text-sm font-medium">{t('dashboard.transaction_history.from_date')}</label>
-          <Popover open={openDateFrom} onOpenChange={setOpenDateFrom}>
+          <label className="text-sm font-medium">
+            {t("dashboard.transaction_history.date_range")}
+          </label>
+          <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateFrom
-                  ? format(new Date(filters.dateFrom), "PPP")
-                  : t('dashboard.transaction_history.select_date')}
+                {filters.dateFrom && filters.dateTo
+                  ? `${format(new Date(filters.dateFrom), "MMM dd")} - ${format(
+                      new Date(filters.dateTo),
+                      "MMM dd"
+                    )}`
+                  : t("dashboard.transaction_history.select_date_range")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
-                mode="single"
-                selected={
-                  filters.dateFrom ? new Date(filters.dateFrom) : undefined
-                }
-                onSelect={(date) => {
-                  updateFilter(
-                    "dateFrom",
-                    date ? date.toISOString() : undefined
-                  );
-                  setOpenDateFrom(false);
+                mode="range"
+                selected={{
+                  from: filters.dateFrom
+                    ? new Date(filters.dateFrom)
+                    : undefined,
+                  to: filters.dateTo ? new Date(filters.dateTo) : undefined,
                 }}
-                initialFocus
+                onSelect={(range) => {
+                  if (range?.from && range?.to) {
+                    const newFilters = { ...filters };
+                    newFilters.dateFrom = range.from.toISOString();
+                    newFilters.dateTo = range.to.toISOString();
+
+                    onFiltersChange(newFilters);
+                    setOpenDateRange(false);
+                  }
+                }}
+                numberOfMonths={1}
+                defaultMonth={currentMonth}
               />
             </PopoverContent>
           </Popover>
         </div>
 
-        {/* Date To */}
         <div>
-          <label className="text-sm font-medium">{t('dashboard.transaction_history.to_date')}</label>
-          <Popover open={openDateTo} onOpenChange={setOpenDateTo}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateTo
-                  ? format(new Date(filters.dateTo), "PPP")
-                  : t('dashboard.transaction_history.select_date')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={filters.dateTo ? new Date(filters.dateTo) : undefined}
-                onSelect={(date) => {
-                  updateFilter("dateTo", date ? date.toISOString() : undefined);
-                  setOpenDateTo(false);
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* Category */}
-        <div>
-          <label className="text-sm font-medium">{t('dashboard.transaction_history.category')}</label>
+          <label className="text-sm font-medium">
+            {t("dashboard.transaction_history.category")}
+          </label>
           <Select
             value={filters.categoryId ? filters.categoryId.toString() : "all"}
             onValueChange={(value) =>
@@ -176,7 +206,9 @@ export default function TransactionFilters({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('dashboard.transaction_history.all_categories')} />
+              <SelectValue
+                placeholder={t("dashboard.transaction_history.all_categories")}
+              />
             </SelectTrigger>
             <SelectContent
               side="bottom"
@@ -184,7 +216,9 @@ export default function TransactionFilters({
               position="popper"
               className="max-h-70"
             >
-              <SelectItem value="all">{t('dashboard.transaction_history.all_categories')}</SelectItem>
+              <SelectItem value="all">
+                {t("dashboard.transaction_history.all_categories")}
+              </SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id.toString()}>
                   {cat.name}
@@ -194,9 +228,10 @@ export default function TransactionFilters({
           </Select>
         </div>
 
-        {/* Type */}
         <div>
-          <label className="text-sm font-medium">{t('dashboard.transaction_history.type')}</label>
+          <label className="text-sm font-medium">
+            {t("dashboard.transaction_history.type")}
+          </label>
           <Select
             value={filters.type || "all"}
             onValueChange={(value) =>
@@ -204,7 +239,9 @@ export default function TransactionFilters({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('dashboard.transaction_history.all_types')} />
+              <SelectValue
+                placeholder={t("dashboard.transaction_history.all_types")}
+              />
             </SelectTrigger>
             <SelectContent
               side="bottom"
@@ -212,14 +249,21 @@ export default function TransactionFilters({
               position="popper"
               className="max-h-70"
             >
-              <SelectItem value="all">{t('dashboard.transaction_history.all_types')}</SelectItem>
-              <SelectItem value="income">{t('dashboard.transaction_history.income')}</SelectItem>
-              <SelectItem value="expense">{t('dashboard.transaction_history.expense')}</SelectItem>
-              <SelectItem value="investment">{t('dashboard.transaction_history.investment')}</SelectItem>
+              <SelectItem value="all">
+                {t("dashboard.transaction_history.all_types")}
+              </SelectItem>
+              <SelectItem value="income">
+                {t("dashboard.transaction_history.income")}
+              </SelectItem>
+              <SelectItem value="expense">
+                {t("dashboard.transaction_history.expense")}
+              </SelectItem>
+              <SelectItem value="investment">
+                {t("dashboard.transaction_history.investment")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
-
       </div>
     </div>
   );

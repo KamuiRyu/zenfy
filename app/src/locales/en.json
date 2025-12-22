@@ -54,6 +54,8 @@
         "clear": "Clear",
         "search": "Search",
         "search_placeholder": "Search transactions...",
+        "date_range": "Date Range",
+        "select_date_range": "Select date range",
         "from_date": "From Date",
         "to_date": "To Date",
         "select_date": "Select date",

@@ -15,50 +15,58 @@ export default function useBalanceOverview(cardUuid?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchBalanceOverview = useCallback(async () => {
-    // Cancel previous request
+    // Cancel previous request if still pending
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new abort controller
     abortControllerRef.current = new AbortController();
 
     try {
       setLoading(true);
       setError(null);
       const url = `transactions/balance-overview?card_uuid=${cardUuid}`;
-      const response = await request(url, "", {
-        signal: abortControllerRef.current.signal,
-      });
+      const response = await request(url, "", {}, abortControllerRef.current.signal);
+      
+      // Handle the API response structure: { type, code, message, data: { balance, total_income, ... } }
       if (response && response.data) {
         setBalanceOverview(response.data);
+      } else {
+        setBalanceOverview(null);
+        setError('Failed to parse balance overview data');
       }
     } catch (err: any) {
-      if (err.name !== 'AbortError') {
-        setError(err.message || "Failed to fetch balance overview");
+      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+        return;
       }
+      setError(err.message || "Failed to fetch balance overview");
     } finally {
       setLoading(false);
     }
   }, [cardUuid]);
 
   useEffect(() => {
+    
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
     if (cardUuid) {
-      fetchBalanceOverview();
+      debounceTimeoutRef.current = setTimeout(() => {
+        fetchBalanceOverview();
+      }, 100);
     } else {
-      // Cancel any pending request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
       setBalanceOverview(null);
       setError(null);
     }
 
-    // Cleanup on unmount or cardUuid change
     return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }

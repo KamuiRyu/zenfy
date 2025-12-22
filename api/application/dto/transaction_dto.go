@@ -77,9 +77,17 @@ type TransactionSummaryResponse struct {
 }
 
 type BalanceOverviewResponse struct {
-	Balance           int64   `json:"balance"`
-	TotalIncome       int64   `json:"total_income"`
-	TotalExpense      int64   `json:"total_expense"`
-	LastPaymentAmount *int64  `json:"last_payment_amount,omitempty"`
-	LastPaymentDate   *string `json:"last_payment_date,omitempty"`
+	Balance           int64          `json:"balance"`
+	TotalIncome       int64          `json:"total_income"`
+	TotalExpense      int64          `json:"total_expense"`
+	LastPaymentAmount *int64         `json:"last_payment_amount,omitempty"`
+	LastPaymentDate   *string        `json:"last_payment_date,omitempty"`
+	MonthlyStats      []MonthlyStats `json:"monthly_stats"`
+}
+
+type MonthlyStats struct {
+	Month        string `json:"month"`
+	Year         int    `json:"year"`
+	TotalIncome  int64  `json:"total_income"`
+	TotalExpense int64  `json:"total_expense"`
 }

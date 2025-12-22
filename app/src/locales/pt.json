@@ -54,6 +54,8 @@
         "clear": "Limpar",
         "search": "Buscar",
         "search_placeholder": "Buscar transações...",
+        "date_range": "Período",
+        "select_date_range": "Selecionar período",
         "from_date": "Data de início",
         "to_date": "Data de fim",
         "select_date": "Selecionar data",
