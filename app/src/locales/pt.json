@@ -33,7 +33,11 @@
     "cards": {
         "my_cards": "Meus Cartões",
         "confirm_delete": "Confirmar Exclusão",
-        "delete_description": "Tem certeza de que deseja excluir este cartão? Esta ação não pode ser desfeita."
+        "delete_description": "Tem certeza de que deseja excluir este cartão? Esta ação não pode ser desfeita.",
+        "page_title": "Meus cartões - Zenfy",
+        "page_description": "Gerencie seus cartões",
+        "heading": "Meus Cartões",
+        "subheading": "Gerencie seus cartões de pagamento"
     },
     "transaction_history": {
         "title": "Histórico de Transações",
