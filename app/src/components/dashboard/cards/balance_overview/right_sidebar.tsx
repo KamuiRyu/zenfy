@@ -17,7 +17,6 @@ export default function RightSidebar() {
       <Statistics
         balanceOverview={balanceOverview}
         loading={loading}
-        error={error}
       />
     </aside>
   );

@@ -120,6 +120,7 @@ export default function EditCardDialog({
         is_default: data.isDefault,
         nickname: data.nickname,
       });
+      window.dispatchEvent(new Event('refetchCards'));
       router.back();
     } catch (err: any) {
       toast.error(t("dashboard.cards.error_updating_card"));

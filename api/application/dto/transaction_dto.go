@@ -47,6 +47,7 @@ type TransactionResponse struct {
 	UserUuid     string                 `json:"user_uuid"`
 	CategoryUuid string                 `json:"category_uuid"`
 	Category     *CategoryResponse      `json:"category,omitempty"`
+	Card         *CardResponse          `json:"card,omitempty"`
 	Amount       int64                  `json:"amount"`
 	Currency     string                 `json:"currency"`
 	Kind         string                 `json:"kind"`

@@ -139,17 +139,15 @@ export default function useTransactions(limit?: number, offset?: number, filters
       clearTimeout(debounceTimeoutRef.current);
     }
 
-    if (mounted && filters?.cardUuid) {
-      // Debounce the API call to avoid rapid successive calls during Fast Refresh
+    if (mounted) {
       debounceTimeoutRef.current = setTimeout(() => {
         fetchTransactions();
       }, 100);
-    } else if (mounted) {
+    } else {
       dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
       dispatch({ type: 'SET_LOADING', payload: false });
     }
 
-    // Cleanup function to cancel ongoing requests and clear timeout
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);

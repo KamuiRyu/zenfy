@@ -56,6 +56,7 @@ export default function AddCardDialog() {
         nickname: data.nickname,
         is_default: data.isDefault,
       });
+      window.dispatchEvent(new Event('refetchCards'));
       router.back();
     } catch (err: any) {
       toast.error(t("dashboard.cards.error_adding_card"));

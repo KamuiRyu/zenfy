@@ -151,6 +151,16 @@ func (uc *ListTransactionsUseCase) toResponse(transaction *model.Transaction) *d
 		}
 	}
 
+	if transaction.Card != nil {
+		response.Card = &dto.CardResponse{
+			Uuid:      transaction.Card.Uuid,
+			Brand:     transaction.Card.Brand,
+			LastFour:  transaction.Card.LastFour,
+			IsDefault: transaction.Card.IsDefault,
+			CreatedAt: transaction.Card.CreatedAt.Format(time.RFC3339),
+		}
+	}
+
 	if transaction.RecurrenceEndDate != nil {
 		endDateStr := transaction.RecurrenceEndDate.Format(time.RFC3339)
 		response.RecurrenceEndDate = &endDateStr

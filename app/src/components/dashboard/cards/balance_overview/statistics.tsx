@@ -14,13 +14,11 @@ import { useI18n } from "@/i18n/useI18n";
 interface StatisticsProps {
   balanceOverview: BalanceOverview | null;
   loading: boolean;
-  error: string | null;
 }
 
 export default function Statistics({
   balanceOverview,
   loading,
-  error,
 }: StatisticsProps) {
   const { t } = useI18n();
   const chartConfig = {

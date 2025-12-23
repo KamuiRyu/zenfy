@@ -39,7 +39,7 @@ export default function DashboardHeader({ name }: { name?: string }) {
         ) : (
           <AvatarMenu
             displayName={displayName ?? ""}
-            avatar={avatar ?? "/avatar.png"}
+            avatar={avatar ?? null}
           />
         )}
       </div>

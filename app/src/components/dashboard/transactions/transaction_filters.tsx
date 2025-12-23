@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
-import { format, startOfMonth, endOfMonth } from "date-fns";
+import { format } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
+import { request } from "@/services/service_base";
+import useCategories from "@/hooks/use_categories";
 
 interface TransactionFiltersProps {
   filters: {
@@ -35,48 +37,27 @@ interface TransactionFiltersProps {
     type?: string;
     search?: string;
   }) => void;
-  categories: { id: number; name: string }[];
-  loading?: boolean;
 }
 
 export default function TransactionFilters({
   filters,
   onFiltersChange,
-  categories,
-  loading,
 }: TransactionFiltersProps) {
   const { t } = useI18n();
   const [openDateRange, setOpenDateRange] = useState(false);
   const [searchValue, setSearchValue] = useState(filters.search || "");
-
-  const currentMonth = new Date();
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
+  const { categories } = useCategories();
 
   useEffect(() => {
-    let needsUpdate = false;
-    const newFilters = { ...filters };
-
-    if (filters.dateFrom) {
-      const dateFrom = new Date(filters.dateFrom);
-      if (dateFrom < monthStart || dateFrom > monthEnd) {
-        delete newFilters.dateFrom;
-        needsUpdate = true;
+    const timer = setTimeout(() => {
+      const newSearchValue = searchValue || undefined;
+      if (newSearchValue !== filters.search) {
+        updateFilter("search", newSearchValue);
       }
-    }
+    }, 500);
 
-    if (filters.dateTo) {
-      const dateTo = new Date(filters.dateTo);
-      if (dateTo < monthStart || dateTo > monthEnd) {
-        delete newFilters.dateTo;
-        needsUpdate = true;
-      }
-    }
-
-    if (needsUpdate) {
-      onFiltersChange(newFilters);
-    }
-  }, [filters.dateFrom, filters.dateTo, monthStart, monthEnd, onFiltersChange]);
+    return () => clearTimeout(timer);
+  }, [searchValue, filters.search]);
 
   const updateFilter = (key: string, value: any) => {
     const newFilters = { ...filters };
@@ -98,17 +79,6 @@ export default function TransactionFilters({
     onFiltersChange(newFilters);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const newSearchValue = searchValue || undefined;
-      if (newSearchValue !== filters.search) {
-        updateFilter("search", newSearchValue);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchValue, filters.search]);
-
   const clearFilters = () => {
     onFiltersChange({});
     setSearchValue("");
@@ -118,24 +88,12 @@ export default function TransactionFilters({
     (v) => v !== undefined && v !== ""
   );
 
-  return loading ? (
-    <div className="p-4 rounded-2xl">
-      <div className="h-10 bg-muted animate-pulse rounded w-1/3 mb-4"></div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-10 bg-muted animate-pulse rounded" />
-        ))}
-      </div>
-    </div>
-  ) : (
-    <div className="mb-8 p-4 ">
-      <div className="flex items-center gap-2 mb-3">
+  return (
+    <div className="rounded-2xl p-6">
+      <div className="flex items-center gap-2 mb-4">
         <Filter className="w-4 h-4" />
         <span className="font-medium">
           {t("dashboard.transaction_history.filters")}
-        </span>
-        <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-          {format(currentMonth, "MMMM yyyy")}
         </span>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -147,7 +105,7 @@ export default function TransactionFilters({
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-sm font-medium mb-2 block">
             {t("dashboard.transaction_history.search")}
           </label>
           <Input
@@ -158,8 +116,9 @@ export default function TransactionFilters({
             }}
           />
         </div>
+
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-sm font-medium mb-2 block">
             {t("dashboard.transaction_history.date_range")}
           </label>
           <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
@@ -197,14 +156,13 @@ export default function TransactionFilters({
                   }
                 }}
                 numberOfMonths={1}
-                defaultMonth={currentMonth}
               />
             </PopoverContent>
           </Popover>
         </div>
 
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-sm font-medium mb-2 block">
             {t("dashboard.transaction_history.category")}
           </label>
           <Select
@@ -225,7 +183,7 @@ export default function TransactionFilters({
               side="bottom"
               avoidCollisions={false}
               position="popper"
-              className="max-h-70"
+              className="max-h-60"
             >
               <SelectItem value="all">
                 {t("dashboard.transaction_history.all_categories")}
@@ -240,7 +198,7 @@ export default function TransactionFilters({
         </div>
 
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-sm font-medium mb-2 block">
             {t("dashboard.transaction_history.type")}
           </label>
           <Select
@@ -258,7 +216,7 @@ export default function TransactionFilters({
               side="bottom"
               avoidCollisions={false}
               position="popper"
-              className="max-h-70"
+              className="max-h-60"
             >
               <SelectItem value="all">
                 {t("dashboard.transaction_history.all_types")}

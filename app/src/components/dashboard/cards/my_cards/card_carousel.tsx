@@ -1,30 +1,95 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import CardItem from "./card_item";
 import CardAdd from "./card_add";
 import { Skeleton } from "@ui/skeleton";
 import useCards from "@/hooks/use_cards";
 import { useI18n } from "@/i18n/useI18n";
+import { useSelectedCard } from "@/providers/selected_card_provider";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import cardService from "@/services/card_service";
 
 export default function CardCarousel() {
-  const {
-    items,
-    loading,
-    selectedIndex,
-    selectIndex,
-    prev,
-    next,
-    containerRef,
-    itemRefs,
-    dragging,
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
-    handleEdit,
-    handleDelete,
-  } = useCards();
-    const { t } = useI18n();
+  const { cards, loading } = useCards();
+  const { setSelectedCard } = useSelectedCard();
+  const router = useRouter();
+  const { t } = useI18n();
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startScroll = useRef(0);
+
+  useEffect(() => {
+    if (cards.length > 0 && selectedIndex >= cards.length) {
+      setSelectedIndex(cards.length - 1);
+    }
+  }, [cards, selectedIndex]);
+
+  const selectIndex = (index: number) => {
+    setSelectedIndex(index);
+    const item = cards[index];
+    if (item) {
+      setSelectedCard(item.id as string | null, item.lastFour, item.brand);
+    }
+  };
+
+  const prev = () => {
+    if (selectedIndex > 0) {
+      selectIndex(selectedIndex - 1);
+    }
+  };
+
+  const next = () => {
+    if (selectedIndex < cards.length - 1) {
+      selectIndex(selectedIndex + 1);
+    }
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    isDragging.current = false;
+    startX.current = e.clientX;
+    startScroll.current = containerRef.current?.scrollLeft || 0;
+    setDragging(false);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!containerRef.current) return;
+    const deltaX = e.clientX - startX.current;
+    if (Math.abs(deltaX) > 5) {
+      isDragging.current = true;
+      setDragging(true);
+      containerRef.current.scrollLeft = startScroll.current - deltaX;
+    }
+  };
+
+  const onPointerUp = () => {
+    if (isDragging.current) {
+      setDragging(false);
+    }
+  };
+
+  const handleEdit = (id?: string | number | null) => {
+    if (!id) return;
+    router.push(`/dashboard/cards/edit/${id}`);
+  };
+
+  const handleDelete = async (id?: string | number | null) => {
+    if (!id) return;
+    try {
+      await cardService.deleteCard(String(id));
+      window.dispatchEvent(new Event('refetchCards'));
+      toast.success("Card deleted successfully");
+    } catch (err) {
+      toast.error("Failed to delete card");
+    }
+  };
 
 
   return (
@@ -45,9 +110,9 @@ export default function CardCarousel() {
       <button
         onClick={next}
         aria-label={t('dashboard.cards.next_card')}
-        disabled={selectedIndex >= items.length - 1}
+        disabled={selectedIndex >= cards.length - 1}
         className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
-          selectedIndex >= items.length - 1
+          selectedIndex >= cards.length - 1
             ? "opacity-40 pointer-events-none"
             : ""
         }`}
@@ -116,7 +181,7 @@ export default function CardCarousel() {
                 </div>
               </div>
             ))
-          : items.map((it, idx) => (
+          : cards.map((it, idx) => (
               <CardItem
                 key={idx}
                 lastFour={it.lastFour}

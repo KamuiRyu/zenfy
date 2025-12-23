@@ -44,7 +44,6 @@ func generateUUID() string {
 	if _, err := rand.Read(b); err != nil {
 		return ""
 	}
-	// set version (4) and variant bits per RFC 4122
 	b[6] = (b[6] & 0x0f) | 0x40
 	b[8] = (b[8] & 0x3f) | 0x80
 	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",

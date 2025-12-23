@@ -78,7 +78,6 @@ const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.uuid = user.id;
-        // ensure avatar/image is persisted in token
         token.image = user.image || user.avatar_url || token.image;
       }
       return token;
