@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS cards (
     nickname VARCHAR(100),
     last_four VARCHAR(4) NOT NULL,
     brand VARCHAR(50) NOT NULL,
-    card_type VARCHAR(20) NOT NULL CHECK (card_type IN ('credit', 'debit')),
+    card_type VARCHAR(20) NOT NULL CHECK (card_type IN ('credit', 'debit', 'credit/debit', 'other')),
     holder_name VARCHAR(255) NOT NULL,
     expiry_month INTEGER NOT NULL CHECK (expiry_month >= 1 AND expiry_month <= 12),
     expiry_year INTEGER NOT NULL,

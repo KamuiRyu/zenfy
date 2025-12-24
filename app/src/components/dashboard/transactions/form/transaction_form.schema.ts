@@ -6,7 +6,7 @@ export const transactionSchema = z.object({
   category_uuid: z.string().min(1, "validation.select_option"),
   card_uuid: z.string().min(1, "validation.select_option"),
   date: z.date(),
-  type: z.enum(["income", "expense", "investment"]),
+  type: z.enum(["income", "expense"]),
   kind: z.enum(["credit", "debit"], { message: "validation.select_option" }),
   isInstallment: z.boolean().optional(),
   installmentNumber: z.number().optional(),

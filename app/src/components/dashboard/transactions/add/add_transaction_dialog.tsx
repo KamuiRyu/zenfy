@@ -28,7 +28,7 @@ export default function AddTransactionDialog({ preSelectedCard }: { preSelectedC
         }
       }}
     >
-      <DialogContent className="!max-w-[50rem]">
+      <DialogContent className="!max-w-[50rem]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>
             {t("dashboard.transactions.add_transaction")}

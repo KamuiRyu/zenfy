@@ -27,7 +27,7 @@ const TransactionItem = React.memo(function TransactionItem({
   selectedCardBrand?: string | null;
 }) {
   const { t } = useI18n();
-  const isIncome = categoryType == "income";
+  const isIncome = categoryType == "income" || categoryType == "refund" || categoryType == "cashback";
   const amountColor = isIncome ? "text-green-600" : "text-red-600";
 
   const transactionIcon = React.useMemo(() => {

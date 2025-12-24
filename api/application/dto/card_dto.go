@@ -8,7 +8,7 @@ type AddCardRequest struct {
 	Nickname    string `json:"nickname" validate:"omitempty,min=2,max=50"`
 	ExpiryMonth int    `json:"expiry_month" validate:"required,min=1,max=12"`
 	ExpiryYear  int    `json:"expiry_year" validate:"required,min=2024"`
-	CardType    string `json:"card_type" validate:"required,oneof=credit debit"`
+	CardType    string `json:"card_type" validate:"required,oneof=credit debit credit/debit"`
 	BillingDay  int    `json:"billing_day" validate:"required,min=1,max=31"`
 	IsDefault   bool   `json:"is_default"`
 }
@@ -21,7 +21,7 @@ type UpdateCardRequest struct {
 	Nickname    string `json:"nickname" validate:"omitempty,min=2,max=50"`
 	ExpiryMonth int    `json:"expiry_month" validate:"required,min=1,max=12"`
 	ExpiryYear  int    `json:"expiry_year" validate:"required,min=2024"`
-	CardType    string `json:"card_type" validate:"required,oneof=credit debit"`
+	CardType    string `json:"card_type" validate:"required,oneof=credit debit credit/debit"`
 	BillingDay  int    `json:"billing_day" validate:"required,min=1,max=31"`
 	IsDefault   bool   `json:"is_default"`
 }

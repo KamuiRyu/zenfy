@@ -37,7 +37,7 @@ type Transaction = {
 
 const base = "/transactions";
 
-export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string, signal?: AbortSignal) {
+export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string, kind?: string, signal?: AbortSignal) {
   const params = new URLSearchParams();
   if (limit) params.append("limit", limit.toString());
   if (offset) params.append("offset", offset.toString());
@@ -47,6 +47,7 @@ export async function getTransactions(limit?: number, offset?: number, cardUuid?
   if (categoryId) params.append("category_id", categoryId.toString());
   if (type) params.append("type", type);
   if (search) params.append("search", search);
+  if (kind) params.append("kind", kind);
   return request(base, `?${params.toString()}`, {}, signal);
 }
 

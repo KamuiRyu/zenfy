@@ -59,6 +59,7 @@
       "select_card_type": "Select the type",
       "credit": "Credit",
       "debit": "Debit",
+      "credit_debit" : "Credit/Debit",
       "other": "Other",
       "select_expiry_date": "Select the date",
       "select_billing_day": "Select the day",
@@ -101,6 +102,9 @@
       "all_categories": "All categories",
       "type": "Type",
       "all_types": "All types",
+      "kind": "Kind",
+      "select_kind": "Select kind",
+      "all_kinds": "All kinds",
       "income": "Income",
       "expense": "Expense",
       "investment": "Investment",
@@ -108,7 +112,8 @@
       "no_transactions_description": "Try adjusting your filters or select another card.",
       "transaction": "Transaction",
       "transactions": "Transactions",
-      "general": "General"
+      "general": "General",
+      "add_transaction": "Add Transaction"
     },
     "balance_overview": {
       "title": "Balance Overview",
@@ -120,8 +125,7 @@
       "error_loading": "Error loading balance",
       "no_payments": "No payments yet",
       "no_cards": "Add a card to view the balance",
-      "select_card": "Select a card to view the balance",
-      "add_transaction": "Add Transaction"
+      "select_card": "Select a card to view the balance"
     },
     "statistics": {
       "title": "Statistics",
@@ -175,6 +179,8 @@
       "details": "Transaction Details",
       "kind": "Kind",
       "select_kind": "Select kind",
+      
+      "credit_debit" : "Credit/Debit",
       "credit": "Credit",
       "debit": "Debit",
       "basic_info": "Basic Information",
@@ -212,7 +218,13 @@
     "CARD_CREATED_SUCCESSFULLY": "Card created successfully",
     "CARD_CREATION_FAILED": "Failed to create card",
     "CARD_UPDATED_SUCCESSFULLY": "Card updated successfully",
-    "CARD_UPDATE_FAILED": "Failed to update card"
+    "CARD_UPDATE_FAILED": "Failed to update card",
+    "TRANSACTION_CREATED_SUCCESSFULLY": "Transaction created successfully",
+    "TRANSACTION_CREATION_FAILED": "Failed to create transaction",
+    "TRANSACTION_UPDATED_SUCCESSFULLY": "Transaction updated successfully",
+    "TRANSACTION_UPDATE_FAILED": "Failed to update transaction",
+    "TRANSACTION_DELETED_SUCCESSFULLY": "Transaction deleted successfully",
+    "TRANSACTION_DELETION_FAILED": "Failed to delete transaction"
   },
   "server": {
     "INVALID_CREDENTIALS": "Invalid credentials",

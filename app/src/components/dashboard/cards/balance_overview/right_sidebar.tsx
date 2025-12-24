@@ -4,12 +4,23 @@ import Statistics from "@/components/dashboard/cards/balance_overview/statistics
 import { useSelectedCard } from "@/providers/selected_card_provider";
 import useCards from "@/hooks/use_cards";
 import { useI18n } from "@/i18n/useI18n";
+import { useEffect } from "react";
 
 export default function RightSidebar() {
   const { t } = useI18n();
   const { selectedCardUuid } = useSelectedCard();
   const { cards, loading: cardsLoading } = useCards();
-  const { balanceOverview, loading, error } = useBalanceOverview(selectedCardUuid ?? undefined);
+  const { balanceOverview, loading, error, refetch } = useBalanceOverview(selectedCardUuid ?? undefined);
+
+  useEffect(() => {
+    const handleTransactionAdded = () => {
+      refetch();
+    };
+    window.addEventListener('balanceOverviewUpdated', handleTransactionAdded);
+    return () => {
+      window.removeEventListener('balanceOverviewUpdated', handleTransactionAdded);
+    };
+  }, [refetch]);
 
   if (cardsLoading) {
     return (

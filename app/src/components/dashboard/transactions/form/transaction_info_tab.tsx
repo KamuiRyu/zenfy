@@ -45,7 +45,7 @@ export default function TransactionInfoTab({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.type")}</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.type")} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="!h-12 w-full">
@@ -55,7 +55,6 @@ export default function TransactionInfoTab({
                     <SelectContent avoidCollisions={false} position="popper" className="max-h-70">
                       <SelectItem value="income">{t("dashboard.transaction_history.income")}</SelectItem>
                       <SelectItem value="expense">{t("dashboard.transaction_history.expense")}</SelectItem>
-                      <SelectItem value="investment">{t("dashboard.transaction_history.investment")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="min-h-[20px]"><FormMessage /></div>
@@ -68,7 +67,7 @@ export default function TransactionInfoTab({
               name="category_uuid"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transaction_history.category")}</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t("dashboard.transaction_history.category")} *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value} disabled={categoriesLoading}>
                     <FormControl>
                       <SelectTrigger className="!h-12 w-full">
@@ -99,7 +98,7 @@ export default function TransactionInfoTab({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.description")}</FormLabel>
+                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.description")} *</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={t("dashboard.transactions.description_placeholder")}

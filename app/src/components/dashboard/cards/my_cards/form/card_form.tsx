@@ -64,7 +64,7 @@ export const CardForm = React.memo(function CardForm({
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="lastFour">{t('dashboard.cards.last_four')}</Label>
+            <Label htmlFor="lastFour">{t("dashboard.cards.last_four")}</Label>
             <Controller
               name="lastFour"
               control={control}
@@ -78,7 +78,7 @@ export const CardForm = React.memo(function CardForm({
                       e.target.value.replace(/\D/g, "").slice(0, 4)
                     )
                   }
-                  placeholder={t('dashboard.cards.last_four_placeholder')}
+                  placeholder={t("dashboard.cards.last_four_placeholder")}
                   disabled={loading}
                   maxLength={4}
                   inputMode="numeric"
@@ -97,7 +97,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="brand">{t('dashboard.cards.brand')}</Label>
+            <Label htmlFor="brand">{t("dashboard.cards.brand")}</Label>
             <Controller
               name="brand"
               control={control}
@@ -110,7 +110,9 @@ export const CardForm = React.memo(function CardForm({
                   name="brand"
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('dashboard.cards.select_brand')} />
+                    <SelectValue
+                      placeholder={t("dashboard.cards.select_brand")}
+                    />
                   </SelectTrigger>
                   <SelectContent
                     side="bottom"
@@ -137,7 +139,9 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="holderName">{t('dashboard.cards.holder_name')}</Label>
+            <Label htmlFor="holderName">
+              {t("dashboard.cards.holder_name")}
+            </Label>
             <Controller
               name="holderName"
               control={control}
@@ -147,7 +151,7 @@ export const CardForm = React.memo(function CardForm({
                   id="holderName"
                   value={field.value || ""}
                   onChange={field.onChange}
-                  placeholder={t('dashboard.cards.card_holder_placeholder')}
+                  placeholder={t("dashboard.cards.card_holder_placeholder")}
                   disabled={loading}
                   className={
                     errors.holderName
@@ -164,7 +168,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="bank">{t('dashboard.cards.bank')}</Label>
+            <Label htmlFor="bank">{t("dashboard.cards.bank")}</Label>
             <Controller
               name="bank"
               control={control}
@@ -177,7 +181,9 @@ export const CardForm = React.memo(function CardForm({
                   name="bank"
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('dashboard.cards.select_bank')} />
+                    <SelectValue
+                      placeholder={t("dashboard.cards.select_bank")}
+                    />
                   </SelectTrigger>
                   <SelectContent
                     side="bottom"
@@ -217,7 +223,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label>{t('dashboard.cards.expiry_date')}</Label>
+            <Label>{t("dashboard.cards.expiry_date")}</Label>
             <Controller
               name="expiryDate"
               control={control}
@@ -232,7 +238,7 @@ export const CardForm = React.memo(function CardForm({
                     >
                       {field.value
                         ? format(field.value, "MM/yyyy")
-                        : t('dashboard.cards.select_expiry_date')}
+                        : t("dashboard.cards.select_expiry_date")}
                       <CalendarIcon className="size-3.5" />
                     </Button>
                   </PopoverTrigger>
@@ -266,7 +272,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="cardType">{t('dashboard.cards.card_type')}</Label>
+            <Label htmlFor="cardType">{t("dashboard.cards.card_type")}</Label>
             <Controller
               name="cardType"
               control={control}
@@ -279,12 +285,28 @@ export const CardForm = React.memo(function CardForm({
                   name="cardType"
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t('dashboard.cards.select_card_type')} />
+                    <SelectValue
+                      placeholder={t("dashboard.cards.select_card_type")}
+                    />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="credit">{t('dashboard.cards.credit')}</SelectItem>
-                    <SelectItem value="debit">{t('dashboard.cards.debit')}</SelectItem>
-                    <SelectItem value="outro">{t('dashboard.cards.other')}</SelectItem>
+                  <SelectContent
+                    side="bottom"
+                    avoidCollisions={false}
+                    position="popper"
+                    className="max-h-70"
+                  >
+                    <SelectItem value="credit/debit">
+                      {t("dashboard.cards.credit_debit")}
+                    </SelectItem>
+                    <SelectItem value="credit">
+                      {t("dashboard.cards.credit")}
+                    </SelectItem>
+                    <SelectItem value="debit">
+                      {t("dashboard.cards.debit")}
+                    </SelectItem>
+                    <SelectItem value="outro">
+                      {t("dashboard.cards.other")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -296,7 +318,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label>{t('dashboard.cards.billing_day')}</Label>
+            <Label>{t("dashboard.cards.billing_day")}</Label>
             <Controller
               name="billingDayDate"
               control={control}
@@ -309,7 +331,9 @@ export const CardForm = React.memo(function CardForm({
                       type="button"
                       disabled={loading}
                     >
-                      {field.value ? field.value.getDate() : t('dashboard.cards.select_billing_day')}
+                      {field.value
+                        ? field.value.getDate()
+                        : t("dashboard.cards.select_billing_day")}
                       <CalendarIcon className="size-3.5" />
                     </Button>
                   </PopoverTrigger>
@@ -346,7 +370,7 @@ export const CardForm = React.memo(function CardForm({
             )}
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="nickname">{t('dashboard.cards.nickname')}</Label>
+            <Label htmlFor="nickname">{t("dashboard.cards.nickname")}</Label>
             <Controller
               name="nickname"
               control={control}
@@ -356,7 +380,7 @@ export const CardForm = React.memo(function CardForm({
                   id="nickname"
                   value={field.value || ""}
                   onChange={field.onChange}
-                  placeholder={t('dashboard.cards.nickname_placeholder')}
+                  placeholder={t("dashboard.cards.nickname_placeholder")}
                   disabled={loading}
                   className={
                     errors.nickname
@@ -386,9 +410,11 @@ export const CardForm = React.memo(function CardForm({
                   disabled={loading}
                 />
                 <div className="grid gap-2">
-                  <Label htmlFor="isDefault">{t('dashboard.cards.is_default')}</Label>
+                  <Label htmlFor="isDefault">
+                    {t("dashboard.cards.is_default")}
+                  </Label>
                   <p className="text-muted-foreground text-sm">
-                    {t('dashboard.cards.is_default_description')}
+                    {t("dashboard.cards.is_default_description")}
                   </p>
                 </div>
               </div>
@@ -397,7 +423,7 @@ export const CardForm = React.memo(function CardForm({
         </div>
         <div className="flex justify-end mt-4 gap-2">
           <Button type="submit" disabled={loading}>
-            {loading ? t('dashboard.cards.saving') : submitLabel}
+            {loading ? t("dashboard.cards.saving") : submitLabel}
           </Button>
         </div>
       </form>

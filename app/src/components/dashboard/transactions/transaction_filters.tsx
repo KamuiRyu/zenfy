@@ -28,6 +28,7 @@ interface TransactionFiltersProps {
     dateTo?: string;
     categoryId?: number;
     type?: string;
+    kind?: string;
     search?: string;
   };
   onFiltersChange: (filters: {
@@ -35,6 +36,7 @@ interface TransactionFiltersProps {
     dateTo?: string;
     categoryId?: number;
     type?: string;
+    kind?: string;
     search?: string;
   }) => void;
 }
@@ -103,7 +105,7 @@ export default function TransactionFilters({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
             {t("dashboard.transaction_history.search")}
@@ -227,8 +229,39 @@ export default function TransactionFilters({
               <SelectItem value="expense">
                 {t("dashboard.transaction_history.expense")}
               </SelectItem>
-              <SelectItem value="investment">
-                {t("dashboard.transaction_history.investment")}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 block">
+            {t("dashboard.transaction_history.kind")}
+          </label>
+          <Select
+            value={filters.kind || "all"}
+            onValueChange={(value) =>
+              updateFilter("kind", value === "all" ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={t("dashboard.transaction_history.all_kinds")}
+              />
+            </SelectTrigger>
+            <SelectContent
+              side="bottom"
+              avoidCollisions={false}
+              position="popper"
+              className="max-h-60"
+            >
+              <SelectItem value="all">
+                {t("dashboard.transaction_history.all_kinds")}
+              </SelectItem>
+              <SelectItem value="credit">
+                {t("dashboard.transaction_history.credit")}
+              </SelectItem>
+              <SelectItem value="debit">
+                {t("dashboard.transaction_history.debit")}
               </SelectItem>
             </SelectContent>
           </Select>

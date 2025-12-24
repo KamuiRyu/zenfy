@@ -59,6 +59,7 @@
       "select_card_type": "Selecione o tipo",
       "credit": "Crédito",
       "debit": "Débito",
+      "credit_debit" : "Crédito/Débito",
       "other": "Outro",
       "select_expiry_date": "Selecione a data",
       "select_billing_day": "Selecione o dia",
@@ -101,6 +102,9 @@
       "all_categories": "Todas as categorias",
       "type": "Tipo",
       "all_types": "Todos os tipos",
+      "kind": "Condição",
+      "select_kind": "Selecionar condição",
+      "all_kinds": "Todas as condições",
       "income": "Receita",
       "expense": "Despesa",
       "investment": "Investimento",
@@ -108,7 +112,8 @@
       "no_transactions_description": "Tente ajustar seus filtros ou selecione outro cartão.",
       "transaction": "Transação",
       "transactions": "Transações",
-      "general": "Geral"
+      "general": "Geral",
+      "add_transaction": "Adicionar Transação"
     },
     "balance_overview": {
       "title": "Visão Geral do Saldo",
@@ -174,6 +179,7 @@
       "type_and_category": "Tipo e Categoria",
       "details": "Detalhes da Transação",
       "kind": "Condição",
+      "credit_debit" : "Crédito/Débito",
       "credit": "Crédito",
       "debit": "Débito",
       "select_kind": "Selecione o tipo",
@@ -212,7 +218,13 @@
     "CARD_CREATED_SUCCESSFULLY": "Cartão criado com sucesso",
     "CARD_CREATION_FAILED": "Falha ao criar o cartão",
     "CARD_UPDATED_SUCCESSFULLY": "Cartão atualizado com sucesso",
-    "CARD_UPDATE_FAILED": "Falha ao atualizar o cartão"
+    "CARD_UPDATE_FAILED": "Falha ao atualizar o cartão",
+    "TRANSACTION_CREATED_SUCCESSFULLY": "Transação criada com sucesso",
+    "TRANSACTION_CREATION_FAILED": "Falha ao criar a transação",
+    "TRANSACTION_UPDATED_SUCCESSFULLY": "Transação atualizada com sucesso",
+    "TRANSACTION_UPDATE_FAILED": "Falha ao atualizar a transação",
+    "TRANSACTION_DELETED_SUCCESSFULLY": "Transação excluída com sucesso",
+    "TRANSACTION_DELETION_FAILED": "Falha ao excluir a transação"
   },
   "server": {
     "INVALID_CREDENTIALS": "Credenciais inválidas",

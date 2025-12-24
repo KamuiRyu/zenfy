@@ -27,7 +27,7 @@ import useCategories from "@/hooks/use_categories";
 import useCards from "@/hooks/use_cards";
 import { TransactionFormData } from "@/components/dashboard/transactions/form/transaction_form.schema";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { CardBrand } from "../../cards/my_cards/card_brand";
 import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./transaction_info_tab";
@@ -42,6 +42,7 @@ interface TransactionFormProps {
 
 export default function TransactionForm({ transaction, onClose, preSelectedCard }: TransactionFormProps) {
   const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState("info");
 
   const transactionSchema = z.object({
     description: z.string().min(1, t("validation.required")),
@@ -49,7 +50,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     category_uuid: z.string().min(1, t("validation.select_option")),
     card_uuid: z.string().min(1, t("validation.select_option")),
     date: z.date(),
-    type: z.enum(["income", "expense", "investment"]),
+    type: z.enum(["income", "expense"]),
     kind: z.enum(["credit", "debit"], { message: t("validation.select_option") }),
     isInstallment: z.boolean().optional(),
     installmentNumber: z.number().optional(),
@@ -104,6 +105,17 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     return ["credit", "debit"];
   }, [selectedCard]);
 
+  useEffect(() => {
+    const errors = form.formState.errors;
+    if (errors.description || errors.amount || errors.category_uuid || errors.card_uuid || errors.date || errors.type) {
+      setActiveTab("info");
+    } else if (errors.kind) {
+      setActiveTab("details");
+    } else if (errors.recurrenceType || errors.recurrenceStartDate || errors.recurrenceEndDate) {
+      setActiveTab("recurring");
+    }
+  }, [form.formState.errors]);
+
   const onSubmit = async () => {
     const data = form.getValues();
     
@@ -112,6 +124,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         await updateTransaction(transaction.uuid, data);
       } else {
         await createTransaction(data);
+        window.dispatchEvent(new CustomEvent('transactionAdded'));
       }
       onClose();
     } catch (error) {
@@ -150,7 +163,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
                     <FormItem>
                       <FormLabel className="text-sm font-medium flex items-center gap-2">
                         <CreditCard className="w-4 h-4" />
-                        {t("dashboard.transactions.card")}
+                        {t("dashboard.transactions.card")} *
                         {isPreSelected && (
                           <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                             {t("dashboard.transactions.pre_selected")}
@@ -220,7 +233,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="info" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="info">{t("dashboard.transactions.basic_info")}</TabsTrigger>
               <TabsTrigger value="details">{t("dashboard.transactions.payment_details")}</TabsTrigger>

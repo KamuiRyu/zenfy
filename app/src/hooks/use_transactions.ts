@@ -48,6 +48,7 @@ type TransactionFilters = {
   dateTo?: string;
   categoryId?: number;
   type?: string;
+  kind?: string;
   cardUuid?: string;
   search?: string;
 };
@@ -76,7 +77,7 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
   }
 }
 
-export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean) {
+export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean, onRefetch?: () => void) {
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -99,10 +100,11 @@ export default function useTransactions(limit?: number, offset?: number, filters
       if (filters?.dateTo) params.date_to = filters.dateTo;
       if (filters?.categoryId) params.category_id = filters.categoryId;
       if (filters?.type) params.type = filters.type;
+      if (filters?.kind) params.kind = filters.kind;
       if (filters?.cardUuid) params.card_uuid = filters.cardUuid;
       if (filters?.search) params.search = filters.search;
 
-      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, abortControllerRef.current.signal);
+      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, abortControllerRef.current.signal);
 
       const payload =
         resp && typeof resp === "object" && "data" in resp

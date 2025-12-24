@@ -57,7 +57,7 @@ export default function TransactionDetailsTab({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.amount")}</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.amount")} *</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -80,7 +80,7 @@ export default function TransactionDetailsTab({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.date")}</FormLabel>
+                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.date")} *</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -123,7 +123,7 @@ export default function TransactionDetailsTab({
             name="kind"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.kind")}</FormLabel>
+                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.kind")} *</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value || ""} disabled={!selectedCardUuid}>
                   <FormControl>
                     <SelectTrigger className="!h-12 w-full">

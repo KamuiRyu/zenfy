@@ -33,9 +33,9 @@ export default function TransactionHistory() {
   const { t } = useI18n();
   const { selectedCardUuid, selectedCardLastFour, selectedCardBrand } = useSelectedCard();
   const [page, setPage] = useState(0);
-  const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; search?: string }>({});
+  const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }>({});
 
-  const handleFiltersChange = (newFilters: { dateFrom?: string; dateTo?: string; type?: string; search?: string }) => {
+  const handleFiltersChange = (newFilters: { dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }) => {
     setFilters(newFilters);
     setPage(0);
   };
@@ -43,7 +43,7 @@ export default function TransactionHistory() {
   const limit = 10;
   const offset = page * limit;
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
-  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted);
+  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted, () => window.dispatchEvent(new CustomEvent('transactionAdded')));
   const { categories, loading: categoriesLoading } = useCategories();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState(false);
@@ -55,6 +55,17 @@ export default function TransactionHistory() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const handleTransactionAdded = () => {
+      refetch();
+      window.dispatchEvent(new CustomEvent('balanceOverviewUpdated'));
+    };
+    window.addEventListener('transactionAdded', handleTransactionAdded);
+    return () => {
+      window.removeEventListener('transactionAdded', handleTransactionAdded);
+    };
+  }, [refetch]);
 
   useEffect(() => {
     let countdownInterval: NodeJS.Timeout | null = null;
@@ -124,7 +135,7 @@ export default function TransactionHistory() {
     return (
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6 sm:p-8 ">
-          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} onAdd={() => router.push('/dashboard/transactions/add')} countdown={null} />
+          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} onAdd={() => router.push('/dashboard/transactions/add')} countdown={null} loading={loading}  />
           <div suppressHydrationWarning>
             <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
           </div>
@@ -147,7 +158,7 @@ export default function TransactionHistory() {
   return (
     <div className="overflow-hidden">
       <div className="rounded-2xl p-6 sm:p-8 ">
-        <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} onAdd={() => router.push('/dashboard/transactions/add')} countdown={countdown} />
+        <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} onAdd={() => router.push('/dashboard/transactions/add')} countdown={countdown} loading={loading} />
 
         <div suppressHydrationWarning>
           <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
@@ -163,7 +174,7 @@ export default function TransactionHistory() {
 
         {selectedCardUuid && !loading && !error && (
           <>
-            <div className="space-y-10 max-h-160 overflow-y-auto">
+            <div className="space-y-10 max-h-120 overflow-y-auto">
               {Object.entries(groupedTransactions).map(([date, dayTransactions]) => (
                 <TransactionGroup
                   key={date}
