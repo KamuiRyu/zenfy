@@ -1,6 +1,8 @@
 import MoneyDisplay from "@/components/ui/money_display";
-import { DollarSign, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Clock, Plus } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface BalanceOverviewData {
   balance: number;
@@ -20,6 +22,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
   const { t } = useI18n();
   const balance = balanceOverview?.balance || 0;
   const isPositive = balance >= 0;
+
 
   if (loading) {
     return (
@@ -113,9 +116,7 @@ export default function BalanceOverview({ balanceOverview, loading, error }: Bal
           <h3 className="text-md font-medium uppercase tracking-wide">
             {t('dashboard.balance_overview.title')}
           </h3>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center">
-            <DollarSign className="w-4 h-4 text-muted-foreground" />
-          </div>
+          
         </div>
 
         <div className={`text-4xl font-bold mb-6 ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>

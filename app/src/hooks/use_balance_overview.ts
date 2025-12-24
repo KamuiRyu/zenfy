@@ -65,6 +65,7 @@ export default function useBalanceOverview(cardUuid?: string) {
     } else {
       setBalanceOverview(null);
       setError(null);
+      setLoading(false);
     }
 
     return () => {

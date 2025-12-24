@@ -9,7 +9,6 @@ import useCards from "@/hooks/use_cards";
 import { useI18n } from "@/i18n/useI18n";
 import { useSelectedCard } from "@/providers/selected_card_provider";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import cardService from "@/services/card_service";
 
 export default function CardCarousel() {
@@ -32,11 +31,26 @@ export default function CardCarousel() {
     }
   }, [cards, selectedIndex]);
 
+  useEffect(() => {
+    if (cards.length > 0 && !loading) {
+      const defaultCard = cards.find((card) => card.isDefault);
+      if (defaultCard) {
+        const defaultIndex = cards.findIndex(
+          (card) => card.id === defaultCard.id
+        );
+        if (defaultIndex !== -1) {
+          selectIndex(defaultIndex);
+        }
+      }
+    }
+  }, [cards, loading]);
+
   const selectIndex = (index: number) => {
+    
     setSelectedIndex(index);
     const item = cards[index];
     if (item) {
-      setSelectedCard(item.id as string | null, item.lastFour, item.brand);
+      setSelectedCard(item.id ? String(item.id) : null, item.lastFour, item.brand);
     }
   };
 
@@ -84,20 +98,16 @@ export default function CardCarousel() {
     if (!id) return;
     try {
       await cardService.deleteCard(String(id));
-      window.dispatchEvent(new Event('refetchCards'));
-      toast.success("Card deleted successfully");
-    } catch (err) {
-      toast.error("Failed to delete card");
-    }
+      window.dispatchEvent(new Event("refetchCards"));
+    } catch (err) {}
   };
-
 
   return (
     <div className="relative">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 z-30">
         <button
           onClick={prev}
-          aria-label={t('dashboard.cards.previous_card')}
+          aria-label={t("dashboard.cards.previous_card")}
           disabled={selectedIndex <= 0}
           className={`flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
             selectedIndex <= 0 ? "opacity-40 pointer-events-none" : ""
@@ -109,7 +119,7 @@ export default function CardCarousel() {
 
       <button
         onClick={next}
-        aria-label={t('dashboard.cards.next_card')}
+        aria-label={t("dashboard.cards.next_card")}
         disabled={selectedIndex >= cards.length - 1}
         className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
           selectedIndex >= cards.length - 1
@@ -136,7 +146,7 @@ export default function CardCarousel() {
           scrollbarWidth: "none",
         }}
       >
-        <CardAdd  />
+        <CardAdd />
 
         {loading
           ? [0, 1, 2].map((i) => (

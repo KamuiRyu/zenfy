@@ -13,8 +13,9 @@ import { useRouter } from "next/navigation";
 import CardPreview from "../form/card_preview";
 import { CardForm } from "../form/card_form";
 import { useForm } from "react-hook-form";
-import { cardFormSchema, CardFormSchema } from "../form/card_form.schema";
+import { CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
 
 export default function EditCardDialog({
@@ -23,6 +24,20 @@ export default function EditCardDialog({
   cardId: string | number;
 }) {
   const { t } = useI18n();
+
+  const cardFormSchema = z.object({
+    lastFour: z.string().length(4, t("validation.exact_length", { count: 4 })),
+    brand: z.string().min(1, t("validation.select_option")),
+    holderName: z.string().min(1, t("validation.required")),
+    bank: z.string().min(1, t("validation.select_option")),
+    expiryDate: z.date({ message: t("validation.select_date") }),
+    cardType: z.string().min(1, t("validation.select_option")),
+    billingDay: z.string().min(1, t("validation.select_option")),
+    billingDayDate: z.date().optional(),
+    nickname: z.string().optional(),
+    isDefault: z.boolean().optional(),
+  });
+
   const [loading, setLoading] = useState(false);
   const [card, setCard] = useState<any>(null);
   const [fetching, setFetching] = useState(true);
@@ -35,13 +50,11 @@ export default function EditCardDialog({
       try {
         const fetchedCard = await cardService.getCard(cardId);
         if (!fetchedCard) {
-          toast.error(t("dashboard.cards.card_not_found"));
           router.back();
           return;
         }
         setCard(fetchedCard);
       } catch (error) {
-        toast.error(t("dashboard.cards.error_loading_card"));
         router.back();
       } finally {
         setFetching(false);
@@ -98,7 +111,6 @@ export default function EditCardDialog({
 
   async function handleSubmit(data: CardFormSchema) {
     if (!card) {
-      toast.error(t("dashboard.cards.card_not_found"));
       return;
     }
 
@@ -123,7 +135,6 @@ export default function EditCardDialog({
       window.dispatchEvent(new Event('refetchCards'));
       router.back();
     } catch (err: any) {
-      toast.error(t("dashboard.cards.error_updating_card"));
     } finally {
       setLoading(false);
     }

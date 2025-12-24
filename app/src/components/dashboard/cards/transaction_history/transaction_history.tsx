@@ -49,6 +49,9 @@ export default function TransactionHistory() {
   const [isCounting, setIsCounting] = useState(false);
   const router = useRouter();
 
+  const mappedCategories = useMemo(() => categories.map(cat => ({ id: parseInt((cat as any).id || '0'), name: cat.name })), [categories]);
+
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -121,9 +124,9 @@ export default function TransactionHistory() {
     return (
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6 sm:p-8 ">
-          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} onAdd={() => router.push('/dashboard/card/transactions/add')} countdown={null} />
+          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} onAdd={() => router.push('/dashboard/transactions/add')} countdown={null} />
           <div suppressHydrationWarning>
-            <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={categories} loading={categoriesLoading} />
+            <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
           </div>
           <div className="space-y-10 max-h-160 overflow-y-auto">
             <TransactionGroup
@@ -147,17 +150,14 @@ export default function TransactionHistory() {
         <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} onAdd={() => router.push('/dashboard/transactions/add')} countdown={countdown} />
 
         <div suppressHydrationWarning>
-          <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={categories} loading={categoriesLoading} />
+          <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
         </div>
 
         {error && <div className="text-center py-12 max-h-130 text-destructive">{t('dashboard.transaction_history.error')}: {error}</div>}
 
         {!selectedCardUuid && !loading && !error && (
           <div className="max-h-160 overflow-y-auto">
-            <TransactionHistoryEmpty
-              title={t('dashboard.transaction_history.select_card_title')}
-              message={t('dashboard.transaction_history.select_card_message')}
-            />
+            <NoTransactions/>
           </div>
         )}
 

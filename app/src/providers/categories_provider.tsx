@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useReducer, ReactNode } fr
 import categoryService from "@/services/category_service";
 
 type Category = {
-  id: number;
+  uuid: string;
   name: string;
   type: string;
   description?: string;

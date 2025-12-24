@@ -123,7 +123,6 @@ func (uc *ListTransactionsUseCase) toResponse(transaction *model.Transaction) *d
 		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
 		IsRecurring:           transaction.IsRecurring,
 		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		RecurrenceInterval:    transaction.RecurrenceInterval,
 		IsInstallment:         transaction.IsInstallment,
 		InstallmentNumber:     transaction.InstallmentNumber,
 		TotalInstallments:     transaction.TotalInstallments,

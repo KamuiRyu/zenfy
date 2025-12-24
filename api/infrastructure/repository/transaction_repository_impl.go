@@ -25,6 +25,7 @@ func (r *transactionRepositoryImpl) Create(tx *model.Transaction) error {
 		Model(tx).
 		Returning("*").
 		Exec(ctx)
+	fmt.Print(err)
 	return err
 }
 
@@ -153,7 +154,7 @@ func (r *transactionRepositoryImpl) Update(tx *model.Transaction) error {
 	result, err := r.db.NewUpdate().
 		Model(tx).
 		Column("amount", "currency", "category", "kind", "merchant", "description", "metadata", "occurred_at", "updated_at",
-			"is_recurring", "recurrence_type", "recurrence_interval", "recurrence_end_date",
+			"is_recurring", "recurrence_type", "recurrence_end_date",
 			"is_installment", "installment_number", "total_installments", "original_transaction_id").
 		Where("id = ?", tx.ID).
 		Exec(ctx)

@@ -14,10 +14,10 @@ type CreateTransactionRequest struct {
 	OccurredAt   *time.Time             `json:"occurred_at" validate:"omitempty"`
 
 	// Recurring fields
-	IsRecurring        bool       `json:"is_recurring"`
-	RecurrenceType     *string    `json:"recurrence_type" validate:"omitempty,oneof=daily weekly monthly yearly"`
-	RecurrenceInterval int        `json:"recurrence_interval" validate:"omitempty,min=1"`
-	RecurrenceEndDate  *time.Time `json:"recurrence_end_date" validate:"omitempty"`
+	IsRecurring         bool       `json:"is_recurring"`
+	RecurrenceType      *string    `json:"recurrence_type" validate:"omitempty,oneof=daily weekly monthly yearly"`
+	RecurrenceStartDate *time.Time `json:"recurrence_start_date" validate:"omitempty"`
+	RecurrenceEndDate   *time.Time `json:"recurrence_end_date" validate:"omitempty"`
 
 	// Installment fields
 	IsInstallment     bool `json:"is_installment"`
@@ -35,10 +35,10 @@ type UpdateTransactionRequest struct {
 	OccurredAt   *time.Time             `json:"occurred_at" validate:"omitempty"`
 
 	// Recurring fields
-	IsRecurring        *bool      `json:"is_recurring"`
-	RecurrenceType     *string    `json:"recurrence_type" validate:"omitempty,oneof=daily weekly monthly yearly"`
-	RecurrenceInterval *int       `json:"recurrence_interval" validate:"omitempty,min=1"`
-	RecurrenceEndDate  *time.Time `json:"recurrence_end_date" validate:"omitempty"`
+	IsRecurring         *bool      `json:"is_recurring"`
+	RecurrenceType      *string    `json:"recurrence_type" validate:"omitempty,oneof=daily weekly monthly yearly"`
+	RecurrenceStartDate *time.Time `json:"recurrence_start_date" validate:"omitempty"`
+	RecurrenceEndDate   *time.Time `json:"recurrence_end_date" validate:"omitempty"`
 }
 
 type TransactionResponse struct {
@@ -59,10 +59,10 @@ type TransactionResponse struct {
 	UpdatedAt    string                 `json:"updated_at"`
 
 	// Recurring fields
-	IsRecurring        bool    `json:"is_recurring"`
-	RecurrenceType     *string `json:"recurrence_type"`
-	RecurrenceInterval int     `json:"recurrence_interval"`
-	RecurrenceEndDate  *string `json:"recurrence_end_date"`
+	IsRecurring         bool    `json:"is_recurring"`
+	RecurrenceType      *string `json:"recurrence_type"`
+	RecurrenceStartDate *string `json:"recurrence_start_date"`
+	RecurrenceEndDate   *string `json:"recurrence_end_date"`
 
 	// Installment fields
 	IsInstallment         bool `json:"is_installment"`

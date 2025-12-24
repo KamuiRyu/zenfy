@@ -47,10 +47,10 @@ type Transaction struct {
 	Card     *Card     `json:"card,omitempty" bun:"rel:belongs-to,join:card_id=id"`
 
 	// Recurring fields
-	IsRecurring        bool            `json:"is_recurring" bun:"is_recurring,notnull,default:false"`
-	RecurrenceType     *RecurrenceType `json:"recurrence_type" bun:"recurrence_type"`
-	RecurrenceInterval int             `json:"recurrence_interval" bun:"recurrence_interval,default:1"`
-	RecurrenceEndDate  *time.Time      `json:"recurrence_end_date" bun:"recurrence_end_date"`
+	IsRecurring         bool            `json:"is_recurring" bun:"is_recurring,notnull,default:false"`
+	RecurrenceType      *RecurrenceType `json:"recurrence_type" bun:"recurrence_type"`
+	RecurrenceStartDate *time.Time      `json:"recurrence_start_date" bun:"recurrence_start_date"`
+	RecurrenceEndDate   *time.Time      `json:"recurrence_end_date" bun:"recurrence_end_date"`
 
 	// Installment fields
 	IsInstallment         bool `json:"is_installment" bun:"is_installment,notnull,default:false"`
@@ -71,7 +71,7 @@ func NewTransaction(
 	occurredAt time.Time,
 	isRecurring bool,
 	recurrenceType *RecurrenceType,
-	recurrenceInterval int,
+	recurrenceStartDate *time.Time,
 	recurrenceEndDate *time.Time,
 	isInstallment bool,
 	installmentNumber, totalInstallments *int,
@@ -91,7 +91,7 @@ func NewTransaction(
 		OccurredAt:            occurredAt,
 		IsRecurring:           isRecurring,
 		RecurrenceType:        recurrenceType,
-		RecurrenceInterval:    recurrenceInterval,
+		RecurrenceStartDate:   recurrenceStartDate,
 		RecurrenceEndDate:     recurrenceEndDate,
 		IsInstallment:         isInstallment,
 		InstallmentNumber:     installmentNumber,

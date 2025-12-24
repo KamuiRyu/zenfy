@@ -27,7 +27,7 @@ export default function Statistics({
       color: "rgb(220 38 38)",
     },
     income: {
-      label: t("dashboard.statistics.income"),
+      label: t("dashboard. statistics.income"),
       color: "rgb(22 163 74)",
     },
   } satisfies ChartConfig;
@@ -115,6 +115,9 @@ export default function Statistics({
       expense: stat.total_expense / 100,
     })) || [];
 
+  // Only render chart if we have valid data and the component is not loading
+  const shouldRenderChart = !loading && chartData.length > 0 && balanceOverview;
+
   return (
     <div className="rounded-2xl overflow-hidden">
       <div className="p-6 sm:p-8">
@@ -139,9 +142,9 @@ export default function Statistics({
           </div>
         </div>
 
-        <div className="h-48">
-          {chartData.length > 0 ? (
-            <ChartContainer config={chartConfig} className="h-full w-full">
+        <div className="h-48 w-full">
+          {shouldRenderChart ? (
+            <ChartContainer config={chartConfig} className="h-full w-full" >
               <AreaChart
                 accessibilityLayer
                 data={chartData}
@@ -232,7 +235,7 @@ export default function Statistics({
           )}
         </div>
 
-        {chartData.length > 0 && (
+        {shouldRenderChart && (
           <div className="mt-4">
             <div className="flex w-full items-start gap-2 text-sm">
               <div className="grid gap-2">

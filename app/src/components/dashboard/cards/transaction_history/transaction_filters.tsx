@@ -177,7 +177,7 @@ export default function TransactionFilters({
                   : t("dashboard.transaction_history.select_date_range")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" side="top">
               <Calendar
                 mode="range"
                 selected={{
@@ -196,6 +196,7 @@ export default function TransactionFilters({
                     setOpenDateRange(false);
                   }
                 }}
+                buttonVariant="ghost"
                 numberOfMonths={1}
                 defaultMonth={currentMonth}
               />

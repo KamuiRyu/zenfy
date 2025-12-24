@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS transactions (
 
     -- Recurring fields
     is_recurring BOOLEAN NOT NULL DEFAULT false,
-    recurrence_type VARCHAR(20), -- daily, weekly, monthly, yearly
-    recurrence_interval INTEGER DEFAULT 1, -- every N days/weeks/months/years
+    recurrence_type VARCHAR(20),
+    recurrence_interval INTEGER DEFAULT 1,
     recurrence_end_date TIMESTAMPTZ,
 
     -- Installment fields

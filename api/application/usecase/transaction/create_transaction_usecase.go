@@ -78,8 +78,13 @@ func (uc *CreateTransactionUseCase) Execute(userID int, input dto.CreateTransact
 		if input.RecurrenceType == nil || *input.RecurrenceType == "" {
 			return nil, fmt.Errorf("RECURRENCE_TYPE_REQUIRED_FOR_RECURRING")
 		}
-		if input.RecurrenceInterval <= 0 {
-			input.RecurrenceInterval = 1
+
+		if input.RecurrenceStartDate == nil {
+			return nil, fmt.Errorf("RECURRENCE_START_DATE_REQUIRED_FOR_RECURRING")
+		}
+
+		if input.RecurrenceEndDate != nil && input.RecurrenceEndDate.Before(*input.RecurrenceStartDate) {
+			return nil, fmt.Errorf("RECURRENCE_END_DATE_CANNOT_BE_BEFORE_START_DATE")
 		}
 	}
 
@@ -114,7 +119,7 @@ func (uc *CreateTransactionUseCase) Execute(userID int, input dto.CreateTransact
 		occurredAt,
 		input.IsRecurring,
 		(*model.RecurrenceType)(input.RecurrenceType),
-		input.RecurrenceInterval,
+		input.RecurrenceStartDate,
 		input.RecurrenceEndDate,
 		input.IsInstallment,
 		nil,
@@ -146,7 +151,7 @@ func (uc *CreateTransactionUseCase) Execute(userID int, input dto.CreateTransact
 				installmentOccurredAt,
 				false,
 				nil,
-				0,
+				nil,
 				nil,
 				true,
 				&i,
@@ -180,7 +185,6 @@ func (uc *CreateTransactionUseCase) toResponse(transaction *model.Transaction) *
 		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
 		IsRecurring:           transaction.IsRecurring,
 		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		RecurrenceInterval:    transaction.RecurrenceInterval,
 		IsInstallment:         transaction.IsInstallment,
 		InstallmentNumber:     transaction.InstallmentNumber,
 		TotalInstallments:     transaction.TotalInstallments,
@@ -215,6 +219,11 @@ func (uc *CreateTransactionUseCase) toResponse(transaction *model.Transaction) *
 			CreatedAt:   transaction.Category.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   transaction.Category.UpdatedAt.Format(time.RFC3339),
 		}
+	}
+
+	if transaction.RecurrenceStartDate != nil {
+		startDateStr := transaction.RecurrenceStartDate.Format(time.RFC3339)
+		response.RecurrenceStartDate = &startDateStr
 	}
 
 	if transaction.RecurrenceEndDate != nil {

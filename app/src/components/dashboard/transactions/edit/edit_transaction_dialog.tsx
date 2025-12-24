@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter, useParams } from "next/navigation";
-import TransactionForm from "../transaction_form";
+import TransactionForm from "../form/transaction_form";
 import { useI18n } from "@/i18n/useI18n";
 import transactionService from "@/services/transaction_service";
 

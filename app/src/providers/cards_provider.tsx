@@ -12,6 +12,7 @@ type Card = {
   brand?: string | undefined;
   bank?: string;
   isDefault?: boolean;
+  cardType?: string;
 };
 
 type CardsState = {
@@ -83,6 +84,8 @@ export function CardsProvider({ children }: { children: ReactNode }) {
         brand: c.brand ?? "",
         bank: c.bank ?? "",
         isDefault: c.is_default ?? c.isDefault ?? false,
+        cardType: c.card_type ?? "",
+        
       }));
       dispatch({ type: 'SET_CARDS', payload: mappedCards });
     } catch (err: any) {

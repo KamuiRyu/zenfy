@@ -7,17 +7,31 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import cardService from "@/services/card_service";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import CardPreview from "../form/card_preview";
 import { CardForm } from "../form/card_form";
 import { useForm } from "react-hook-form";
-import { cardFormSchema, CardFormSchema } from "../form/card_form.schema";
+import { CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
 
 export default function AddCardDialog() {
   const { t } = useI18n();
+
+  const cardFormSchema = z.object({
+    lastFour: z.string().length(4, t("validation.exact_length", { count: 4 })),
+    brand: z.string().min(1, t("validation.select_option")),
+    holderName: z.string().min(1, t("validation.required")),
+    bank: z.string().min(1, t("validation.select_option")),
+    expiryDate: z.date({ message: t("validation.select_date") }),
+    cardType: z.string().min(1, t("validation.select_option")),
+    billingDay: z.string().min(1, t("validation.select_option")),
+    billingDayDate: z.date().optional(),
+    nickname: z.string().optional(),
+    isDefault: z.boolean().optional(),
+  });
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const form = useForm<CardFormSchema>({
@@ -59,7 +73,6 @@ export default function AddCardDialog() {
       window.dispatchEvent(new Event('refetchCards'));
       router.back();
     } catch (err: any) {
-      toast.error(t("dashboard.cards.error_adding_card"));
     } finally {
       setLoading(false);
     }

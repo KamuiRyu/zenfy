@@ -7,10 +7,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import TransactionForm from "../transaction_form";
+import TransactionForm from "../form/transaction_form";
 import { useI18n } from "@/i18n/useI18n";
 
-export default function AddTransactionDialog() {
+export default function AddTransactionDialog({ preSelectedCard }: { preSelectedCard?: string }) {
   const { t } = useI18n();
   const router = useRouter();
 
@@ -20,6 +20,7 @@ export default function AddTransactionDialog() {
 
   return (
     <Dialog
+    
       defaultOpen={true}
       onOpenChange={(open) => {
         if (!open) {
@@ -27,13 +28,13 @@ export default function AddTransactionDialog() {
         }
       }}
     >
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="!max-w-[50rem]">
         <DialogHeader>
           <DialogTitle>
             {t("dashboard.transactions.add_transaction")}
           </DialogTitle>
         </DialogHeader>
-        <TransactionForm onClose={handleClose} />
+        <TransactionForm onClose={handleClose} preSelectedCard={preSelectedCard} />
       </DialogContent>
     </Dialog>
   );

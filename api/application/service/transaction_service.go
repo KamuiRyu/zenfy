@@ -81,9 +81,6 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 		if req.RecurrenceType == nil || *req.RecurrenceType == "" {
 			return nil, fmt.Errorf("recurrence_type is required for recurring transactions")
 		}
-		if req.RecurrenceInterval <= 0 {
-			req.RecurrenceInterval = 1
-		}
 	}
 
 	// Validate installment fields
@@ -121,7 +118,7 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 		occurredAt,
 		req.IsRecurring,
 		(*model.RecurrenceType)(req.RecurrenceType),
-		req.RecurrenceInterval,
+		req.RecurrenceStartDate,
 		req.RecurrenceEndDate,
 		req.IsInstallment,
 		nil, // installment_number
@@ -153,8 +150,8 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 				installmentOccurredAt,
 				false, // not recurring
 				nil,
-				0,
-				nil,
+				nil,  // recurrence_start_date
+				nil,  // recurrence_end_date
 				true, // is installment
 				&i,   // installment_number
 				req.TotalInstallments,
@@ -253,8 +250,8 @@ func (s *transactionService) UpdateTransaction(userID int, transactionID int, re
 	if req.RecurrenceType != nil {
 		transaction.RecurrenceType = (*model.RecurrenceType)(req.RecurrenceType)
 	}
-	if req.RecurrenceInterval != nil {
-		transaction.RecurrenceInterval = *req.RecurrenceInterval
+	if req.RecurrenceStartDate != nil {
+		transaction.RecurrenceStartDate = req.RecurrenceStartDate
 	}
 	if req.RecurrenceEndDate != nil {
 		transaction.RecurrenceEndDate = req.RecurrenceEndDate
@@ -417,7 +414,6 @@ func (s *transactionService) toResponse(transaction *model.Transaction) *dto.Tra
 		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
 		IsRecurring:           transaction.IsRecurring,
 		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		RecurrenceInterval:    transaction.RecurrenceInterval,
 		IsInstallment:         transaction.IsInstallment,
 		InstallmentNumber:     transaction.InstallmentNumber,
 		TotalInstallments:     transaction.TotalInstallments,
@@ -442,6 +438,11 @@ func (s *transactionService) toResponse(transaction *model.Transaction) *dto.Tra
 			CreatedAt:   transaction.Category.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   transaction.Category.UpdatedAt.Format(time.RFC3339),
 		}
+	}
+
+	if transaction.RecurrenceStartDate != nil {
+		startDateStr := transaction.RecurrenceStartDate.Format(time.RFC3339)
+		response.RecurrenceStartDate = &startDateStr
 	}
 
 	if transaction.RecurrenceEndDate != nil {

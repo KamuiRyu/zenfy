@@ -30,7 +30,6 @@ type Transaction = {
   updated_at: string;
   is_recurring: boolean;
   recurrence_type?: string;
-  recurrence_interval?: number;
   recurrence_end_date?: string;
   is_installment: boolean;
   installment_number?: number;

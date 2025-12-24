@@ -91,8 +91,9 @@ func (uc *UpdateTransactionUseCase) Execute(userID int, transactionID int, input
 	if input.RecurrenceType != nil {
 		transaction.RecurrenceType = (*model.RecurrenceType)(input.RecurrenceType)
 	}
-	if input.RecurrenceInterval != nil {
-		transaction.RecurrenceInterval = *input.RecurrenceInterval
+
+	if input.RecurrenceStartDate != nil {
+		transaction.RecurrenceStartDate = input.RecurrenceStartDate
 	}
 	if input.RecurrenceEndDate != nil {
 		transaction.RecurrenceEndDate = input.RecurrenceEndDate
@@ -125,7 +126,6 @@ func (uc *UpdateTransactionUseCase) toResponse(transaction *model.Transaction) *
 		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
 		IsRecurring:           transaction.IsRecurring,
 		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		RecurrenceInterval:    transaction.RecurrenceInterval,
 		IsInstallment:         transaction.IsInstallment,
 		InstallmentNumber:     transaction.InstallmentNumber,
 		TotalInstallments:     transaction.TotalInstallments,
@@ -150,6 +150,11 @@ func (uc *UpdateTransactionUseCase) toResponse(transaction *model.Transaction) *
 			CreatedAt:   transaction.Category.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   transaction.Category.UpdatedAt.Format(time.RFC3339),
 		}
+	}
+
+	if transaction.RecurrenceStartDate != nil {
+		startDateStr := transaction.RecurrenceStartDate.Format(time.RFC3339)
+		response.RecurrenceStartDate = &startDateStr
 	}
 
 	if transaction.RecurrenceEndDate != nil {

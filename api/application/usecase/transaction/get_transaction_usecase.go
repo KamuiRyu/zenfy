@@ -57,7 +57,6 @@ func (uc *GetTransactionUseCase) toResponse(transaction *model.Transaction) *dto
 		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
 		IsRecurring:           transaction.IsRecurring,
 		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		RecurrenceInterval:    transaction.RecurrenceInterval,
 		IsInstallment:         transaction.IsInstallment,
 		InstallmentNumber:     transaction.InstallmentNumber,
 		TotalInstallments:     transaction.TotalInstallments,
@@ -87,6 +86,11 @@ func (uc *GetTransactionUseCase) toResponse(transaction *model.Transaction) *dto
 			CreatedAt:   transaction.Category.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:   transaction.Category.UpdatedAt.Format(time.RFC3339),
 		}
+	}
+
+	if transaction.RecurrenceStartDate != nil {
+		startDateStr := transaction.RecurrenceStartDate.Format(time.RFC3339)
+		response.RecurrenceStartDate = &startDateStr
 	}
 
 	if transaction.RecurrenceEndDate != nil {
