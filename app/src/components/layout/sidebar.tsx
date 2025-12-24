@@ -4,8 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BarChart3, Wallet, Layers, Calendar, Settings, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 export default function Sidebar() {
+  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname() || "/";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <aside className="fixed top-0 h-screen w-20 flex flex-col items-center py-6 bg-sidebar transition-colors duration-300 flex-shrink-0 z-50" >
       <div className="flex flex-col items-center w-full">
@@ -15,7 +23,6 @@ export default function Sidebar() {
 
         <nav className="mt-6 flex flex-col items-center gap-4 w-full">
           {(() => {
-            const pathname = usePathname() || "/";
             const items = [
               { href: "/dashboard", Icon: Home, label: "Home" },
               { href: "/dashboard/transactions", Icon: Receipt, label: "Transactions" },
@@ -27,9 +34,9 @@ export default function Sidebar() {
             ];
 
             return items.map(({ href, Icon, label }) => {
-              const isActive = href === "/dashboard" 
+              const isActive = mounted && (href === "/dashboard" 
                 ? pathname === "/dashboard"
-                : pathname === href || pathname.startsWith(href + "/");
+                : pathname === href || pathname.startsWith(href + "/"));
               return (
                 <Link
                   key={href}

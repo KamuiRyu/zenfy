@@ -108,25 +108,24 @@ func (uc *ListTransactionsUseCase) ExecuteByUserAndCard(userID int, cardUUID str
 
 func (uc *ListTransactionsUseCase) toResponse(transaction *model.Transaction) *dto.TransactionResponse {
 	response := &dto.TransactionResponse{
-		Uuid:                  transaction.Uuid,
-		CardUuid:              transaction.Card.Uuid,
-		UserUuid:              "", // Will be set below
-		CategoryUuid:          transaction.Category.Uuid,
-		Amount:                transaction.Amount,
-		Currency:              transaction.Currency,
-		Kind:                  string(transaction.Kind),
-		Merchant:              transaction.Merchant,
-		Description:           transaction.Description,
-		Metadata:              transaction.Metadata,
-		OccurredAt:            transaction.OccurredAt.Format(time.RFC3339),
-		CreatedAt:             transaction.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
-		IsRecurring:           transaction.IsRecurring,
-		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		IsInstallment:         transaction.IsInstallment,
-		InstallmentNumber:     transaction.InstallmentNumber,
-		TotalInstallments:     transaction.TotalInstallments,
-		OriginalTransactionID: transaction.OriginalTransactionID,
+		Uuid:              transaction.Uuid,
+		CardUuid:          transaction.Card.Uuid,
+		UserUuid:          "", // Will be set below
+		CategoryUuid:      transaction.Category.Uuid,
+		Amount:            transaction.Amount,
+		Currency:          transaction.Currency,
+		Kind:              string(transaction.Kind),
+		Merchant:          transaction.Merchant,
+		Description:       transaction.Description,
+		Metadata:          transaction.Metadata,
+		OccurredAt:        transaction.OccurredAt.Format(time.RFC3339),
+		CreatedAt:         transaction.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:         transaction.UpdatedAt.Format(time.RFC3339),
+		IsRecurring:       transaction.IsRecurring,
+		RecurrenceType:    (*string)(transaction.RecurrenceType),
+		IsInstallment:     transaction.IsInstallment,
+		InstallmentNumber: transaction.InstallmentNumber,
+		TotalInstallments: transaction.TotalInstallments,
 	}
 
 	// Get user UUID

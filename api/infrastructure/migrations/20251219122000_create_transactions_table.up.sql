@@ -25,7 +25,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     is_installment BOOLEAN NOT NULL DEFAULT false,
     installment_number INTEGER,
     total_installments INTEGER,
-    original_transaction_id INTEGER REFERENCES transactions(id) ON DELETE SET NULL
 );
 
 -- Indexes

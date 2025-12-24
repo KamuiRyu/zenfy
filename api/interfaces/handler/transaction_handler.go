@@ -110,12 +110,7 @@ func (h *TransactionHandler) DeleteTransaction(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
 	transactionIDStr := c.Params("id")
-	transactionID, err := strconv.Atoi(transactionIDStr)
-	if err != nil {
-		return response.Error(c, fiber.StatusBadRequest, "INVALID_TRANSACTION_ID", "Invalid transaction ID", nil)
-	}
-
-	err = h.deleteTransactionUC.Execute(userID, transactionID)
+	err := h.deleteTransactionUC.ExecuteByUUID(userID, transactionIDStr)
 	if err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "TRANSACTION_DELETE_FAILED", err.Error(), nil)
 	}

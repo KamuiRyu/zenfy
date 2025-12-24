@@ -6,12 +6,18 @@ import AvatarMenu from "./avatar_menu";
 import { Skeleton } from "../ui/skeleton";
 import { ThemeToggleButton } from "./theme_toggle_button";
 import { LanguageSwitcher } from "./language_switcher";
+import { useState, useEffect } from "react";
 
 export default function DashboardHeader({ name }: { name?: string }) {
+  const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
-  const isLoading = status === "loading";
+  const isLoading = status === "loading" && !mounted;
   const displayName = name || session?.user?.name || null;
   const avatar = session?.user?.image || null;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="w-full">

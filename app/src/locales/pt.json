@@ -224,7 +224,7 @@
     "TRANSACTION_UPDATED_SUCCESSFULLY": "Transação atualizada com sucesso",
     "TRANSACTION_UPDATE_FAILED": "Falha ao atualizar a transação",
     "TRANSACTION_DELETED_SUCCESSFULLY": "Transação excluída com sucesso",
-    "TRANSACTION_DELETION_FAILED": "Falha ao excluir a transação"
+    "TRANSACTION_DELETED_FAILED": "Falha ao excluir a transação"
   },
   "server": {
     "INVALID_CREDENTIALS": "Credenciais inválidas",
@@ -239,6 +239,8 @@
     "exact_length": "Deve ter exatamente {{count}} caracteres",
     "select_option": "Selecione uma opção",
     "select_date": "Selecione uma data",
-    "min_value": "Deve ser pelo menos {{count}}"
+    "min_value": "Deve ser pelo menos {{count}}",
+    "max_value": "Deve ser no máximo {{count}}",
+    "number" : "Deve ser um número"
   }
 }

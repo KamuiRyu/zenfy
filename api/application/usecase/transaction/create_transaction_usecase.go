@@ -103,46 +103,23 @@ func (uc *CreateTransactionUseCase) Execute(userID int, input dto.CreateTransact
 		occurredAt = *input.OccurredAt
 	}
 
-	transactionUUID := uuid.New().String()
-
-	transaction := model.NewTransaction(
-		userID,
-		card.ID,
-		category.ID,
-		transactionUUID,
-		input.Amount,
-		input.Currency,
-		model.TransactionKind(input.Kind),
-		input.Merchant,
-		input.Description,
-		input.Metadata,
-		occurredAt,
-		input.IsRecurring,
-		(*model.RecurrenceType)(input.RecurrenceType),
-		input.RecurrenceStartDate,
-		input.RecurrenceEndDate,
-		input.IsInstallment,
-		nil,
-		input.TotalInstallments,
-		nil,
-	)
-
-	if err := uc.transactionRepo.Create(transaction); err != nil {
-		return nil, fmt.Errorf("FAILED_TO_CREATE_TRANSACTION")
-	}
-
-	// Handle installments
 	if input.IsInstallment && input.TotalInstallments != nil {
-		for i := 1; i < *input.TotalInstallments; i++ {
+		var firstInstallment *model.Transaction
+		for i := 0; i < *input.TotalInstallments; i++ {
 			installmentUUID := uuid.New().String()
 			installmentOccurredAt := occurredAt.AddDate(0, i, 0)
+
+			transactionAmount := input.Amount / int64(*input.TotalInstallments)
+			if i == *input.TotalInstallments-1 {
+				transactionAmount = input.Amount - (transactionAmount * int64(*input.TotalInstallments-1))
+			}
 
 			installment := model.NewTransaction(
 				userID,
 				card.ID,
 				category.ID,
 				installmentUUID,
-				input.Amount,
+				transactionAmount,
 				input.Currency,
 				model.TransactionKind(input.Kind),
 				input.Merchant,
@@ -156,39 +133,70 @@ func (uc *CreateTransactionUseCase) Execute(userID int, input dto.CreateTransact
 				true,
 				&i,
 				input.TotalInstallments,
-				&transaction.ID,
 			)
 
 			if err := uc.transactionRepo.Create(installment); err != nil {
 				return nil, fmt.Errorf("FAILED_TO_CREATE_INSTALLMENT_%d", i+1)
 			}
-		}
-	}
 
-	return uc.toResponse(transaction), nil
+			if i == 0 {
+				firstInstallment = installment
+			}
+		}
+
+		return uc.toResponse(firstInstallment), nil
+	} else {
+		transactionUUID := uuid.New().String()
+
+		transaction := model.NewTransaction(
+			userID,
+			card.ID,
+			category.ID,
+			transactionUUID,
+			input.Amount,
+			input.Currency,
+			model.TransactionKind(input.Kind),
+			input.Merchant,
+			input.Description,
+			input.Metadata,
+			occurredAt,
+			input.IsRecurring,
+			(*model.RecurrenceType)(input.RecurrenceType),
+			input.RecurrenceStartDate,
+			input.RecurrenceEndDate,
+			input.IsInstallment,
+			nil,
+			input.TotalInstallments,
+		)
+
+		if err := uc.transactionRepo.Create(transaction); err != nil {
+			return nil, fmt.Errorf("FAILED_TO_CREATE_TRANSACTION")
+		}
+
+		return uc.toResponse(transaction), nil
+	}
 }
 
 func (uc *CreateTransactionUseCase) toResponse(transaction *model.Transaction) *dto.TransactionResponse {
 	response := &dto.TransactionResponse{
-		Uuid:                  transaction.Uuid,
-		CardUuid:              "", // Will be set below
-		UserUuid:              "", // Will be set below
-		CategoryUuid:          "", // Will be set below
-		Amount:                transaction.Amount,
-		Currency:              transaction.Currency,
-		Kind:                  string(transaction.Kind),
-		Merchant:              transaction.Merchant,
-		Description:           transaction.Description,
-		Metadata:              transaction.Metadata,
-		OccurredAt:            transaction.OccurredAt.Format(time.RFC3339),
-		CreatedAt:             transaction.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
-		IsRecurring:           transaction.IsRecurring,
-		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		IsInstallment:         transaction.IsInstallment,
-		InstallmentNumber:     transaction.InstallmentNumber,
-		TotalInstallments:     transaction.TotalInstallments,
-		OriginalTransactionID: transaction.OriginalTransactionID,
+		Uuid:              transaction.Uuid,
+		CardUuid:          "", // Will be set below
+		UserUuid:          "", // Will be set below
+		CategoryUuid:      "", // Will be set below
+		Amount:            transaction.Amount,
+		Currency:          transaction.Currency,
+		Kind:              string(transaction.Kind),
+		Merchant:          transaction.Merchant,
+		Description:       transaction.Description,
+		Metadata:          transaction.Metadata,
+		OccurredAt:        transaction.OccurredAt.Format(time.RFC3339),
+		CreatedAt:         transaction.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:         transaction.UpdatedAt.Format(time.RFC3339),
+		IsRecurring:       transaction.IsRecurring,
+		RecurrenceType:    (*string)(transaction.RecurrenceType),
+		IsInstallment:     transaction.IsInstallment,
+		InstallmentNumber: transaction.InstallmentNumber,
+		TotalInstallments: transaction.TotalInstallments,
 	}
 
 	// Get user UUID

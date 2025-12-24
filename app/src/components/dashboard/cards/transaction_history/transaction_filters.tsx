@@ -80,6 +80,16 @@ export default function TransactionFilters({
     }
   }, [filters.dateFrom, filters.dateTo, monthStart, monthEnd, onFiltersChange]);
 
+  useEffect(() => {
+    if (!filters.dateFrom && !filters.dateTo) {
+      onFiltersChange({
+        ...filters,
+        dateFrom: monthStart.toISOString(),
+        dateTo: monthEnd.toISOString(),
+      });
+    }
+  }, []); // Run only on mount
+
   const updateFilter = (key: string, value: any) => {
     const newFilters = { ...filters };
     if (value !== undefined) {
@@ -176,7 +186,10 @@ export default function TransactionFilters({
                       new Date(filters.dateTo),
                       "MMM dd"
                     )}`
-                  : t("dashboard.transaction_history.select_date_range")}
+                  : `${format(monthStart, "MMM dd")} - ${format(
+                      monthEnd,
+                      "MMM dd"
+                    )}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" side="top">
@@ -185,8 +198,8 @@ export default function TransactionFilters({
                 selected={{
                   from: filters.dateFrom
                     ? new Date(filters.dateFrom)
-                    : undefined,
-                  to: filters.dateTo ? new Date(filters.dateTo) : undefined,
+                    : monthStart,
+                  to: filters.dateTo ? new Date(filters.dateTo) : monthEnd,
                 }}
                 onSelect={(range) => {
                   if (range?.from && range?.to) {

@@ -224,7 +224,7 @@
     "TRANSACTION_UPDATED_SUCCESSFULLY": "Transaction updated successfully",
     "TRANSACTION_UPDATE_FAILED": "Failed to update transaction",
     "TRANSACTION_DELETED_SUCCESSFULLY": "Transaction deleted successfully",
-    "TRANSACTION_DELETION_FAILED": "Failed to delete transaction"
+    "TRANSACTION_DELETED_FAILED": "Failed to delete transaction"
   },
   "server": {
     "INVALID_CREDENTIALS": "Invalid credentials",
@@ -239,6 +239,10 @@
     "exact_length": "Must be exactly {{count}} characters",
     "select_option": "Select an option",
     "select_date": "Select a date",
-    "min_value": "Must be at least {{count}}"
+    "min_value": "Must be at least {{count}}",
+    "max_value": "Must be at most {{count}}",
+    "number" : "Must be a number",
+    "max_installments": "Must be at most 99 installments"
+    
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Control, UseFormWatch } from "react-hook-form";
+import { Control, UseFormWatch, useFormContext } from "react-hook-form";
 import { useI18n } from "@/i18n/useI18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -29,8 +28,9 @@ import { Switch } from "@/components/ui/switch";
 import { CalendarIcon, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "./transaction_form.schema";
+import { useEffect } from "react";
 
 interface TransactionDetailsTabProps {
   control: Control<TransactionFormData>;
@@ -46,6 +46,13 @@ export default function TransactionDetailsTab({
   kindOptions,
 }: TransactionDetailsTabProps) {
   const { t } = useI18n();
+  const { setValue } = useFormContext();
+
+  useEffect(() => {
+    if (watch("kind") !== "credit") {
+      setValue("isInstallment", false);
+    }
+  }, [watch("kind"), setValue]);
 
   return (
     <Card className="border-0 shadow-lg bg-transparent">
@@ -59,16 +66,18 @@ export default function TransactionDetailsTab({
                 <FormItem>
                   <FormLabel className="text-sm font-medium">{t("dashboard.transactions.amount")} *</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         type="number"
                         step="0.01"
                         placeholder={t("dashboard.transactions.amount_placeholder")}
-                        className="pl-10 !h-12 w-full"
-                        {...field}
+                        className="!h-12 w-full"
+                        value={field.value?.toString() || ""}
+                        onChange={e => {
+                          const val = parseInt(e.target.value);
+                          field.onChange(isNaN(val) ? 0 : val);
+                        }}
+                        name={field.name}
                       />
-                    </div>
                   </FormControl>
                   <div className="min-h-[20px]"><FormMessage /></div>
                 </FormItem>
@@ -152,6 +161,7 @@ export default function TransactionDetailsTab({
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled={watch("kind") !== "credit"}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -170,12 +180,17 @@ export default function TransactionDetailsTab({
                 name="installmentNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.installment_number")}</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.installment_number")} *</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        {...field}
-                        onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="pl-10 !h-12 w-full"
+                        value={field.value?.toString() || ""}
+                        onChange={e => {
+                          const val = parseInt(e.target.value);
+                          field.onChange(isNaN(val) ? 1 : val);
+                        }}
+                        name={field.name}
                       />
                     </FormControl>
                     <div className="min-h-[20px]"><FormMessage /></div>
@@ -187,12 +202,17 @@ export default function TransactionDetailsTab({
                 name="totalInstallments"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.total_installments")}</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.total_installments")} *</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        {...field}
-                        onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="pl-10 !h-12 w-full"
+                        value={field.value?.toString() || ""}
+                        onChange={e => {
+                          const val = parseInt(e.target.value);
+                          field.onChange(isNaN(val) ? 1 : val);
+                        }}
+                        name={field.name}
                       />
                     </FormControl>
                     <div className="min-h-[20px]"><FormMessage /></div>

@@ -46,19 +46,52 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
 
   const transactionSchema = z.object({
     description: z.string().min(1, t("validation.required")),
-    amount: z.string().min(1, t("validation.required")),
+    amount: z.number({ message: t("validation.number") }).min(1, t("validation.required")),
     category_uuid: z.string().min(1, t("validation.select_option")),
     card_uuid: z.string().min(1, t("validation.select_option")),
     date: z.date(),
     type: z.enum(["income", "expense"]),
     kind: z.enum(["credit", "debit"], { message: t("validation.select_option") }),
     isInstallment: z.boolean().optional(),
-    installmentNumber: z.number().optional(),
-    totalInstallments: z.number().optional(),
+    installmentNumber: z.number({ message: t("validation.number") }).max(99, t("validation.max_installments")).optional(),
+    totalInstallments: z.number({ message: t("validation.number") }).max(99, t("validation.max_installments")).optional(),
     isRecurring: z.boolean().optional(),
     recurrenceType: z.enum(["daily", "weekly", "monthly", "yearly"]).optional(),
     recurrenceStartDate: z.date().optional(),
     recurrenceEndDate: z.date().optional(),
+  }).superRefine((data, ctx) => {
+    if (data.isInstallment) {
+      if (!data.installmentNumber) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("validation.required"),
+          path: ["installmentNumber"]
+        });
+      }
+      if (!data.totalInstallments) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("validation.required"),
+          path: ["totalInstallments"]
+        });
+      }
+    }
+
+    if(data.isRecurring) {
+      if (!data.recurrenceType) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("validation.select_option"),
+        });
+      }
+
+      if (!data.recurrenceStartDate){
+        ctx.addIssue({
+          code: "custom",
+          message: t("validation.required"),  
+        });
+      }
+    }
   });
 
   const { createTransaction, updateTransaction, loading } = useTransactionActions();
@@ -69,7 +102,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       description: transaction?.description || "",
-      amount: transaction ? (transaction.amount / 100).toString() : "",
+      amount: transaction ? (transaction.amount / 100) : 0,
       category_uuid: transaction?.category?.uuid?.toString() || "",
       card_uuid: preSelectedCard || transaction?.card_uuid || "",
       date: (() => {
@@ -82,8 +115,8 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
       type: transaction?.category?.type || "expense",
       kind: transaction?.kind || undefined,
       isInstallment: transaction?.is_installment || false,
-      installmentNumber: transaction?.installment_number || undefined,
-      totalInstallments: transaction?.total_installments || undefined,
+      installmentNumber: transaction?.installment_number || 1,
+      totalInstallments: transaction?.total_installments || 1,
       isRecurring: transaction?.is_recurring || false,
       recurrenceType: transaction?.recurrence_type || undefined,
       recurrenceEndDate: transaction?.recurrence_end_date ? new Date(transaction.recurrence_end_date) : undefined,

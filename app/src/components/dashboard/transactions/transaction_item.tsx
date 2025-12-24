@@ -105,8 +105,8 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
       </div>
 
       <div className="hidden lg:flex justify-center flex-shrink-0">
-        <span className="px-3 py-1 rounded-full text-sm font-medium border truncate w-[120px] text-center ">
-          {subtitle || t("dashboard.transaction_history.general")}
+        <span className="px-3 py-1 rounded-full text-sm font-medium border truncate w-[120px] text-center " title={subtitle || t("dashboard.transaction_history.general")}>
+            {subtitle || t("dashboard.transaction_history.general")}
         </span>
       </div>
 

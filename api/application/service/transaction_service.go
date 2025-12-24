@@ -17,6 +17,7 @@ type TransactionService interface {
 	GetTransactionByUUID(userID int, transactionUUID string) (*dto.TransactionResponse, error)
 	UpdateTransaction(userID int, transactionID int, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error)
 	DeleteTransaction(userID int, transactionID int) error
+	DeleteTransactionUUID(userID int, transactionUUID string) error
 	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
 	ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error)
 	GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error)
@@ -123,7 +124,6 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 		req.IsInstallment,
 		nil, // installment_number
 		req.TotalInstallments,
-		nil, // original_transaction_id
 	)
 
 	if err := s.transactionRepo.Create(transaction); err != nil {
@@ -155,7 +155,6 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 				true, // is installment
 				&i,   // installment_number
 				req.TotalInstallments,
-				&transaction.ID,
 			)
 
 			if err := s.transactionRepo.Create(installment); err != nil {
@@ -281,6 +280,21 @@ func (s *transactionService) DeleteTransaction(userID int, transactionID int) er
 	return s.transactionRepo.Delete(transactionID)
 }
 
+func (s *transactionService) DeleteTransactionUUID(userID int, transactionUUID string) error {
+	transaction, err := s.transactionRepo.FindByUUID(transactionUUID)
+	if err != nil {
+		return err
+	}
+	if transaction == nil {
+		return fmt.Errorf("transaction not found")
+	}
+	if transaction.UserID != userID {
+		return fmt.Errorf("transaction does not belong to user")
+	}
+
+	return s.transactionRepo.DeleteByUUID(transactionUUID)
+}
+
 func (s *transactionService) ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error) {
 	// Verify card belongs to user
 	card, err := s.cardRepo.FindByID(cardID)
@@ -399,25 +413,24 @@ func (s *transactionService) GetBalanceOverview(userID int, cardID *int) (*dto.B
 
 func (s *transactionService) toResponse(transaction *model.Transaction) *dto.TransactionResponse {
 	response := &dto.TransactionResponse{
-		Uuid:                  transaction.Uuid,
-		CardUuid:              transaction.Card.Uuid,
-		UserUuid:              "", // Will be set below
-		CategoryUuid:          transaction.Category.Uuid,
-		Amount:                transaction.Amount,
-		Currency:              transaction.Currency,
-		Kind:                  string(transaction.Kind),
-		Merchant:              transaction.Merchant,
-		Description:           transaction.Description,
-		Metadata:              transaction.Metadata,
-		OccurredAt:            transaction.OccurredAt.Format(time.RFC3339),
-		CreatedAt:             transaction.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:             transaction.UpdatedAt.Format(time.RFC3339),
-		IsRecurring:           transaction.IsRecurring,
-		RecurrenceType:        (*string)(transaction.RecurrenceType),
-		IsInstallment:         transaction.IsInstallment,
-		InstallmentNumber:     transaction.InstallmentNumber,
-		TotalInstallments:     transaction.TotalInstallments,
-		OriginalTransactionID: transaction.OriginalTransactionID,
+		Uuid:              transaction.Uuid,
+		CardUuid:          transaction.Card.Uuid,
+		UserUuid:          "", // Will be set below
+		CategoryUuid:      transaction.Category.Uuid,
+		Amount:            transaction.Amount,
+		Currency:          transaction.Currency,
+		Kind:              string(transaction.Kind),
+		Merchant:          transaction.Merchant,
+		Description:       transaction.Description,
+		Metadata:          transaction.Metadata,
+		OccurredAt:        transaction.OccurredAt.Format(time.RFC3339),
+		CreatedAt:         transaction.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:         transaction.UpdatedAt.Format(time.RFC3339),
+		IsRecurring:       transaction.IsRecurring,
+		RecurrenceType:    (*string)(transaction.RecurrenceType),
+		IsInstallment:     transaction.IsInstallment,
+		InstallmentNumber: transaction.InstallmentNumber,
+		TotalInstallments: transaction.TotalInstallments,
 	}
 
 	// Get user UUID

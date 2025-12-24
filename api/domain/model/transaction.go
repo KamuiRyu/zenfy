@@ -53,10 +53,9 @@ type Transaction struct {
 	RecurrenceEndDate   *time.Time      `json:"recurrence_end_date" bun:"recurrence_end_date"`
 
 	// Installment fields
-	IsInstallment         bool `json:"is_installment" bun:"is_installment,notnull,default:false"`
-	InstallmentNumber     *int `json:"installment_number" bun:"installment_number"`
-	TotalInstallments     *int `json:"total_installments" bun:"total_installments"`
-	OriginalTransactionID *int `json:"original_transaction_id" bun:"original_transaction_id"`
+	IsInstallment     bool `json:"is_installment" bun:"is_installment,notnull,default:false"`
+	InstallmentNumber *int `json:"installment_number" bun:"installment_number"`
+	TotalInstallments *int `json:"total_installments" bun:"total_installments"`
 }
 
 // NewTransaction creates a new transaction instance
@@ -75,27 +74,25 @@ func NewTransaction(
 	recurrenceEndDate *time.Time,
 	isInstallment bool,
 	installmentNumber, totalInstallments *int,
-	originalTransactionID *int,
 ) *Transaction {
 	return &Transaction{
-		UserID:                userID,
-		CardID:                cardID,
-		CategoryID:            categoryID,
-		Uuid:                  uuid,
-		Amount:                amount,
-		Currency:              currency,
-		Kind:                  kind,
-		Merchant:              merchant,
-		Description:           description,
-		Metadata:              metadata,
-		OccurredAt:            occurredAt,
-		IsRecurring:           isRecurring,
-		RecurrenceType:        recurrenceType,
-		RecurrenceStartDate:   recurrenceStartDate,
-		RecurrenceEndDate:     recurrenceEndDate,
-		IsInstallment:         isInstallment,
-		InstallmentNumber:     installmentNumber,
-		TotalInstallments:     totalInstallments,
-		OriginalTransactionID: originalTransactionID,
+		UserID:              userID,
+		CardID:              cardID,
+		CategoryID:          categoryID,
+		Uuid:                uuid,
+		Amount:              amount,
+		Currency:            currency,
+		Kind:                kind,
+		Merchant:            merchant,
+		Description:         description,
+		Metadata:            metadata,
+		OccurredAt:          occurredAt,
+		IsRecurring:         isRecurring,
+		RecurrenceType:      recurrenceType,
+		RecurrenceStartDate: recurrenceStartDate,
+		RecurrenceEndDate:   recurrenceEndDate,
+		IsInstallment:       isInstallment,
+		InstallmentNumber:   installmentNumber,
+		TotalInstallments:   totalInstallments,
 	}
 }

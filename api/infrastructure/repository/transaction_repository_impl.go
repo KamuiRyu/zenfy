@@ -51,9 +51,10 @@ func (r *transactionRepositoryImpl) FindByUUID(uuid string) (*model.Transaction,
 	transaction := &model.Transaction{}
 	err := r.db.NewSelect().
 		Model(transaction).
+		ModelTableExpr("transactions as transaction").
 		Relation("Category").
 		Relation("Card").
-		Where("uuid = ?", uuid).
+		Where("transaction.uuid = ?", uuid).
 		Scan(ctx)
 
 	if err == sql.ErrNoRows {
