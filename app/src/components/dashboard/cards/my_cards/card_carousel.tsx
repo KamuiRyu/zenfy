@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import CardItem from "./card_item";
 import CardAdd from "./card_add";
@@ -17,42 +17,52 @@ export default function CardCarousel() {
   const router = useRouter();
   const { t } = useI18n();
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedCardId, setSelectedCardId] = useState<string | number | null>(
+    null
+  );
   const [dragging, setDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startScroll = useRef(0);
 
-  useEffect(() => {
-    if (cards.length > 0 && selectedIndex >= cards.length) {
-      setSelectedIndex(cards.length - 1);
-    }
-  }, [cards, selectedIndex]);
+  const selectedIndex = useMemo(() => {
+    if (cards.length === 0) return 0;
 
+    if (selectedCardId !== null) {
+      const index = cards.findIndex((card) => card.id === selectedCardId);
+      if (index !== -1) return index;
+    }
+
+    return 0;
+  }, [cards, selectedCardId]);
+
+  const hasSetDefault = useRef(false);
   useEffect(() => {
-    if (cards.length > 0 && !loading) {
-      const defaultCard = cards.find((card) => card.isDefault);
+    if (!hasSetDefault.current && cards.length > 0 && !loading) {
+      const defaultCard = cards.find((card) => card.isDefault) || cards[0];
       if (defaultCard) {
-        const defaultIndex = cards.findIndex(
-          (card) => card.id === defaultCard.id
-        );
-        if (defaultIndex !== -1) {
-          selectIndex(defaultIndex);
-        }
+        setTimeout(() => {
+          setSelectedCardId(defaultCard.id ?? null);
+          setSelectedCard(defaultCard.id ? String(defaultCard.id) : null, defaultCard.lastFour, defaultCard.brand);
+        }, 0);
+        hasSetDefault.current = true;
       }
     }
-  }, [cards, loading]);
+  }, [cards, loading, setSelectedCard]);
 
-  const selectIndex = (index: number) => {
-    
-    setSelectedIndex(index);
-    const item = cards[index];
-    if (item) {
-      setSelectedCard(item.id ? String(item.id) : null, item.lastFour, item.brand);
-    }
-  };
+
+  const selectIndex = useCallback(
+    (index: number) => {
+      const item = cards[index];
+      if (item) {
+        setSelectedCardId(item.id ?? null);
+        setSelectedCard(item.id ? String(item.id) : null, item.lastFour, item.brand);
+      }
+    },
+    [cards, setSelectedCard]
+  );
 
   const prev = () => {
     if (selectedIndex > 0) {
@@ -98,8 +108,11 @@ export default function CardCarousel() {
     if (!id) return;
     try {
       await cardService.deleteCard(String(id));
+      if (id === selectedCardId) {
+        setSelectedCardId(null);
+      }
       window.dispatchEvent(new Event("refetchCards"));
-    } catch (err) {}
+    } catch {}
   };
 
   return (
@@ -109,7 +122,7 @@ export default function CardCarousel() {
           onClick={prev}
           aria-label={t("dashboard.cards.previous_card")}
           disabled={selectedIndex <= 0}
-          className={`flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
+          className={`flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover: bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
             selectedIndex <= 0 ? "opacity-40 pointer-events-none" : ""
           }`}
         >
@@ -193,7 +206,7 @@ export default function CardCarousel() {
             ))
           : cards.map((it, idx) => (
               <CardItem
-                key={idx}
+                key={it.id ?? idx}
                 lastFour={it.lastFour}
                 expiry={it.expiry}
                 holderName={it.holderName}
@@ -205,7 +218,9 @@ export default function CardCarousel() {
                 onClick={() => selectIndex(idx)}
                 onEdit={() => handleEdit(it.id)}
                 onDelete={() => handleDelete(it.id)}
-                ref={(el: any) => (itemRefs.current[idx + 1] = el)}
+                ref={(el) => {
+                  itemRefs.current[idx + 1] = el;
+                }}
               />
             ))}
       </div>

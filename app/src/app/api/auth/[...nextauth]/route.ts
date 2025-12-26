@@ -1,7 +1,57 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+declare module "next-auth" {
+  interface User {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
+  }
+
+  interface Session {
+    user: {
+      accessToken?: string;
+      refreshToken?: string;
+      uuid?: string;
+    } & DefaultSession["user"];
+    expiresAt?: number;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
+    uuid?: string;
+    image?: string;
+  }
+}
+
 const API_URL = process.env.API_URL || "http://localhost:8080/api";
+
+type AuthErrorPayload = {
+  code?: string;
+  message?: string;
+  error?: string | object;
+  errors?: Array<Record<string, string>>;
+};
+
+type AuthUser = {
+  uuid: string;
+  name: string;
+  email: string;
+  avatar_url?: string;
+  token_data?: {
+    token: string;
+    refresh: string;
+    expires_at: number;
+  };
+};
+
+type AuthResponse = {
+  data: AuthUser;
+};
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -19,26 +69,27 @@ const authOptions: NextAuthOptions = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: credentials.email, password: credentials.password }),
           });
-          const payload = await res.json().catch(() => null);
+          const payload: AuthResponse | AuthErrorPayload | null = await res.json().catch(() => null);
           if (!res.ok) {
             let message = "Authentication failed";
 
             if (payload && typeof payload === "object") {
-              const code = (payload as any).code;
-              const msg = (payload as any).message ?? (payload as any).error ?? null;
+              const errorPayload = payload as AuthErrorPayload;
+              const code = errorPayload.code;
+              const msg = errorPayload.message ?? errorPayload.error ?? null;
 
               if (code) {
-                const errObj: any = { code, message: msg ?? message };
-                if ((payload as any).errors) errObj.errors = (payload as any).errors;
+                const errObj: { code: string; message: string | object; errors?: Array<Record<string, string>> } = { code, message: msg ?? message };
+                if (errorPayload.errors) errObj.errors = errorPayload.errors;
                 throw new Error(JSON.stringify(errObj));
               }
 
-              if ((payload as any).message) message = (payload as any).message;
-              else if ((payload as any).error) message = typeof (payload as any).error === "string" ? (payload as any).error : JSON.stringify((payload as any).error);
-              else if ((payload as any).errors && Array.isArray((payload as any).errors)) {
+              if (errorPayload.message) message = errorPayload.message;
+              else if (errorPayload.error) message = typeof errorPayload.error === "string" ? errorPayload.error : JSON.stringify(errorPayload.error);
+              else if (errorPayload.errors && Array.isArray(errorPayload.errors)) {
                 try {
                   const parts: string[] = [];
-                  for (const e of (payload as any).errors) {
+                  for (const e of errorPayload.errors) {
                     if (typeof e === "object") {
                       for (const k of Object.keys(e)) {
                         parts.push(`${k}: ${e[k]}`);
@@ -46,7 +97,7 @@ const authOptions: NextAuthOptions = {
                     }
                   }
                   if (parts.length) message = parts.join(", ");
-                } catch (e) {
+                } catch {
                   // ignore
                 }
               }
@@ -55,7 +106,8 @@ const authOptions: NextAuthOptions = {
             throw new Error(message);
           }
 
-          const user = payload?.data || null;
+          const authResponse = payload as AuthResponse;
+          const user = authResponse?.data || null;
           if (!user) throw new Error("Invalid response from auth server");
           return {
             id: user.uuid,
@@ -65,16 +117,16 @@ const authOptions: NextAuthOptions = {
             accessToken: user.token_data?.token,
             refreshToken: user.token_data?.refresh,
             expiresAt: user.token_data?.expires_at,
-          } as any;
-        } catch (err: any) {
-          throw new Error(err?.message || "Authentication error");
+          };
+        } catch (err) {
+          throw new Error(err instanceof Error ? err.message : "Authentication error");
         }
       },
     }),
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }) {
       if (user) {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
@@ -105,7 +157,7 @@ const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({ session, token }: any) {
+    async session({ session, token }) {
       return {
         ...session,
         user: {
@@ -116,10 +168,10 @@ const authOptions: NextAuthOptions = {
           image: token.image,
         },
         expiresAt: token.expiresAt,
-      } as any;
+      };
     },
   },
 };
 
-const handler = NextAuth(authOptions as any);
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

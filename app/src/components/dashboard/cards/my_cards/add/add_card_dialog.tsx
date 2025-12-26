@@ -72,7 +72,7 @@ export default function AddCardDialog() {
       });
       window.dispatchEvent(new Event('refetchCards'));
       router.back();
-    } catch (err: any) {
+    } catch  {
     } finally {
       setLoading(false);
     }
