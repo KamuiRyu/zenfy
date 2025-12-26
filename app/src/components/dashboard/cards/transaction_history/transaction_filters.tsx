@@ -19,25 +19,12 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
+import { TransactionFiltersType, CategoryType}  from "@/types/transactions";
 
 interface TransactionFiltersProps {
-  filters: {
-    dateFrom?: string;
-    dateTo?: string;
-    categoryId?: number;
-    type?: string;
-    kind?: string;
-    search?: string;
-  };
-  onFiltersChange: (filters: {
-    dateFrom?: string;
-    dateTo?: string;
-    categoryId?: number;
-    type?: string;
-    kind?: string;
-    search?: string;
-  }) => void;
-  categories: { id: number; name: string }[];
+  filters: TransactionFiltersType;
+  onFiltersChange: (filters: TransactionFiltersType) => void;
+  categories: CategoryType[];
   loading?: boolean;
 }
 

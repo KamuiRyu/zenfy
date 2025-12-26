@@ -12,6 +12,7 @@ import NoTransactions from "./no_transactions";
 import { useI18n } from "@/i18n/useI18n";
 import TransactionHistoryLoading from "./transaction_history_loading";
 import { useRouter } from "next/navigation";
+import { TransactionType, TransactionFiltersType, CategoryType } from "@/types/transactions";
 
 function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("pt-BR", {
@@ -32,13 +33,13 @@ export default function TransactionHistory() {
   const { t } = useI18n();
   const { selectedCardUuid, selectedCardLastFour, selectedCardBrand } = useSelectedCard();
   const [page, setPage] = useState(0);
-  const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }>({});
+  const [filters, setFilters] = useState<TransactionFiltersType>({});
 
-  const handleFiltersChange = (newFilters: { dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }) => {
+  const handleFiltersChange = (newFilters: TransactionFiltersType) => {
     setFilters(newFilters);
     setPage(0);
   };
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(true);
   const limit = 10;
   const offset = page * limit;
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
@@ -48,12 +49,8 @@ export default function TransactionHistory() {
   const [isCounting, setIsCounting] = useState(false);
   const router = useRouter();
 
-  const mappedCategories = useMemo(() => categories.map(cat => ({ id: parseInt((cat as any).id || '0'), name: cat.name })), [categories]);
+  const mappedCategories = useMemo(() => categories.map(cat => ({ id: parseInt(String((cat as unknown as { id: string | number }).id) || '0'), name: cat.name } as CategoryType)), [categories]);
 
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleTransactionAdded = () => {
@@ -93,7 +90,7 @@ export default function TransactionHistory() {
   };
 
   const groupedTransactions = useMemo(() => {
-    const groups: Record<string, any[]> = {};
+    const groups: Record<string, TransactionType[]> = {};
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());

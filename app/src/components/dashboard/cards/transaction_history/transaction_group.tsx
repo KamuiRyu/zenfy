@@ -1,26 +1,11 @@
 import React from "react";
 import TransactionItem from "./transaction_item";
 import { useI18n } from "@/i18n/useI18n";
-
-interface Transaction {
-  uuid: string;
-  description?: string;
-  merchant?: string;
-  category?: {
-    name: string;
-    type?: string;
-    icon?: string;
-    color?: string;
-  };
-  occurred_at: string;
-  card_uuid?: string;
-  amount: number;
-  currency: string;
-}
+import { TransactionType } from "@/types/transactions";
 
 interface TransactionGroupProps {
   date: string;
-  transactions: Transaction[];
+  transactions: TransactionType[];
   formatTime: (dateString: string) => string;
   formatCurrency: (amount: number, currency: string) => string;
   selectedCardLastFour?: string | null;
