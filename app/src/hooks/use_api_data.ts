@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useReducer, useState, useRef, useCallback } from "react";
 
 type ApiDataState<T> = {
   data: T[];
@@ -111,13 +111,12 @@ export function useApiSingleData<T>(
     }
   }, [fetchFunction]);
 
-  const effectDeps = useMemo(() => [autoFetch, fetchData, ...dependencies], [autoFetch, fetchData, ...dependencies]);
-
   useEffect(() => {
     if (autoFetch) {
       fetchData();
     }
-  }, effectDeps);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFetch, fetchData, ...dependencies]);
 
   return {
     data,

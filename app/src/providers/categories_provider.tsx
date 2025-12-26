@@ -64,13 +64,13 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
         const keys = Object.keys(payload).filter((k) => String(Number(k)) === String(k));
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
-          dataArray = keys.map((k) => (payload as any)[k]);
-        } else dataArray = Object.values(payload as any);
+          dataArray = keys.map((k) => (payload as Record<string, Category>)[k]);
+        } else dataArray = Object.values(payload as Record<string, Category>);
       }
       dispatch({ type: 'SET_CATEGORIES', payload: dataArray });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load categories", err);
-      dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load categories" });
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : "Failed to load categories" });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useReducer, ReactNode } from "react";
 import cardService from "@/services/card_service";
+import { CardType } from "@/types/cards";
 
 type Card = {
   id?: string | number | null;
@@ -60,37 +61,37 @@ export function CardsProvider({ children }: { children: ReactNode }) {
     try {
       const resp = await cardService.getCards();
       const payload = resp && typeof resp === "object" && "data" in resp ? resp.data : resp;
-      let dataArray: Card[] = [];
-      if (Array.isArray(payload)) dataArray = payload;
+      let dataArray: CardType[] = [];
+      if (Array.isArray(payload)) dataArray = payload as CardType[];
       else if (payload && typeof payload === "object") {
         const keys = Object.keys(payload).filter((k) => String(Number(k)) === String(k));
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
-          dataArray = keys.map((k) => (payload as any)[k]);
-        } else dataArray = Object.values(payload as any);
+          dataArray = keys.map((k) => (payload as Record<string, CardType>)[k]);
+        } else dataArray = Object.values(payload as Record<string, CardType>);
       }
-      const mappedCards = dataArray.map((c: any) => ({
+      const mappedCards = dataArray.map((c: CardType) => ({
         id: c.uuid ?? c.card_id ?? null,
         lastFour: c.last_four ?? c.lastFour ?? "",
         expiry: (() => {
-          const expiryMonth = c.expiry_month ?? c.expiryMonth ?? null;
-          const expiryYear = c.expiry_year ?? c.expiryYear ?? null;
+          const expiryMonth = c.expiry_month ?? null;
+          const expiryYear = c.expiry_year?? null;
           const month = expiryMonth ? String(expiryMonth).padStart(2, "0") : "00";
           const year = expiryYear ? String(expiryYear).slice(-2) : "00";
           return `${month}/${year}`;
         })(),
-        holderName: c.holder_name ?? c.holderName ?? "",
+        holderName: c.holder_name ?? "",
         nickname: c.nickname ?? "",
         brand: c.brand ?? "",
         bank: c.bank ?? "",
-        isDefault: c.is_default ?? c.isDefault ?? false,
+        isDefault: c.is_default ?? false,
         cardType: c.card_type ?? "",
         
       }));
       dispatch({ type: 'SET_CARDS', payload: mappedCards });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load cards", err);
-      dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load cards" });
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : "Failed to load cards" });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

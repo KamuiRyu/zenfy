@@ -16,7 +16,7 @@ apiClient.interceptors.request.use(
       if (!token) {
         try {
           const session = await getSession();
-          token = (session as any)?.user?.accessToken ?? null;
+          token = (session as { user?: { accessToken?: string } })?.user?.accessToken ?? null;
         } catch {}
       }
 
@@ -65,13 +65,13 @@ export async function request(
       ...opts,
     });
     return response.data;
-  } catch (error: any) {
-    if (error.name === 'CanceledError' || error.name === 'AbortError') {
+  } catch (error: unknown) {
+    if (error instanceof Error && (error.name === 'CanceledError' || error.name === 'AbortError')) {
       throw error;
     }
-    const err: any = new Error("API error");
-    err.status = error.response?.status;
-    err.body = error.response?.data;
+    const err = new Error("API error");
+    (err as { status?: number; body?: unknown }).status = (error as { response?: { status?: number } })?.response?.status;
+    (err as { status?: number; body?: unknown }).body = (error as { response?: { data?: unknown } })?.response?.data;
     throw err;
   }
 }
