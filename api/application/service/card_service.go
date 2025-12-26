@@ -132,6 +132,7 @@ func (s *cardService) GetCardByUUID(userID int, cardUUID string) (*dto.CardRespo
 		Uuid:        card.Uuid,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
+		Bank:        card.Bank,
 		CardType:    string(card.CardType),
 		HolderName:  card.HolderName,
 		Nickname:    card.Nickname,

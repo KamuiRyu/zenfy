@@ -21,7 +21,7 @@ const CardItem = React.forwardRef<
     selected?: boolean;
     onClick?: () => void;
     isDragging?: boolean;
-    onEdit?: () => void;
+    onEdit?: (e?: React.SyntheticEvent) => void;
     onDelete?: () => void;
   }
 >(
@@ -52,8 +52,7 @@ const CardItem = React.forwardRef<
 
     const name = holderName ?? t('dashboard.cards.card_holder');
 
-    function handleEdit(e: React.MouseEvent) {
-      e.stopPropagation();
+    function handleEdit() {
       onEdit?.();
     }
 
@@ -100,7 +99,7 @@ const CardItem = React.forwardRef<
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  handleEdit(e as any);
+                  handleEdit();
                 }
               }}
               aria-label={t("dashboard.cards.edit_card")}

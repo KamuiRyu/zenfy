@@ -7,6 +7,7 @@ export default function HipercardIcon(props: React.SVGProps<SVGSVGElement>) {
       height="500"
       version="1.1"
       viewBox="0 0 780 500"
+      {... props}
     >
       <path
         d="M725,0H55C24.673,0,0,24.673,0,55v391c0,30.327,24.673,55,55,55h670c30.325,0,55-24.673,55-55V55  C780,24.673,755.325,0,725,0z"

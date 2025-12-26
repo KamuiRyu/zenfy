@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import cardService from "@/services/card_service";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import CardPreview from "../form/card_preview";
 import { CardForm } from "../form/card_form";
@@ -17,6 +16,20 @@ import { CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
+
+interface Card {
+  uuid: string;
+  last_four: string;
+  brand: string;
+  bank: string;
+  card_type: string;
+  holder_name: string;
+  nickname?: string;
+  expiry_month: number;
+  expiry_year: number;
+  billing_day: number;
+  is_default: boolean;
+}
 
 export default function EditCardDialog({
   cardId,
@@ -39,7 +52,7 @@ export default function EditCardDialog({
   });
 
   const [loading, setLoading] = useState(false);
-  const [card, setCard] = useState<any>(null);
+  const [card, setCard] = useState<Card | null>(null);
   const [fetching, setFetching] = useState(true);
   const router = useRouter();
 
@@ -54,7 +67,7 @@ export default function EditCardDialog({
           return;
         }
         setCard(fetchedCard);
-      } catch (error) {
+      } catch {
         router.back();
       } finally {
         setFetching(false);
@@ -134,7 +147,7 @@ export default function EditCardDialog({
       });
       window.dispatchEvent(new Event('refetchCards'));
       router.back();
-    } catch (err: any) {
+    } catch {
     } finally {
       setLoading(false);
     }
