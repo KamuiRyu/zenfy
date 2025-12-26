@@ -38,6 +38,7 @@ export interface TransactionFiltersType {
 }
 
 export interface CategoryType {
-  id: number;
+  id?: number;
+  uuid: string;
   name: string;
 }

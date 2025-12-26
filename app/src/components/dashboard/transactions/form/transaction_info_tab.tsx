@@ -17,15 +17,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tag } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "./transaction_form.schema";
+import { CategoryType } from "@/types/transactions";
 
 interface TransactionInfoTabProps {
   control: Control<TransactionFormData>;
-  categories: any[];
+  categories: CategoryType[];
   categoriesLoading: boolean;
-  filteredCategories: any[];
+  filteredCategories: CategoryType[];
 }
 
 export default function TransactionInfoTab({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
@@ -128,8 +128,8 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     },
   });
 
-  const selectedType = form.watch("type");
-  const selectedCardUuid = form.watch("card_uuid");
+  const selectedType = useWatch({ control: form.control, name: "type" });
+  const selectedCardUuid = useWatch({ control: form.control, name: "card_uuid" });
   const selectedCard = cards.find(card => card.id?.toString() === selectedCardUuid);
 
   const filteredCategories = useMemo(() => {
@@ -173,11 +173,11 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
   useEffect(() => {
     const errors = form.formState.errors;
     if (errors.description || errors.amount || errors.category_uuid || errors.card_uuid || errors.date || errors.type) {
-      setActiveTab("info");
+      setTimeout(() => setActiveTab("info"), 0);
     } else if (errors.kind) {
-      setActiveTab("details");
+      setTimeout(() => setActiveTab("details"), 0);
     } else if (errors.recurrenceType || errors.recurrenceStartDate || errors.recurrenceEndDate) {
-      setActiveTab("recurring");
+      setTimeout(() => setActiveTab("recurring"), 0);
     }
   }, [form.formState.errors]);
 
@@ -207,7 +207,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         window.dispatchEvent(new CustomEvent('transactionAdded'));
       }
       onClose();
-    } catch (error) {
+    } catch {
     }
   };
 
