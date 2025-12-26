@@ -124,6 +124,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
       totalInstallments: transaction?.total_installments || 1,
       isRecurring: transaction?.is_recurring || false,
       recurrenceType: transaction?.recurrence_type || undefined,
+      recurrenceStartDate: transaction?.recurrence_start_date ? new Date(transaction.recurrence_start_date) : undefined,
       recurrenceEndDate: transaction?.recurrence_end_date ? new Date(transaction.recurrence_end_date) : undefined,
     },
   });
@@ -208,6 +209,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     try {
       if (transaction) {
         await updateTransaction(transaction.uuid, data);
+        window.dispatchEvent(new CustomEvent('transactionUpdated'));
       } else {
         await createTransaction(data);
         window.dispatchEvent(new CustomEvent('transactionAdded'));

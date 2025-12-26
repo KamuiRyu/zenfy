@@ -13,7 +13,7 @@ export function useTransactionActions() {
       const payload = {
         description: data.description,
         merchant: data.merchant,
-        amount: Math.round(parseFloat(data.amount.toString()) * 100),
+        amount: Math.round(parseFloat(data.amount.toString())),
         category_uuid: data.category_uuid,
         card_uuid: data.card_uuid,
         occurred_at: data.occurred_at,
@@ -43,7 +43,7 @@ export function useTransactionActions() {
       const payload = {
         description: data.description,
         merchant: data.merchant,
-        amount: Math.round(parseFloat(data.amount.toString()) * 100),
+        amount: Math.round(parseFloat(data.amount.toString())),
         category_uuid: data.category_uuid,
         card_uuid: data.card_uuid,
         occurred_at: data.occurred_at,

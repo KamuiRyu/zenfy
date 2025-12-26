@@ -46,7 +46,12 @@ export default function EditTransactionDialog() {
   if (loading) {
     return (
       <Dialog defaultOpen={true} open={true} onOpenChange={handleClose}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="!max-w-[50rem]" aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>
+              {t("dashboard.transactions.edit_transaction")}
+            </DialogTitle>
+          </DialogHeader>
           <div className="flex items-center justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
@@ -57,9 +62,11 @@ export default function EditTransactionDialog() {
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="!max-w-[50rem]" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{t("dashboard.transactions.edit_transaction")}</DialogTitle>
+          <DialogTitle>
+            {t("dashboard.transactions.edit_transaction")}
+          </DialogTitle>
         </DialogHeader>
         <TransactionForm transaction={transaction} onClose={handleClose} />
       </DialogContent>

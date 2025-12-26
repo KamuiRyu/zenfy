@@ -13,12 +13,12 @@ export default function RightSidebar() {
   const { balanceOverview, loading, error, refetch } = useBalanceOverview(selectedCardUuid ?? undefined);
 
   useEffect(() => {
-    const handleTransactionAdded = () => {
+    const handleBalanceOverviewUpdated = () => {
       refetch();
     };
-    window.addEventListener('balanceOverviewUpdated', handleTransactionAdded);
+    window.addEventListener('balanceOverviewUpdated', handleBalanceOverviewUpdated);
     return () => {
-      window.removeEventListener('balanceOverviewUpdated', handleTransactionAdded);
+      window.removeEventListener('balanceOverviewUpdated', handleBalanceOverviewUpdated);
     };
   }, [refetch]);
 

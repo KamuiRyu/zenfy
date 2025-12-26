@@ -15,7 +15,7 @@ type TransactionService interface {
 	CreateTransaction(userID int, req dto.CreateTransactionRequest) (*dto.TransactionResponse, error)
 	GetTransactionByID(userID int, transactionID int) (*dto.TransactionResponse, error)
 	GetTransactionByUUID(userID int, transactionUUID string) (*dto.TransactionResponse, error)
-	UpdateTransaction(userID int, transactionID int, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error)
+	UpdateTransaction(userID int, transactionUUID string, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error)
 	DeleteTransaction(userID int, transactionID int) error
 	DeleteTransactionUUID(userID int, transactionUUID string) error
 	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
@@ -208,8 +208,8 @@ func (s *transactionService) GetTransactionByUUID(userID int, transactionUUID st
 	return s.toResponse(transaction), nil
 }
 
-func (s *transactionService) UpdateTransaction(userID int, transactionID int, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error) {
-	transaction, err := s.transactionRepo.FindByID(transactionID)
+func (s *transactionService) UpdateTransaction(userID int, transactionUUID string, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error) {
+	transaction, err := s.transactionRepo.FindByUUID(transactionUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -271,6 +271,7 @@ func (s *transactionService) UpdateTransaction(userID int, transactionID int, re
 	transaction.UpdatedAt = time.Now()
 
 	if err := s.transactionRepo.Update(transaction); err != nil {
+		fmt.Println("Error: ", err)
 		return nil, fmt.Errorf("FAILED_TO_UPDATE_TRANSACTION")
 	}
 

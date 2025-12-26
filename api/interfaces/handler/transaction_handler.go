@@ -68,12 +68,8 @@ func (h *TransactionHandler) GetTransaction(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
 	transactionIDStr := c.Params("id")
-	transactionID, err := strconv.Atoi(transactionIDStr)
-	if err != nil {
-		return response.Error(c, fiber.StatusBadRequest, "INVALID_TRANSACTION_ID", "Invalid transaction ID", nil)
-	}
 
-	transaction, err := h.getTransactionUC.Execute(userID, transactionID)
+	transaction, err := h.getTransactionUC.Execute(userID, transactionIDStr)
 	if err != nil {
 		return response.Error(c, fiber.StatusNotFound, "TRANSACTION_NOT_FOUND", err.Error(), nil)
 	}
@@ -85,17 +81,13 @@ func (h *TransactionHandler) UpdateTransaction(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
 	transactionIDStr := c.Params("id")
-	transactionID, err := strconv.Atoi(transactionIDStr)
-	if err != nil {
-		return response.Error(c, fiber.StatusBadRequest, "INVALID_TRANSACTION_ID", "Invalid transaction ID", nil)
-	}
 
 	var req dto.UpdateTransactionRequest
 	if err := c.BodyParser(&req); err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_REQUEST", "Invalid request body", nil)
 	}
 
-	transaction, err := h.updateTransactionUC.Execute(userID, transactionID, req)
+	transaction, err := h.updateTransactionUC.Execute(userID, transactionIDStr, req)
 	if err != nil {
 		if _, ok := err.(validator.ValidationErrors); ok {
 			return resp.ValidationErrorResponse(c, fiber.StatusUnprocessableEntity, "VALIDATION_ERROR", messages.ValidationError, err, &req)
