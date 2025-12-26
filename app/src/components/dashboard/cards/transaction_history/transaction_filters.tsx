@@ -319,6 +319,15 @@ export default function TransactionFilters({
               <SelectItem value="debit">
                 {t("dashboard.transactions.debit")}
               </SelectItem>
+               <SelectItem value="deposit">
+                {t("dashboard.transactions.deposit")}
+              </SelectItem>
+              <SelectItem value="withdrawal">
+                {t("dashboard.transactions.withdrawal")}
+              </SelectItem>
+              <SelectItem value="transfer">
+                {t("dashboard.transactions.transfer")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>

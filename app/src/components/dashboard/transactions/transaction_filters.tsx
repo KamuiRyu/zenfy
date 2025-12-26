@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { format } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
-import { request } from "@/services/service_base";
 import useCategories from "@/hooks/use_categories";
 
 interface TransactionFiltersProps {
