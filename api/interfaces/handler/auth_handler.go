@@ -166,7 +166,11 @@ func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
 	if err != nil {
 		return resp.Error(c, fiber.StatusUnauthorized, "INVALID_TOKEN", messages.InvalidToken, err)
 	}
-	return resp.Success(c, fiber.StatusOK, map[string]string{"token": tokenData.Token, "refresh_token": tokenData.Refresh}, messages.TokenRefreshed)
+	return resp.Success(c, fiber.StatusOK, map[string]interface{}{
+		"token":         tokenData.Token,
+		"refresh_token": tokenData.Refresh,
+		"expires_at":    tokenData.ExpiresAt,
+	}, messages.TokenRefreshed)
 }
 
 func (h *AuthHandler) Validate(c *fiber.Ctx) error {

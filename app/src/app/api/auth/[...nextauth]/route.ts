@@ -64,6 +64,7 @@ const authOptions: NextAuthOptions = {
             image: user.avatar_url,
             accessToken: user.token_data?.token,
             refreshToken: user.token_data?.refresh,
+            expiresAt: user.token_data?.expires_at,
           } as any;
         } catch (err: any) {
           throw new Error(err?.message || "Authentication error");
@@ -77,9 +78,31 @@ const authOptions: NextAuthOptions = {
       if (user) {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
-        token.uuid = user.id;
-        token.image = user.image || user.avatar_url || token.image;
+        token.expiresAt = user.expiresAt;
       }
+
+      if (token.expiresAt && Date.now() >= token.expiresAt * 1000) {
+        try {
+          const res = await fetch(`${API_URL}/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token.refreshToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const payload = await res.json();
+          if (res.ok && payload.data) {
+            token.accessToken = payload.data.token;
+            token.refreshToken = payload.data.refresh_token;
+            token.expiresAt = payload.data.expires_at;
+          } else {
+            console.error("Failed to refresh token:", payload);
+          }
+        } catch (error) {
+          console.error("Error refreshing token:", error);
+        }
+      }
+
       return token;
     },
     async session({ session, token }: any) {
@@ -92,6 +115,7 @@ const authOptions: NextAuthOptions = {
           uuid: token.uuid,
           image: token.image,
         },
+        expiresAt: token.expiresAt,
       } as any;
     },
   },

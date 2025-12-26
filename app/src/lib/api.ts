@@ -19,9 +19,25 @@ export async function forwardRequest(
   }
 
   try {
-    const t = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    const access =
+    let t = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    let access =
       (t as any)?.accessToken || (t as any)?.token || (t as any)?.access;
+    if (t && (t as any).expiresAt && Date.now() >= (t as any).expiresAt * 1000) {
+      try {
+        const refreshRes = await axios.post(`${API_URL}/auth/refresh`, {}, {
+          headers: {
+            "Authorization": `Bearer ${(t as any).refreshToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (refreshRes.status === 200 && refreshRes.data.data) {
+          access = refreshRes.data.data.token;
+        }
+      } catch (refreshError) {
+        console.error("Failed to refresh token in proxy:", refreshError);
+      }
+    }
+
     if (access) headers["authorization"] = `Bearer ${access}`;
   } catch {}
 

@@ -75,10 +75,12 @@ func (s *authService) Login(input dto.LoginRequestDTO) (*dto.LoginResponseDTO, e
 	if err != nil {
 		return nil, errors.New("ERROR_GENERATING_REFRESH_TOKEN")
 	}
-	expiresAt := time.Now().Add(7 * 24 * time.Hour)
-	if err := s.refreshRepo.Create(refreshToken, user.ID, expiresAt); err != nil {
+	refreshExpiresAt := time.Now().Add(7 * 24 * time.Hour)
+	if err := s.refreshRepo.Create(refreshToken, user.ID, refreshExpiresAt); err != nil {
 		return nil, errors.New("ERROR_SAVING_REFRESH_TOKEN")
 	}
+
+	accessExpiresAt := time.Now().Add(24 * time.Hour)
 
 	return &dto.LoginResponseDTO{
 		Uuid:      user.Uuid,
@@ -88,7 +90,7 @@ func (s *authService) Login(input dto.LoginRequestDTO) (*dto.LoginResponseDTO, e
 		TokenData: dto.TokenData{
 			Token:     token,
 			Refresh:   refreshToken,
-			ExpiresAt: expiresAt.Unix(),
+			ExpiresAt: accessExpiresAt.Unix(),
 		},
 	}, nil
 }
@@ -252,14 +254,16 @@ func (s *authService) RefreshToken(refreshToken string) (*dto.TokenData, error) 
 	if err != nil {
 		return nil, errors.New("ERROR_GENERATING_REFRESH_TOKEN")
 	}
-	expiresAt := time.Now().Add(7 * 24 * time.Hour)
-	if err := s.refreshRepo.Create(newRefresh, userID, expiresAt); err != nil {
+	refreshExpiresAt := time.Now().Add(7 * 24 * time.Hour)
+	if err := s.refreshRepo.Create(newRefresh, userID, refreshExpiresAt); err != nil {
 		return nil, errors.New("ERROR_SAVING_REFRESH_TOKEN")
 	}
+
+	accessExpiresAt := time.Now().Add(24 * time.Hour)
 
 	return &dto.TokenData{
 		Token:     accessToken,
 		Refresh:   newRefresh,
-		ExpiresAt: expiresAt.Unix(),
+		ExpiresAt: accessExpiresAt.Unix(),
 	}, nil
 }
