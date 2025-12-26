@@ -2,7 +2,6 @@ import React from "react";
 import TransactionItem from "./transaction_item";
 import { useI18n } from "@/i18n/useI18n";
 import { TransactionType } from "@/types/transactions";
-
 interface TransactionGroupProps {
   date: string;
   transactions: TransactionType[];

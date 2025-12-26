@@ -11,6 +11,7 @@ import { useRouter, useParams } from "next/navigation";
 import TransactionForm from "../form/transaction_form";
 import { useI18n } from "@/i18n/useI18n";
 import transactionService from "@/services/transaction_service";
+import { TransactionType } from "@/types/transactions";
 
 export default function EditTransactionDialog() {
   const { t } = useI18n();
@@ -18,7 +19,7 @@ export default function EditTransactionDialog() {
   const params = useParams();
   const id = params.id as string;
 
-  const [transaction, setTransaction] = useState<any>(null);
+  const [transaction, setTransaction] = useState<TransactionType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

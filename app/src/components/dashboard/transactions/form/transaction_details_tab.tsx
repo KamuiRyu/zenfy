@@ -25,7 +25,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { CalendarIcon, DollarSign } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,11 +48,13 @@ export default function TransactionDetailsTab({
   const { t } = useI18n();
   const { setValue } = useFormContext();
 
+  const kind = watch("kind");
+
   useEffect(() => {
-    if (watch("kind") !== "credit") {
+    if (kind !== "credit") {
       setValue("isInstallment", false);
     }
-  }, [watch("kind"), setValue]);
+  }, [kind, setValue]);
 
   return (
     <Card className="border-0 shadow-lg bg-transparent">

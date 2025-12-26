@@ -121,7 +121,7 @@ export default function TransactionHistory() {
       if (!groups[dateKey]) {
         groups[dateKey] = [];
       }
-      groups[dateKey].push(transaction);
+      groups[dateKey].push(transaction as unknown as TransactionType);
     });
 
     return groups;

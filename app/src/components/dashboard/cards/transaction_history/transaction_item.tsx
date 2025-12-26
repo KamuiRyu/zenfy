@@ -44,12 +44,12 @@ const TransactionItem = React.memo(function TransactionItem({
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join("")}`;
 
-      const SiIconComponent = (SiIcons as any)[siIconName];
+      const SiIconComponent = (SiIcons as Record<string, React.ComponentType<{className?: string}>>)[siIconName];
       if (SiIconComponent) {
         return <SiIconComponent className="w-6 h-6 text-white" />;
       }
 
-      const BsIconComponent = (BsIcons as any)[bsIconName];
+      const BsIconComponent = (BsIcons as Record<string, React.ComponentType<{className?: string}>>)[bsIconName];
       if (BsIconComponent) {
         return <BsIconComponent className="w-6 h-6 text-white" />;
       }

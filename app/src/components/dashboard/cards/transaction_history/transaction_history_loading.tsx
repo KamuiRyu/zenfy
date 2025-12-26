@@ -1,6 +1,3 @@
-import React from "react";
-import TransactionGroup from "./transaction_group";
-import { useI18n } from "@/i18n/useI18n";
 
 export default function TransactionHistoryLoading({}) {
   return (

@@ -1,6 +1,11 @@
-import React from "react";
 
-export default function ChartCard({ title, children }: any) {
+
+interface ChartCardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+export default function ChartCard({ title, children }: ChartCardProps) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       <div className="flex items-center justify-between mb-4">

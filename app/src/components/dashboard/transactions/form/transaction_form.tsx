@@ -33,9 +33,10 @@ import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./transaction_info_tab";
 import TransactionDetailsTab from "./transaction_details_tab";
 import TransactionRecurringTab from "./transaction_recurring_tab";
+import { TransactionType } from "@/types/transactions";
 
 interface TransactionFormProps {
-  transaction?: any;
+  transaction?: TransactionType | null;
   onClose: () => void;
   preSelectedCard?: string;
 }

@@ -1,6 +1,11 @@
-import React from "react";
 
-export default function StatCard({ title, value, accent = "blue", children }: any) {
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  children: React.ReactNode;
+}
+
+export default function StatCard({ title, value, children }: StatCardProps) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       <div className="flex items-start justify-between gap-4">
