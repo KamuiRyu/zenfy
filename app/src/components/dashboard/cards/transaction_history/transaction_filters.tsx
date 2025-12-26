@@ -234,7 +234,7 @@ export default function TransactionFilters({
                 {t("dashboard.transaction_history.all_categories")}
               </SelectItem>
               {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id.toString()}>
+                <SelectItem key={cat.uuid} value={cat.uuid}>
                   {cat.name}
                 </SelectItem>
               ))}

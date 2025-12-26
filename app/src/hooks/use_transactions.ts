@@ -2,60 +2,20 @@
 
 import { useEffect, useReducer, useRef, useCallback } from "react";
 import transactionService from "@/services/transaction_service";
+import { TransactionFiltersType, TransactionType } from "@/types/transactions";
 
-type Transaction = {
-  uuid: string;
-  card_uuid: string;
-  user_uuid: string;
-  category_uuid: string;
-  category?: {
-    uuid: string;
-    user_id?: number;
-    name: string;
-    description?: string;
-    color?: string;
-    icon?: string;
-    is_default: boolean;
-    created_at: string;
-    updated_at: string;
-  };
-  amount: number;
-  currency: string;
-  type: string;
-  merchant?: string;
-  description?: string;
-  metadata?: Record<string, any>;
-  occurred_at: string;
-  created_at: string;
-  updated_at: string;
-  is_recurring: boolean;
-  recurrence_type?: string;
-  recurrence_end_date?: string;
-  is_installment: boolean;
-  installment_number?: number;
-  total_installments?: number;
-};
 
 type TransactionsState = {
-  transactions: Transaction[];
+  transactions: TransactionType[];
   loading: boolean;
   error: string | null;
 };
 
-type TransactionFilters = {
-  dateFrom?: string;
-  dateTo?: string;
-  categoryId?: number;
-  type?: string;
-  kind?: string;
-  cardUuid?: string;
-  search?: string;
-};
 
 type TransactionsAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_TRANSACTIONS'; payload: Transaction[] };
+  | { type: 'SET_TRANSACTIONS'; payload: TransactionType[] };
 
 const initialState: TransactionsState = {
   transactions: [],
@@ -76,7 +36,7 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
   }
 }
 
-export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean, onRefetch?: () => void) {
+export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFiltersType, mounted?: boolean, onRefetch?: () => void) {
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);

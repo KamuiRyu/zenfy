@@ -49,7 +49,7 @@ export default function TransactionHistory() {
   const [isCounting, setIsCounting] = useState(false);
   const router = useRouter();
 
-  const mappedCategories = useMemo(() => categories.map(cat => ({ id: parseInt(String((cat as unknown as { id: string | number }).id) || '0'), name: cat.name } as CategoryType)), [categories]);
+  const mappedCategories = useMemo(() => categories.map(cat => ({ uuid: String((cat as unknown as { id: string | number }).id) || '0', name: cat.name } as CategoryType)), [categories]);
 
 
   useEffect(() => {

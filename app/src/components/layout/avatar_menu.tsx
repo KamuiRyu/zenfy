@@ -12,6 +12,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useI18n } from "@/i18n/useI18n";
 import { ConfirmDialog } from "../base/confirm_dialog";
+import Image from "next/image";
 
 export default function AvatarMenu({
   displayName,
@@ -27,7 +28,7 @@ export default function AvatarMenu({
       <DropdownMenuTrigger asChild>
         <button className="rounded-full p-0 bg-transparent hover:bg-transparent focus:outline-none focus:ring-0">
           {avatar ? (
-            <img
+            <Image
               src={avatar}
               alt="avatar"
               className="w-10 h-10 rounded-full object-cover"
@@ -63,8 +64,8 @@ export default function AvatarMenu({
             <DropdownMenuItem
               asChild
               className="w-full p-0"
-              onSelect={(e: any) => {
-                e.preventDefault();
+              onSelect={(event: Event) => {
+                event.preventDefault();
               }}
             >
               <button className="w-full text-left px-3 py-2">{t("dashboard.logout.title")}</button>

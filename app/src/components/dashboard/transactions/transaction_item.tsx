@@ -6,14 +6,13 @@ import { ptBR, enUS } from "date-fns/locale";
 import { Edit2, Trash2 } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/base/confirm_dialog";
-import MoneyDisplay from "@/components/ui/money_display";
 import { useTransactionActions } from "@/hooks/use_transaction_actions";
 import { CardBrand } from "@/components/dashboard/cards/my_cards/card_brand";
 import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
 import { useRouter } from "next/navigation";
+import { TransactionType } from "@/types/transactions";
 
 interface IconComponentProps {
   className?: string;
@@ -22,7 +21,7 @@ interface IconComponentProps {
 type IconComponent = React.ComponentType<IconComponentProps>;
 
 interface TransactionItemProps {
-  transaction: any;
+  transaction: TransactionType;
   onDelete: (uuid: string) => void;
 }
 
@@ -139,7 +138,7 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
             try {
               await deleteTransaction(transaction.uuid);
               onDelete(transaction.uuid);
-            } catch (error) {
+            } catch {
             }
           }}
           trigger={
