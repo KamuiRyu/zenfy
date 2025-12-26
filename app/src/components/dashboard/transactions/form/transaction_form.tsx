@@ -27,7 +27,7 @@ import useCategories from "@/hooks/use_categories";
 import useCards from "@/hooks/use_cards";
 import { TransactionFormData } from "@/components/dashboard/transactions/form/transaction_form.schema";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { CardBrand } from "../../cards/my_cards/card_brand";
 import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./transaction_info_tab";
@@ -170,17 +170,6 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     return [...new Set(options)];
   }, [selectedCard, selectedType]);
 
-  useEffect(() => {
-    const errors = form.formState.errors;
-    if (errors.description || errors.amount || errors.category_uuid || errors.card_uuid || errors.date || errors.type) {
-      setActiveTab("info");
-    } else if (errors.kind) {
-      setActiveTab("details");
-    } else if (errors.recurrenceType || errors.recurrenceStartDate || errors.recurrenceEndDate) {
-      setActiveTab("recurring");
-    }
-  }, [form.formState.errors]);
-
   const onSubmit = async () => {
     const formData = form.getValues();
 
@@ -224,7 +213,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         window.dispatchEvent(new CustomEvent('transactionAdded'));
       }
       onClose();
-    } catch (error) {
+    } catch {
     }
   };
 

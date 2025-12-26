@@ -43,7 +43,7 @@ export default function TransactionHistory() {
   const limit = 10;
   const offset = page * limit;
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
-  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted, () => window.dispatchEvent(new CustomEvent('transactionAdded')));
+  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted);
   const { categories, loading: categoriesLoading } = useCategories();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState(false);

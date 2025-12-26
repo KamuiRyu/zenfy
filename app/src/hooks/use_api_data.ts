@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer, useState, useRef, useCallback } from "react";
+import { useEffect, useReducer, useState, useRef, useCallback, useMemo } from "react";
 
 type ApiDataState<T> = {
   data: T[];
@@ -111,11 +111,13 @@ export function useApiSingleData<T>(
     }
   }, [fetchFunction]);
 
+  const effectDeps = useMemo(() => [autoFetch, fetchData, ...dependencies], [autoFetch, fetchData, ...dependencies]);
+
   useEffect(() => {
     if (autoFetch) {
       fetchData();
     }
-  }, [autoFetch, fetchData, ...dependencies]);
+  }, effectDeps);
 
   return {
     data,

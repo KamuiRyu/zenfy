@@ -1,5 +1,6 @@
 import { CardType } from "./cards";
 import { CategoriesType } from "./categories";
+import { Filter } from "./base";
 
 export type TransactionKind = "credit" | "debit" | "withdrawal" | "deposit" | "transfer";
 export type RecurrenceType = "daily" | "weekly" | "monthly" | "yearly" | undefined;
@@ -60,4 +61,14 @@ export interface TransactionData {
   recurrenceType?: RecurrenceType;
   recurrenceStartDate?: Date;
   recurrenceEndDate?: Date;
+}
+
+export interface TransactionFiltersAPI extends Filter{
+  date_from?: string;
+  date_to?: string;
+  category_id?: number;
+  type?: string;
+  kind?: string;
+  search?: string;
+  card_uuid?: string;
 }

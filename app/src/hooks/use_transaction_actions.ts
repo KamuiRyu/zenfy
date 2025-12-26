@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import transactionService from "@/services/transaction_service";
-import { TransactionData, TransactionType } from "@/types/transactions";
+import { TransactionData } from "@/types/transactions";
 
 export function useTransactionActions() {
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ export function useTransactionActions() {
       };
       const response = await transactionService.updateTransaction(id, payload);
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to update transaction", error);
       throw error;
     } finally {
@@ -71,7 +71,7 @@ export function useTransactionActions() {
     try {
       await transactionService.deleteTransaction(id);
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to delete transaction", error);
       throw error;
     } finally {

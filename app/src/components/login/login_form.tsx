@@ -71,7 +71,7 @@ export default function LoginForm() {
           translateFormMessage(t, parsed.code ?? res.error)
         );
         return;
-      } catch (_) {
+      } catch {
         setError(translateFormMessage(t, res.error));
         return;
       }
