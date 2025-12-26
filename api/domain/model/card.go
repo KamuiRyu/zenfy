@@ -30,13 +30,13 @@ type Card struct {
 }
 
 // NewCard creates a new card instance
-func NewCard(userID int, Uuid string, lastFour, brand string, cardType CardType, holderName, nickname string, expiryMonth, expiryYear, billingDay int, isDefault bool) *Card {
+func NewCard(userID int, Uuid string, lastFour, brand string, bank string, cardType CardType, holderName, nickname string, expiryMonth, expiryYear, billingDay int, isDefault bool) *Card {
 	return &Card{
 		UserID:      userID,
 		Uuid:        Uuid,
 		LastFour:    lastFour,
 		Brand:       brand,
-		Bank:        "",
+		Bank:        bank,
 		CardType:    cardType,
 		HolderName:  holderName,
 		Nickname:    nickname,

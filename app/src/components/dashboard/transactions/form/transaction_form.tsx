@@ -151,6 +151,11 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
 
   const onSubmit = async () => {
     const data = form.getValues();
+
+    if (!data.isInstallment) {
+      delete data.installmentNumber;
+      delete data.totalInstallments;
+    }
     
     try {
       if (transaction) {

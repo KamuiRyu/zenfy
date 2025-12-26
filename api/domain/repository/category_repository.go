@@ -12,5 +12,6 @@ type CategoryRepository interface {
 	ListByUser(userID int) ([]*model.Category, error)
 	Update(category *model.Category) error
 	Delete(id int) error
+	DeleteByUUID(uuid string) error
 	FindDefaultCategories() ([]*model.Category, error)
 }

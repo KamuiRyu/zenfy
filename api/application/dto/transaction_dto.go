@@ -21,7 +21,8 @@ type CreateTransactionRequest struct {
 
 	// Installment fields
 	IsInstallment     bool `json:"is_installment"`
-	TotalInstallments *int `json:"total_installments" validate:"omitempty,min=2,max=60"`
+	InstallmentNumber *int `json:"installment_number" validate:"omitempty,min=1"`
+	TotalInstallments *int `json:"total_installments" validate:"omitempty,min=1,max=99"`
 }
 
 type UpdateTransactionRequest struct {
@@ -65,10 +66,9 @@ type TransactionResponse struct {
 	RecurrenceEndDate   *string `json:"recurrence_end_date"`
 
 	// Installment fields
-	IsInstallment         bool `json:"is_installment"`
-	InstallmentNumber     *int `json:"installment_number"`
-	TotalInstallments     *int `json:"total_installments"`
-	OriginalTransactionID *int `json:"original_transaction_id"`
+	IsInstallment     bool `json:"is_installment"`
+	InstallmentNumber *int `json:"installment_number"`
+	TotalInstallments *int `json:"total_installments"`
 }
 
 type TransactionSummaryResponse struct {

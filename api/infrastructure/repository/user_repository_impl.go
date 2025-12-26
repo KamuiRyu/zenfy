@@ -35,6 +35,22 @@ func (r *userRepoImpl) GetByID(id int) (*model.User, error) {
 	return u, nil
 }
 
+func (r *userRepoImpl) GetByUUID(uuid string) (*model.User, error) {
+	ctx := context.Background()
+	u := &model.User{}
+	err := r.db.NewSelect().
+		Model(u).
+		Where("uuid = ?", uuid).
+		Scan(ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("query user by uuid: %w", err)
+	}
+	return u, nil
+}
+
 func (r *userRepoImpl) Create(u *model.User) error {
 	ctx := context.Background()
 	_, err := r.db.NewInsert().

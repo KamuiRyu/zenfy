@@ -5,24 +5,25 @@ import (
 	"zenfy-api/application/service"
 )
 
-type UpdateCardUseCase struct {
+type CreateCardUseCase struct {
 	cardService service.CardService
 	validator   service.ValidationService
 }
 
-func NewUpdateCardUseCase(
+func NewCreateCardUseCase(
 	cardService service.CardService,
 	validator service.ValidationService,
-) *UpdateCardUseCase {
-	return &UpdateCardUseCase{
+) *CreateCardUseCase {
+	return &CreateCardUseCase{
 		cardService: cardService,
 		validator:   validator,
 	}
 }
 
-func (uc *UpdateCardUseCase) Execute(userID int, cardUUID string, input dto.UpdateCardRequest) (*dto.CardResponse, error) {
+func (uc *CreateCardUseCase) Execute(userID int, input dto.AddCardRequest) (*dto.CardResponse, error) {
 	if err := uc.validator.Validate(&input); err != nil {
 		return nil, err
 	}
-	return uc.cardService.UpdateCard(userID, cardUUID, input)
+
+	return uc.cardService.CreateCard(userID, input)
 }

@@ -12,11 +12,12 @@ import (
 )
 
 type CardService interface {
-	AddCard(userID int, req dto.AddCardRequest) (*dto.CardResponse, error)
+	CreateCard(userID int, req dto.AddCardRequest) (*dto.CardResponse, error)
 	GetUserCards(userID int) ([]dto.CardResponse, error)
-	GetCardByID(userID, cardID int) (*dto.CardResponse, error)
-	DeleteCard(userID, cardID int) error
-	SetDefaultCard(userID, cardID int) error
+	GetCardByUUID(userID int, cardUUID string) (*dto.CardResponse, error)
+	UpdateCard(userID int, cardUUID string, req dto.UpdateCardRequest) (*dto.CardResponse, error)
+	DeleteCard(userID int, cardUUID string) error
+	SetDefaultCard(userID int, cardUUID string) error
 }
 
 type cardService struct {
@@ -29,15 +30,14 @@ func NewCardService(cardRepo repository.CardRepository) CardService {
 	}
 }
 
-func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResponse, error) {
-
+func (s *cardService) CreateCard(userID int, req dto.AddCardRequest) (*dto.CardResponse, error) {
 	if err := s.validateExpiryDate(req.ExpiryMonth, req.ExpiryYear); err != nil {
 		return nil, err
 	}
 
 	existingCards, err := s.cardRepo.FindByUserID(userID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("CARD_NOT_FOUND")
 	}
 	isDefault := len(existingCards) == 0 || req.IsDefault
 
@@ -46,7 +46,7 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 			if card.IsDefault {
 				card.IsDefault = false
 				if err := s.cardRepo.Update(card); err != nil {
-					return nil, fmt.Errorf("failed to unset current default card: %w", err)
+					return nil, fmt.Errorf("FAILED_TO_UNSET_CURRENT_DEFAULT_CARD")
 				}
 				break
 			}
@@ -61,6 +61,7 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 		cardUuid,
 		req.LastFour,
 		req.Brand,
+		req.Bank,
 		model.CardType(req.CardType),
 		req.HolderName,
 		req.Nickname,
@@ -71,7 +72,60 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 	)
 
 	if err := s.cardRepo.Create(card); err != nil {
-		return nil, fmt.Errorf("failed to create card: %w", err)
+		return nil, fmt.Errorf("FAILED_TO_CREATE_CARD")
+	}
+
+	return &dto.CardResponse{
+		Uuid:        card.Uuid,
+		LastFour:    card.LastFour,
+		Brand:       card.Brand,
+		Bank:        card.Bank,
+		CardType:    string(card.CardType),
+		HolderName:  card.HolderName,
+		Nickname:    card.Nickname,
+		ExpiryMonth: card.ExpiryMonth,
+		ExpiryYear:  card.ExpiryYear,
+		BillingDay:  card.BillingDay,
+		IsDefault:   card.IsDefault,
+		CreatedAt:   card.CreatedAt.Format(time.RFC3339),
+	}, nil
+}
+
+func (s *cardService) GetUserCards(userID int) ([]dto.CardResponse, error) {
+	cards, err := s.cardRepo.FindByUserID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("CARD_NOT_FOUND")
+	}
+
+	responses := make([]dto.CardResponse, len(cards))
+	for i, card := range cards {
+		responses[i] = dto.CardResponse{
+			Uuid:        card.Uuid,
+			LastFour:    card.LastFour,
+			Brand:       card.Brand,
+			Bank:        card.Bank,
+			CardType:    string(card.CardType),
+			HolderName:  card.HolderName,
+			Nickname:    card.Nickname,
+			ExpiryMonth: card.ExpiryMonth,
+			ExpiryYear:  card.ExpiryYear,
+			BillingDay:  card.BillingDay,
+			IsDefault:   card.IsDefault,
+			CreatedAt:   card.CreatedAt.Format(time.RFC3339),
+		}
+	}
+
+	return responses, nil
+}
+
+func (s *cardService) GetCardByUUID(userID int, cardUUID string) (*dto.CardResponse, error) {
+	card, err := s.cardRepo.FindByUUID(cardUUID)
+	if err != nil {
+		return nil, fmt.Errorf("CARD_NOT_FOUND")
+	}
+
+	if card.UserID != userID {
+		return nil, fmt.Errorf("CARD_DOES_NOT_BELONG_TO_USER")
 	}
 
 	return &dto.CardResponse{
@@ -89,44 +143,71 @@ func (s *cardService) AddCard(userID int, req dto.AddCardRequest) (*dto.CardResp
 	}, nil
 }
 
-func (s *cardService) GetUserCards(userID int) ([]dto.CardResponse, error) {
-	cards, err := s.cardRepo.FindByUserID(userID)
-	if err != nil {
+func (s *cardService) UpdateCard(userID int, cardUUID string, req dto.UpdateCardRequest) (*dto.CardResponse, error) {
+
+	if err := s.validateExpiryDate(req.ExpiryMonth, req.ExpiryYear); err != nil {
 		return nil, err
 	}
 
-	responses := make([]dto.CardResponse, len(cards))
-	for i, card := range cards {
-		responses[i] = dto.CardResponse{
-			LastFour:    card.LastFour,
-			Brand:       card.Brand,
-			CardType:    string(card.CardType),
-			HolderName:  card.HolderName,
-			Nickname:    card.Nickname,
-			ExpiryMonth: card.ExpiryMonth,
-			ExpiryYear:  card.ExpiryYear,
-			BillingDay:  card.BillingDay,
-			IsDefault:   card.IsDefault,
-			CreatedAt:   card.CreatedAt.Format(time.RFC3339),
-		}
-	}
-
-	return responses, nil
-}
-
-func (s *cardService) GetCardByID(userID, cardID int) (*dto.CardResponse, error) {
-	card, err := s.cardRepo.FindByID(cardID)
+	// Check if card exists and belongs to user
+	card, err := s.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("CARD_NOT_FOUND")
 	}
 
 	if card.UserID != userID {
-		return nil, fmt.Errorf("card does not belong to user")
+		return nil, fmt.Errorf("CARD_DOES_NOT_BELONG_TO_USER")
 	}
 
+	// Update card fields
+	card.LastFour = req.LastFour
+	card.Brand = req.Brand
+	if req.Bank != "" {
+		card.Bank = req.Bank
+	}
+	card.CardType = model.CardType(req.CardType)
+	card.HolderName = req.HolderName
+	if req.Nickname != "" {
+		card.Nickname = req.Nickname
+	}
+	card.ExpiryMonth = req.ExpiryMonth
+	card.ExpiryYear = req.ExpiryYear
+	card.BillingDay = req.BillingDay
+
+	// Handle default card logic
+	if req.IsDefault && !card.IsDefault {
+		// User wants to set this as default, unset current default
+		existingCards, err := s.cardRepo.FindByUserID(userID)
+		if err != nil {
+			return nil, fmt.Errorf("CARD_NOT_FOUND")
+		}
+
+		for _, c := range existingCards {
+			if c.IsDefault && c.ID != card.ID {
+				c.IsDefault = false
+				if err := s.cardRepo.Update(c); err != nil {
+					return nil, fmt.Errorf("FAILED_TO_UNSET_CURRENT_DEFAULT_CARD")
+				}
+				break
+			}
+		}
+		card.IsDefault = true
+	} else if !req.IsDefault && card.IsDefault {
+		// User wants to unset this as default
+		card.IsDefault = false
+	}
+
+	// Update card in database
+	if err := s.cardRepo.Update(card); err != nil {
+		return nil, fmt.Errorf("FAILED_TO_UPDATE_CARD")
+	}
+
+	// Return response
 	return &dto.CardResponse{
+		Uuid:        card.Uuid,
 		LastFour:    card.LastFour,
 		Brand:       card.Brand,
+		Bank:        card.Bank,
 		CardType:    string(card.CardType),
 		HolderName:  card.HolderName,
 		Nickname:    card.Nickname,
@@ -138,30 +219,30 @@ func (s *cardService) GetCardByID(userID, cardID int) (*dto.CardResponse, error)
 	}, nil
 }
 
-func (s *cardService) DeleteCard(userID, cardID int) error {
-	card, err := s.cardRepo.FindByID(cardID)
+func (s *cardService) DeleteCard(userID int, cardUUID string) error {
+	card, err := s.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return err
+		return fmt.Errorf("CARD_NOT_FOUND")
 	}
 
 	if card.UserID != userID {
-		return fmt.Errorf("card does not belong to user")
+		return fmt.Errorf("CARD_DOES_NOT_BELONG_TO_USER")
 	}
 
-	return s.cardRepo.Delete(cardID)
+	return s.cardRepo.DeleteByUUID(cardUUID)
 }
 
-func (s *cardService) SetDefaultCard(userID, cardID int) error {
-	card, err := s.cardRepo.FindByID(cardID)
+func (s *cardService) SetDefaultCard(userID int, cardUUID string) error {
+	card, err := s.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
-		return err
+		return fmt.Errorf("CARD_NOT_FOUND")
 	}
 
 	if card.UserID != userID {
-		return fmt.Errorf("card does not belong to user")
+		return fmt.Errorf("CARD_DOES_NOT_BELONG_TO_USER")
 	}
 
-	return s.cardRepo.SetDefault(userID, cardID)
+	return s.cardRepo.SetDefault(userID, card.ID)
 }
 
 func (s *cardService) validateExpiryDate(month, year int) error {
@@ -170,11 +251,11 @@ func (s *cardService) validateExpiryDate(month, year int) error {
 	currentMonth := int(now.Month())
 
 	if year < currentYear {
-		return fmt.Errorf("card has expired")
+		return fmt.Errorf("CARD_HAS_EXPIRED")
 	}
 
 	if year == currentYear && month < currentMonth {
-		return fmt.Errorf("card has expired")
+		return fmt.Errorf("CARD_HAS_EXPIRED")
 	}
 
 	return nil

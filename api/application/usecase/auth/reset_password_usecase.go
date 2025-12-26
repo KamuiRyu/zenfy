@@ -1,23 +1,17 @@
 package usecase
 
 import (
-	"errors"
-
-	"golang.org/x/crypto/bcrypt"
-
 	"zenfy-api/application/dto"
 	"zenfy-api/application/service"
-	"zenfy-api/domain/repository"
 )
 
 type ResetPasswordUseCase struct {
-	passwordResetRepo repository.PasswordResetTokenRepository
-	userRepo          repository.UserRepository
-	validator         service.ValidationService
+	authService service.AuthService
+	validator   service.ValidationService
 }
 
-func NewResetPasswordUseCase(passwordResetRepo repository.PasswordResetTokenRepository, userRepo repository.UserRepository, validator service.ValidationService) *ResetPasswordUseCase {
-	return &ResetPasswordUseCase{passwordResetRepo: passwordResetRepo, userRepo: userRepo, validator: validator}
+func NewResetPasswordUseCase(authService service.AuthService, validator service.ValidationService) *ResetPasswordUseCase {
+	return &ResetPasswordUseCase{authService: authService, validator: validator}
 }
 
 func (uc *ResetPasswordUseCase) Execute(input dto.ResetPasswordRequestDTO) error {
@@ -25,19 +19,5 @@ func (uc *ResetPasswordUseCase) Execute(input dto.ResetPasswordRequestDTO) error
 		return err
 	}
 
-	userID, err := uc.passwordResetRepo.Consume(input.Token)
-	if err != nil {
-		return errors.New("INVALID_OR_EXPIRED_TOKEN")
-	}
-
-	hashed, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	if err := uc.userRepo.UpdatePassword(userID, string(hashed)); err != nil {
-		return err
-	}
-
-	return nil
+	return uc.authService.ResetPassword(input.Token, input.NewPassword)
 }

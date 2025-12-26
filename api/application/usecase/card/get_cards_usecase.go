@@ -1,24 +1,22 @@
 package usecase
 
 import (
-	"time"
-
 	"zenfy-api/application/dto"
-	"zenfy-api/domain/repository"
+	"zenfy-api/application/service"
 )
 
 type GetCardsUseCase struct {
-	cardRepo repository.CardRepository
+	cardService service.CardService
 }
 
-func NewGetCardsUseCase(cardRepo repository.CardRepository) *GetCardsUseCase {
+func NewGetCardsUseCase(cardService service.CardService) *GetCardsUseCase {
 	return &GetCardsUseCase{
-		cardRepo: cardRepo,
+		cardService: cardService,
 	}
 }
 
 func (uc *GetCardsUseCase) Execute(userID int) ([]dto.CardResponse, error) {
-	cards, err := uc.cardRepo.FindByUserID(userID)
+	cards, err := uc.cardService.GetUserCards(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +35,7 @@ func (uc *GetCardsUseCase) Execute(userID int) ([]dto.CardResponse, error) {
 			ExpiryYear:  card.ExpiryYear,
 			BillingDay:  card.BillingDay,
 			IsDefault:   card.IsDefault,
-			CreatedAt:   card.CreatedAt.Format(time.RFC3339),
+			CreatedAt:   card.CreatedAt,
 		}
 	}
 

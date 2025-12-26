@@ -1,38 +1,24 @@
 package usecase
 
 import (
-	"fmt"
-	"strconv"
-	"time"
-
 	"zenfy-api/application/dto"
-	"zenfy-api/domain/repository"
+	"zenfy-api/application/service"
 )
 
 type GetCardUseCase struct {
-	cardRepo repository.CardRepository
+	cardService service.CardService
 }
 
-func NewGetCardUseCase(cardRepo repository.CardRepository) *GetCardUseCase {
+func NewGetCardUseCase(cardService service.CardService) *GetCardUseCase {
 	return &GetCardUseCase{
-		cardRepo: cardRepo,
+		cardService: cardService,
 	}
 }
 
 func (uc *GetCardUseCase) Execute(userID int, cardUUID string) (*dto.CardResponse, error) {
-	card, err := uc.cardRepo.FindByUUID(cardUUID)
+	card, err := uc.cardService.GetCardByUUID(userID, cardUUID)
 	if err != nil {
-		// fallback: if client passed numeric ID as string, try FindByID
-		if idInt, perr := strconv.Atoi(cardUUID); perr == nil {
-			card, err = uc.cardRepo.FindByID(idInt)
-		}
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if card.UserID != userID {
-		return nil, fmt.Errorf("UNAUTHORIZED_ACTION")
+		return nil, err
 	}
 
 	return &dto.CardResponse{
@@ -47,6 +33,6 @@ func (uc *GetCardUseCase) Execute(userID int, cardUUID string) (*dto.CardRespons
 		ExpiryYear:  card.ExpiryYear,
 		BillingDay:  card.BillingDay,
 		IsDefault:   card.IsDefault,
-		CreatedAt:   card.CreatedAt.Format(time.RFC3339),
+		CreatedAt:   card.CreatedAt,
 	}, nil
 }

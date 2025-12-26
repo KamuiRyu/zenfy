@@ -36,7 +36,7 @@ func (r *transactionRepositoryImpl) FindByID(id int) (*model.Transaction, error)
 		Model(transaction).
 		Relation("Category").
 		Relation("Card").
-		Where("id = ?", id).
+		Where("transactions.id = ?", id).
 		Scan(ctx)
 
 	if err == sql.ErrNoRows {
@@ -156,7 +156,7 @@ func (r *transactionRepositoryImpl) Update(tx *model.Transaction) error {
 		Model(tx).
 		Column("amount", "currency", "category", "kind", "merchant", "description", "metadata", "occurred_at", "updated_at",
 			"is_recurring", "recurrence_type", "recurrence_end_date",
-			"is_installment", "installment_number", "total_installments", "original_transaction_id").
+			"is_installment", "installment_number", "total_installments").
 		Where("id = ?", tx.ID).
 		Exec(ctx)
 
@@ -240,7 +240,6 @@ func (r *transactionRepositoryImpl) ListInstallments(originalTransactionID int) 
 	var transactions []*model.Transaction
 	err := r.db.NewSelect().
 		Model(&transactions).
-		Where("original_transaction_id = ?", originalTransactionID).
 		Order("installment_number ASC").
 		Scan(ctx)
 

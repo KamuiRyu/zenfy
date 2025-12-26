@@ -162,11 +162,11 @@ func (h *AuthHandler) Refresh(c *fiber.Ctx) error {
 		token = auth
 	}
 
-	accessToken, newRefresh, err := h.refreshUC.Execute(token)
+	tokenData, err := h.refreshUC.Execute(token)
 	if err != nil {
 		return resp.Error(c, fiber.StatusUnauthorized, "INVALID_TOKEN", messages.InvalidToken, err)
 	}
-	return resp.Success(c, fiber.StatusOK, map[string]string{"token": accessToken, "refresh_token": newRefresh}, messages.TokenRefreshed)
+	return resp.Success(c, fiber.StatusOK, map[string]string{"token": tokenData.Token, "refresh_token": tokenData.Refresh}, messages.TokenRefreshed)
 }
 
 func (h *AuthHandler) Validate(c *fiber.Ctx) error {

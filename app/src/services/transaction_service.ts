@@ -32,7 +32,6 @@ type Transaction = {
   is_installment: boolean;
   installment_number?: number;
   total_installments?: number;
-  original_transaction_id?: number;
 };
 
 const base = "/transactions";

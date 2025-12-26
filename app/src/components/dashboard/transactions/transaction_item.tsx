@@ -28,7 +28,7 @@ interface TransactionItemProps {
 
 export default function TransactionItem({ transaction, onDelete }: TransactionItemProps) {
   const { t } = useI18n();
-  const { deleteTransaction, loading } = useTransactionActions();
+  const { deleteTransaction } = useTransactionActions();
   const router = useRouter();
 
   const isIncome = transaction.category?.type === "income";
