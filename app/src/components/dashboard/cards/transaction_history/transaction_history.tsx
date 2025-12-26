@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import TransactionHistoryEmpty from "./transaction_history_empty";
 import TransactionHistoryHeader from "./transaction_history_header";
 import TransactionGroup from "./transaction_group";
 import TransactionHistoryFooter from "./transaction_history_footer";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -78,7 +78,7 @@ export default function TransactionFilters({
     if (needsUpdate) {
       onFiltersChange(newFilters);
     }
-  }, [filters.dateFrom, filters.dateTo, monthStart, monthEnd, onFiltersChange]);
+  }, [filters, monthStart, monthEnd, onFiltersChange]);
 
   useEffect(() => {
     if (!filters.dateFrom && !filters.dateTo) {
@@ -88,12 +88,12 @@ export default function TransactionFilters({
         dateTo: monthEnd.toISOString(),
       });
     }
-  }, []); // Run only on mount
+  }, [filters, monthStart, monthEnd, onFiltersChange]);
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = useCallback((key: string, value: string | number | undefined) => {
     const newFilters = { ...filters };
     if (value !== undefined) {
-      newFilters[key as keyof typeof newFilters] = value;
+      (newFilters as Record<string, string | number | undefined>)[key] = value;
     } else {
       delete newFilters[key as keyof typeof newFilters];
     }
@@ -108,7 +108,7 @@ export default function TransactionFilters({
     }
 
     onFiltersChange(newFilters);
-  };
+  }, [filters, onFiltersChange]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -119,7 +119,7 @@ export default function TransactionFilters({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue, filters.search]);
+  }, [searchValue, filters.search, updateFilter]);
 
   const clearFilters = () => {
     onFiltersChange({});
