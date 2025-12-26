@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -49,6 +49,30 @@ export default function TransactionFilters({
   const [searchValue, setSearchValue] = useState(filters.search || "");
   const { categories } = useCategories();
 
+  const updateFilter = useCallback(
+    (key: string, value: string | number | undefined) => {
+      const newFilters = { ...filters };
+      if (value !== undefined) {
+        (newFilters as Record<string, string | number | undefined>)[key] =
+          value;
+      } else {
+        delete newFilters[key as keyof typeof newFilters];
+      }
+
+      if (key === "dateFrom" || key === "dateTo") {
+        const hasDateFrom = newFilters.dateFrom !== undefined;
+        const hasDateTo = newFilters.dateTo !== undefined;
+
+        if ((hasDateFrom && !hasDateTo) || (!hasDateFrom && hasDateTo)) {
+          return;
+        }
+      }
+
+      onFiltersChange(newFilters);
+    },
+    [filters, onFiltersChange]
+  );
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const newSearchValue = searchValue || undefined;
@@ -58,27 +82,7 @@ export default function TransactionFilters({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue, filters.search]);
-
-  const updateFilter = (key: string, value: any) => {
-    const newFilters = { ...filters };
-    if (value !== undefined) {
-      newFilters[key as keyof typeof newFilters] = value;
-    } else {
-      delete newFilters[key as keyof typeof newFilters];
-    }
-
-    if (key === "dateFrom" || key === "dateTo") {
-      const hasDateFrom = newFilters.dateFrom !== undefined;
-      const hasDateTo = newFilters.dateTo !== undefined;
-
-      if ((hasDateFrom && !hasDateTo) || (!hasDateFrom && hasDateTo)) {
-        return;
-      }
-    }
-
-    onFiltersChange(newFilters);
-  };
+  }, [searchValue, filters.search, updateFilter]);
 
   const clearFilters = () => {
     onFiltersChange({});

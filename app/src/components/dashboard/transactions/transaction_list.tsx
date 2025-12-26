@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useI18n } from "@/i18n/useI18n";
 import useTransactions from "@/hooks/use_transactions";
 import TransactionItem from "./transaction_item";

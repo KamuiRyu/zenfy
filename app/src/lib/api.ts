@@ -19,14 +19,17 @@ export async function forwardRequest(
   }
 
   try {
-    let t = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const t = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     let access =
-      (t as any)?.accessToken || (t as any)?.token || (t as any)?.access;
-    if (t && (t as any).expiresAt && Date.now() >= (t as any).expiresAt * 1000) {
+      (t as { accessToken?: string; token?: string; access?: string })?.accessToken ||
+      (t as { accessToken?: string; token?: string; access?: string })?.token ||
+      (t as { accessToken?: string; token?: string; access?: string })?.access;
+    const expiresAt = (t as { expiresAt?: number })?.expiresAt;
+    if (t && expiresAt && Date.now() >= expiresAt * 1000) {
       try {
         const refreshRes = await axios.post(`${API_URL}/auth/refresh`, {}, {
           headers: {
-            "Authorization": `Bearer ${(t as any).refreshToken}`,
+            "Authorization": `Bearer ${(t as { refreshToken?: string }).refreshToken}`,
             "Content-Type": "application/json",
           },
         });
@@ -42,7 +45,7 @@ export async function forwardRequest(
   } catch {}
 
   const config: AxiosRequestConfig = {
-    method: req.method as any,
+    method: req.method as "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD",
     url,
     headers,
     validateStatus: () => true,
@@ -70,9 +73,9 @@ export async function forwardRequest(
       status: response.status,
       headers: resHeaders,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: "Proxy request failed", details: error.message },
+      { error: "Proxy request failed", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

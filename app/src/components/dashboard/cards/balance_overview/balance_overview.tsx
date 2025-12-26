@@ -1,8 +1,6 @@
 import MoneyDisplay from "@/components/ui/money_display";
-import { DollarSign, TrendingUp, TrendingDown, Clock, Plus } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 interface BalanceOverviewData {
   balance: number;

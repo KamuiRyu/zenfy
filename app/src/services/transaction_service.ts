@@ -1,38 +1,5 @@
 import { request } from "@/services/service_base";
-
-type Transaction = {
-  uuid: string;
-  card_uuid: string;
-  user_uuid: string;
-  category_uuid: string;
-  category?: {
-    uuid: string;
-    user_id?: number;
-    name: string;
-    description?: string;
-    color?: string;
-    icon?: string;
-    is_default: boolean;
-    created_at: string;
-    updated_at: string;
-  };
-  amount: number;
-  currency: string;
-  type: string;
-  merchant?: string;
-  description?: string;
-  metadata?: Record<string, any>;
-  occurred_at: string;
-  created_at: string;
-  updated_at: string;
-  is_recurring: boolean;
-  recurrence_type?: string;
-  recurrence_start_date?: string;
-  recurrence_end_date?: string;
-  is_installment: boolean;
-  installment_number?: number;
-  total_installments?: number;
-};
+import { TransactionData } from "@/types/transactions";
 
 const base = "/transactions";
 
@@ -63,11 +30,11 @@ export async function getTransaction(id: string) {
   }
 }
 
-export async function createTransaction(payload: Partial<Transaction>) {
+export async function createTransaction(payload: Partial<TransactionData>) {
   return request(base, "", { method: "POST", data: payload });
 }
 
-export async function updateTransaction(id: string, payload: Partial<Transaction>) {
+export async function updateTransaction(id: string, payload: Partial<TransactionData>) {
   const response = await request(base, `${id}`, {
     method: "PUT",
     data: payload,

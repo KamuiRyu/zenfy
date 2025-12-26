@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,25 +19,12 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, Filter, X } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
+import { TransactionFiltersType, CategoryType}  from "@/types/transactions";
 
 interface TransactionFiltersProps {
-  filters: {
-    dateFrom?: string;
-    dateTo?: string;
-    categoryId?: number;
-    type?: string;
-    kind?: string;
-    search?: string;
-  };
-  onFiltersChange: (filters: {
-    dateFrom?: string;
-    dateTo?: string;
-    categoryId?: number;
-    type?: string;
-    kind?: string;
-    search?: string;
-  }) => void;
-  categories: { id: number; name: string }[];
+  filters: TransactionFiltersType;
+  onFiltersChange: (filters: TransactionFiltersType) => void;
+  categories: CategoryType[];
   loading?: boolean;
 }
 
@@ -78,7 +65,7 @@ export default function TransactionFilters({
     if (needsUpdate) {
       onFiltersChange(newFilters);
     }
-  }, [filters.dateFrom, filters.dateTo, monthStart, monthEnd, onFiltersChange]);
+  }, [filters, monthStart, monthEnd, onFiltersChange]);
 
   useEffect(() => {
     if (!filters.dateFrom && !filters.dateTo) {
@@ -88,12 +75,12 @@ export default function TransactionFilters({
         dateTo: monthEnd.toISOString(),
       });
     }
-  }, []); // Run only on mount
+  }, [filters, monthStart, monthEnd, onFiltersChange]);
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = useCallback((key: string, value: string | number | undefined) => {
     const newFilters = { ...filters };
     if (value !== undefined) {
-      newFilters[key as keyof typeof newFilters] = value;
+      (newFilters as Record<string, string | number | undefined>)[key] = value;
     } else {
       delete newFilters[key as keyof typeof newFilters];
     }
@@ -108,7 +95,7 @@ export default function TransactionFilters({
     }
 
     onFiltersChange(newFilters);
-  };
+  }, [filters, onFiltersChange]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -119,7 +106,7 @@ export default function TransactionFilters({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue, filters.search]);
+  }, [searchValue, filters.search, updateFilter]);
 
   const clearFilters = () => {
     onFiltersChange({});
@@ -247,7 +234,7 @@ export default function TransactionFilters({
                 {t("dashboard.transaction_history.all_categories")}
               </SelectItem>
               {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id.toString()}>
+                <SelectItem key={cat.uuid} value={cat.uuid}>
                   {cat.name}
                 </SelectItem>
               ))}

@@ -15,6 +15,7 @@ import { CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
+import { CardTypes } from "@/types/cards";
 
 export default function AddCardDialog() {
   const { t } = useI18n();
@@ -65,14 +66,14 @@ export default function AddCardDialog() {
         expiry_year: data.expiryDate
           ? data.expiryDate.getFullYear()
           : undefined,
-        card_type: data.cardType,
+        card_type: data.cardType as CardTypes,
         billing_day: Number(data.billingDay),
         nickname: data.nickname,
         is_default: data.isDefault,
       });
       window.dispatchEvent(new Event('refetchCards'));
       router.back();
-    } catch (err: any) {
+    } catch  {
     } finally {
       setLoading(false);
     }

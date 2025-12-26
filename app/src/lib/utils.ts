@@ -1,4 +1,3 @@
-import { useI18n } from "@/i18n/useI18n";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 

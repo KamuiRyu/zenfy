@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useI18n } from "@/i18n/useI18n";
@@ -27,15 +27,16 @@ import useCategories from "@/hooks/use_categories";
 import useCards from "@/hooks/use_cards";
 import { TransactionFormData } from "@/components/dashboard/transactions/form/transaction_form.schema";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { CardBrand } from "../../cards/my_cards/card_brand";
 import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./transaction_info_tab";
 import TransactionDetailsTab from "./transaction_details_tab";
 import TransactionRecurringTab from "./transaction_recurring_tab";
+import { TransactionData, TransactionType } from "@/types/transactions";
 
 interface TransactionFormProps {
-  transaction?: any;
+  transaction?: TransactionType | null;
   onClose: () => void;
   preSelectedCard?: string;
 }
@@ -127,8 +128,8 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     },
   });
 
-  const selectedType = form.watch("type");
-  const selectedCardUuid = form.watch("card_uuid");
+  const selectedType = useWatch({ control: form.control, name: "type" });
+  const selectedCardUuid = useWatch({ control: form.control, name: "card_uuid" });
   const selectedCard = cards.find(card => card.id?.toString() === selectedCardUuid);
 
   const filteredCategories = useMemo(() => {
@@ -169,19 +170,25 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     return [...new Set(options)];
   }, [selectedCard, selectedType]);
 
-  useEffect(() => {
-    const errors = form.formState.errors;
-    if (errors.description || errors.amount || errors.category_uuid || errors.card_uuid || errors.date || errors.type) {
-      setActiveTab("info");
-    } else if (errors.kind) {
-      setActiveTab("details");
-    } else if (errors.recurrenceType || errors.recurrenceStartDate || errors.recurrenceEndDate) {
-      setActiveTab("recurring");
-    }
-  }, [form.formState.errors]);
-
   const onSubmit = async () => {
-    const data = form.getValues();
+    const formData = form.getValues();
+
+    const data: TransactionData = {
+      description: formData.description,
+      amount: Math.round(formData.amount * 100),
+      category_uuid: formData.category_uuid,
+      card_uuid: formData.card_uuid,
+      occurred_at: formData.date,
+      kind: formData.kind,
+      merchant: formData.merchant,
+      isInstallment: formData.isInstallment,
+      installmentNumber: formData.installmentNumber,
+      totalInstallments: formData.totalInstallments,
+      isRecurring: formData.isRecurring,
+      recurrenceType: formData.recurrenceType,
+      recurrenceStartDate: formData.recurrenceStartDate,
+      recurrenceEndDate: formData.recurrenceEndDate,
+    };
 
     if (!data.isInstallment) {
       delete data.installmentNumber;
@@ -206,7 +213,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         window.dispatchEvent(new CustomEvent('transactionAdded'));
       }
       onClose();
-    } catch (error) {
+    } catch {
     }
   };
 

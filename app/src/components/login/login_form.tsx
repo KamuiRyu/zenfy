@@ -52,9 +52,10 @@ export default function LoginForm() {
           parsed.code === "VALIDATION_ERROR" &&
           Array.isArray(parsed.errors)
         ) {
-          parsed.errors.forEach((err: any) => {
+          parsed.errors.forEach((err: { field: string; message?: string }) => {
             if (err && err.field) {
-              methods.setError(err.field, {
+              const fieldName = err.field === "email" || err.field === "password" ? err.field : "root";
+              methods.setError(fieldName as "email" | "password" | "root", {
                 type: "server",
                 message: translateFormMessage(
                   t,
@@ -70,7 +71,7 @@ export default function LoginForm() {
           translateFormMessage(t, parsed.code ?? res.error)
         );
         return;
-      } catch (e) {
+      } catch {
         setError(translateFormMessage(t, res.error));
         return;
       }

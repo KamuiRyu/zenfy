@@ -14,11 +14,6 @@ type ApiDataAction<T> =
   | { type: 'SET_DATA'; payload: T[] };
 
 function createApiDataReducer<T>() {
-  const initialState: ApiDataState<T> = {
-    data: [],
-    loading: true,
-    error: null,
-  };
 
   return function apiDataReducer(state: ApiDataState<T>, action: ApiDataAction<T>): ApiDataState<T> {
     switch (action.type) {
@@ -35,9 +30,9 @@ function createApiDataReducer<T>() {
 }
 
 export default function useApiData<T>(
-  service: any,
+  service: Record<string, (...args: unknown[]) => Promise<unknown>>,
   methodName: string,
-  mapper?: (item: any) => T,
+  mapper?: (item: unknown) => T,
   autoFetch: boolean = true
 ) {
   const reducer = createApiDataReducer<T>();
@@ -47,17 +42,17 @@ export default function useApiData<T>(
     error: null,
   });
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     dispatch({ type: 'SET_ERROR', payload: null });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const resp = await service[methodName]();
       const payload =
         resp && typeof resp === "object" && "data" in resp
-          ? (resp as any).data
+          ? (resp as { data: unknown }).data
           : resp;
 
-      let dataArray: any[] = [];
+      let dataArray: unknown[] = [];
       if (Array.isArray(payload)) dataArray = payload;
       else if (payload && typeof payload === "object") {
         const keys = Object.keys(payload).filter(
@@ -65,26 +60,26 @@ export default function useApiData<T>(
         );
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
-          dataArray = keys.map((k) => (payload as any)[k]);
-        } else dataArray = Object.values(payload as any);
+          dataArray = keys.map((k) => (payload as Record<string, unknown>)[k]);
+        } else dataArray = Object.values(payload as Record<string, unknown>);
       }
 
-      const mappedData = mapper ? dataArray.map(mapper) : dataArray;
+      const mappedData: T[] = mapper ? dataArray.map(mapper) : (dataArray as T[]);
 
       dispatch({ type: 'SET_DATA', payload: mappedData });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to load ${methodName}`, err);
-      dispatch({ type: 'SET_ERROR', payload: err?.message || `Failed to load ${methodName}` });
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : `Failed to load ${methodName}` });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [service, methodName, mapper]);
 
   useEffect(() => {
     if (autoFetch) {
       fetchData();
     }
-  }, [autoFetch]);
+  }, [autoFetch, fetchData]);
 
   return {
     data: state.data,
@@ -96,31 +91,32 @@ export default function useApiData<T>(
 
 export function useApiSingleData<T>(
   fetchFunction: () => Promise<T>,
-  dependencies: any[] = [],
+  dependencies: readonly unknown[] = [],
   autoFetch: boolean = true
 ) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const result = await fetchFunction();
       setData(result);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch data");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch data");
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchFunction]);
 
   useEffect(() => {
     if (autoFetch) {
       fetchData();
     }
-  }, dependencies);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFetch, fetchData, ...dependencies]);
 
   return {
     data,
@@ -131,7 +127,7 @@ export function useApiSingleData<T>(
 }
 
 // Hook para dados com filtros e paginação
-export function useApiDataWithFilters<T, F = any>(
+export function useApiDataWithFilters<T, F = Record<string, unknown>>(
   fetchFunction: (filters?: F, limit?: number, offset?: number, signal?: AbortSignal) => Promise<T[]>,
   filters?: F,
   limit?: number,
@@ -161,11 +157,11 @@ export function useApiDataWithFilters<T, F = any>(
     try {
       const data = await fetchFunction(filters, limit, offset, abortControllerRef.current.signal);
       dispatch({ type: 'SET_DATA', payload: data });
-    } catch (err: any) {
-      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.name === 'CanceledError' || err.name === 'AbortError')) {
         return;
       }
-      dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load data" });
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : "Failed to load data" });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

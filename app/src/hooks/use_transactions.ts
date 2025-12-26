@@ -2,60 +2,20 @@
 
 import { useEffect, useReducer, useRef, useCallback } from "react";
 import transactionService from "@/services/transaction_service";
+import { TransactionFiltersAPI, TransactionFiltersType, TransactionType } from "@/types/transactions";
 
-type Transaction = {
-  uuid: string;
-  card_uuid: string;
-  user_uuid: string;
-  category_uuid: string;
-  category?: {
-    uuid: string;
-    user_id?: number;
-    name: string;
-    description?: string;
-    color?: string;
-    icon?: string;
-    is_default: boolean;
-    created_at: string;
-    updated_at: string;
-  };
-  amount: number;
-  currency: string;
-  type: string;
-  merchant?: string;
-  description?: string;
-  metadata?: Record<string, any>;
-  occurred_at: string;
-  created_at: string;
-  updated_at: string;
-  is_recurring: boolean;
-  recurrence_type?: string;
-  recurrence_end_date?: string;
-  is_installment: boolean;
-  installment_number?: number;
-  total_installments?: number;
-};
 
 type TransactionsState = {
-  transactions: Transaction[];
+  transactions: TransactionType[];
   loading: boolean;
   error: string | null;
 };
 
-type TransactionFilters = {
-  dateFrom?: string;
-  dateTo?: string;
-  categoryId?: number;
-  type?: string;
-  kind?: string;
-  cardUuid?: string;
-  search?: string;
-};
 
 type TransactionsAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_TRANSACTIONS'; payload: Transaction[] };
+  | { type: 'SET_TRANSACTIONS'; payload: TransactionType[] };
 
 const initialState: TransactionsState = {
   transactions: [],
@@ -76,7 +36,7 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
   }
 }
 
-export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean, onRefetch?: () => void) {
+export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFiltersType, mounted?: boolean) {
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -92,7 +52,7 @@ export default function useTransactions(limit?: number, offset?: number, filters
     dispatch({ type: 'SET_ERROR', payload: null });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const params: any = {};
+      const params: TransactionFiltersAPI = {};
       if (limit) params.limit = limit;
       if (offset) params.offset = offset;
       if (filters?.dateFrom) params.date_from = filters.dateFrom;
@@ -107,10 +67,10 @@ export default function useTransactions(limit?: number, offset?: number, filters
 
       const payload =
         resp && typeof resp === "object" && "data" in resp
-          ? (resp as any).data
+          ? (resp as { data: unknown }).data
           : resp;
 
-      let transactionsArray: any[] = [];
+      let transactionsArray: unknown[] = [];
       if (Array.isArray(payload)) transactionsArray = payload;
       else if (payload && typeof payload === "object") {
         const keys = Object.keys(payload).filter(
@@ -118,16 +78,16 @@ export default function useTransactions(limit?: number, offset?: number, filters
         );
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
-          transactionsArray = keys.map((k) => (payload as any)[k]);
-        } else transactionsArray = Object.values(payload as any);
+          transactionsArray = keys.map((k) => (payload as Record<string, unknown>)[k]);
+        } else transactionsArray = Object.values(payload as Record<string, unknown>);
       }
 
-      dispatch({ type: 'SET_TRANSACTIONS', payload: transactionsArray });
-    } catch (err: any) {
-      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+      dispatch({ type: 'SET_TRANSACTIONS', payload: transactionsArray as TransactionType[] });
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.name === 'CanceledError' || err.name === 'AbortError')) {
         return;
       }
-      dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load transactions" });
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : "Failed to load transactions" });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

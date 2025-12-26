@@ -7,7 +7,6 @@ import { useI18n } from "@/i18n/useI18n";
 
 interface CardFormProps {
   mode: "add" | "edit";
-  cardId?: string | string[];
   initialValues?: {
     holderName?: string;
     lastFour?: string;
@@ -19,7 +18,7 @@ interface CardFormProps {
   onSuccess?: () => void;
 }
 
-export default function CardForm({ mode, cardId, initialValues, onSuccess }: CardFormProps) {
+export default function CardForm({ mode, initialValues, onSuccess }: CardFormProps) {
   const { t } = useI18n();
   const [holderName, setHolderName] = useState(initialValues?.holderName || "");
   const [lastFour, setLastFour] = useState(initialValues?.lastFour || "");

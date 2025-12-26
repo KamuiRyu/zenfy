@@ -1,18 +1,6 @@
 import { request } from "@/services/service_base";
+import { CardType } from "@/types/cards";
 
-type Card = {
-  id?: string | number;
-  last_four: string;
-  card_type?: string;
-  holder_name?: string;
-  billing_day?: number;
-  nickname?: string;
-  brand?: string;
-  bank?: string;
-  expiry_month?: number;
-  expiry_year?: number;
-  is_default?: boolean;
-};
 
 const base = "/cards";
 
@@ -29,11 +17,11 @@ export async function getCard(id: string | number) {
   }
 }
 
-export async function createCard(payload: Partial<Card>) {
+export async function createCard(payload: Partial<CardType>) {
   return request(base, "", { method: "POST", data: payload });
 }
 
-export async function updateCard(id: string | number, payload: Partial<Card>) {
+export async function updateCard(id: string | number, payload: Partial<CardType>) {
   const response = await request(base, `${id}`, {
     method: "PUT",
     data: payload,
