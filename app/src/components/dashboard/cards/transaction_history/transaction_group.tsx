@@ -58,7 +58,8 @@ const TransactionGroup = React.memo(function TransactionGroup({ date, transactio
         
           <TransactionItem
             key={transaction.uuid}
-            title={transaction.description || transaction.merchant || t("dashboard.transaction_history.transaction")}
+            title={transaction.description || t("dashboard.transaction_history.transaction")}
+            merchant={transaction.merchant}
             subtitle={transaction.category?.name}
             time={formatTime(transaction.occurred_at)}
             card={transaction.card_uuid}

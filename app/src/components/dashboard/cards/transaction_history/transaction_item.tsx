@@ -7,6 +7,7 @@ import { useI18n } from "@/i18n/useI18n";
 const TransactionItem = React.memo(function TransactionItem({
   title,
   subtitle,
+  merchant,
   time,
   amount,
   categoryType,
@@ -17,6 +18,7 @@ const TransactionItem = React.memo(function TransactionItem({
 }: {
   title: string;
   subtitle?: string;
+  merchant?: string;
   time?: string;
   card?: string;
   amount: string;
@@ -68,6 +70,11 @@ const TransactionItem = React.memo(function TransactionItem({
           <div className="font-semibold text-card-foreground truncate text-lg">
             {title}
           </div>
+          {merchant && (
+            <div className="text-sm text-muted-foreground truncate mt-0.5">
+              {merchant}
+            </div>
+          )}
           <div className="text-base text-muted-foreground mt-0.5 font-medium">
             {time}
           </div>

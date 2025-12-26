@@ -55,6 +55,7 @@ export default function TransactionRecurringTab({
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={watch("isInstallment")}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
@@ -73,8 +74,8 @@ export default function TransactionRecurringTab({
               name="recurrenceType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_type")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_type")} *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger className="!h-12 w-full">
                         <SelectValue placeholder={t("dashboard.transactions.select_recurrence_type")} />
@@ -98,7 +99,7 @@ export default function TransactionRecurringTab({
                 name="recurrenceStartDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_start_date")}</FormLabel>
+                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_start_date")} *</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -126,6 +127,10 @@ export default function TransactionRecurringTab({
                           disabled={(date) =>
                             date < new Date("1900-01-01")
                           }
+                          fromYear={new Date().getFullYear()}
+                          toYear={new Date().getFullYear() + 20}
+                          fromMonth={new Date()}
+                          captionLayout="dropdown"
                           buttonVariant="ghost"
                         />
                       </PopoverContent>
@@ -168,6 +173,10 @@ export default function TransactionRecurringTab({
                           disabled={(date) =>
                             date < new Date()
                           }
+                          fromYear={new Date().getFullYear()}
+                          toYear={new Date().getFullYear() + 20}
+                          fromMonth={new Date()}
+                          captionLayout="dropdown"
                           buttonVariant="ghost"
                         />
                       </PopoverContent>

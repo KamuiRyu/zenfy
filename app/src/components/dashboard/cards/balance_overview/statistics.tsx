@@ -20,14 +20,14 @@ export default function Statistics({
   balanceOverview,
   loading,
 }: StatisticsProps) {
-  const { t } = useI18n();
+  const { t, formatNumber } = useI18n();
   const chartConfig = {
     expense: {
       label: t("dashboard.statistics.expense"),
       color: "rgb(220 38 38)",
     },
     income: {
-      label: t("dashboard. statistics.income"),
+      label: t("dashboard.statistics.income"),
       color: "rgb(22 163 74)",
     },
   } satisfies ChartConfig;
@@ -163,7 +163,7 @@ export default function Statistics({
                 />
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent />}
+                  content={<ChartTooltipContent formatValue={(value) => formatNumber(value, { style: 'currency', currency: 'BRL' })} />}
                 />
                 <defs>
                   <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
@@ -195,7 +195,7 @@ export default function Statistics({
                   dataKey="expense"
                   type="natural"
                   fill="url(#fillExpense)"
-                  fillOpacity={0.4}
+                  fillOpacity={0.6}
                   stroke="rgb(220 38 38)"
                   stackId="a"
                 />
@@ -203,7 +203,7 @@ export default function Statistics({
                   dataKey="income"
                   type="natural"
                   fill="url(#fillIncome)"
-                  fillOpacity={0.4}
+                  fillOpacity={0.6}
                   stroke="rgb(22 163 74)"
                   stackId="a"
                 />

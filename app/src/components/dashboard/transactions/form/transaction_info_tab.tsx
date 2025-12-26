@@ -45,19 +45,33 @@ export default function TransactionInfoTab({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.type")} *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-sm font-medium">
+                    {t("dashboard.transactions.type")} *
+                  </FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="!h-12 w-full">
-                        <SelectValue placeholder={t("dashboard.transactions.select_type")} />
+                        <SelectValue
+                          placeholder={t("dashboard.transactions.select_type")}
+                        />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent avoidCollisions={false} position="popper" className="max-h-70">
-                      <SelectItem value="income">{t("dashboard.transaction_history.income")}</SelectItem>
-                      <SelectItem value="expense">{t("dashboard.transaction_history.expense")}</SelectItem>
+                    <SelectContent
+                      avoidCollisions={false}
+                      position="popper"
+                      className="max-h-70"
+                    >
+                      <SelectItem value="income">
+                        {t("dashboard.transaction_history.income")}
+                      </SelectItem>
+                      <SelectItem value="expense">
+                        {t("dashboard.transaction_history.expense")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  <div className="min-h-[20px]"><FormMessage /></div>
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -67,22 +81,43 @@ export default function TransactionInfoTab({
               name="category_uuid"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transaction_history.category")} *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} disabled={categoriesLoading}>
+                  <FormLabel className="text-sm font-medium">
+                    {t("dashboard.transaction_history.category")} *
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={categoriesLoading}
+                  >
                     <FormControl>
                       <SelectTrigger className="!h-12 w-full">
-                        <SelectValue placeholder={categoriesLoading ? t("action.loading") : t("dashboard.transactions.select_category")} />
+                        <SelectValue
+                          placeholder={
+                            categoriesLoading
+                              ? t("action.loading")
+                              : t("dashboard.transactions.select_category")
+                          }
+                        />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent avoidCollisions={false} position="popper" className="max-h-70">
+                    <SelectContent
+                      avoidCollisions={false}
+                      position="popper"
+                      className="max-h-70"
+                    >
                       {filteredCategories.map((category) => (
-                        <SelectItem key={category.uuid} value={category.uuid.toString()}>
+                        <SelectItem
+                          key={category.uuid}
+                          value={category.uuid.toString()}
+                        >
                           {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="min-h-[20px]"><FormMessage /></div>
+                  <div className="min-h-[20px]">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -91,22 +126,50 @@ export default function TransactionInfoTab({
       </Card>
 
       <Card className="border-0 shadow-lg bg-transparent">
-        
         <CardContent className="pt-0">
+          <FormField
+            control={control}
+            name="merchant"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium">
+                  {t("dashboard.transactions.merchant")}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      "dashboard.transactions.merchant_placeholder"
+                    )}
+                    className="min-h-[60px] resize-none !h-auto w-full"
+                    {...field}
+                  />
+                </FormControl>
+                <div className="min-h-[20px]">
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
           <FormField
             control={control}
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.description")} *</FormLabel>
+                <FormLabel className="text-sm font-medium">
+                  {t("dashboard.transactions.description")} *
+                </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t("dashboard.transactions.description_placeholder")}
+                    placeholder={t(
+                      "dashboard.transactions.description_placeholder"
+                    )}
                     className="min-h-[100px] resize-none !h-auto w-full"
                     {...field}
                   />
                 </FormControl>
-                <div className="min-h-[20px]"><FormMessage /></div>
+                <div className="min-h-[20px]">
+                  <FormMessage />
+                </div>
               </FormItem>
             )}
           />

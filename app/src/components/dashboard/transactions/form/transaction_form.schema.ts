@@ -8,7 +8,8 @@ export const transactionSchema = z
     card_uuid: z.string().min(1, "validation.select_option"),
     date: z.date(),
     type: z.enum(["income", "expense"]),
-    kind: z.enum(["credit", "debit"], { message: "validation.select_option" }),
+    kind: z.enum(["credit", "debit", "deposit", "withdrawal", "transfer"], { message: "validation.select_option" }),
+    merchant: z.string().optional(),
     isInstallment: z.boolean().optional(),
     installmentNumber: z.number().optional(),
     totalInstallments: z.number().optional(),
@@ -18,6 +19,19 @@ export const transactionSchema = z
     recurrenceEndDate: z.date().optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.isInstallment && data.isRecurring) {
+      ctx.addIssue({
+        code: "custom",
+        message: "validation.installment_recurring_mutual_exclusive",
+        path: ["isInstallment"],
+      });
+      ctx.addIssue({
+        code: "custom",
+        message: "validation.installment_recurring_mutual_exclusive",
+        path: ["isRecurring"],
+      });
+    }
+
     if (data.isInstallment) {
       if (!data.installmentNumber) {
         ctx.addIssue({

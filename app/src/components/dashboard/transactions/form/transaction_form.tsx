@@ -51,7 +51,8 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     card_uuid: z.string().min(1, t("validation.select_option")),
     date: z.date(),
     type: z.enum(["income", "expense"]),
-    kind: z.enum(["credit", "debit"], { message: t("validation.select_option") }),
+    kind: z.enum(["credit", "debit", "deposit", "withdrawal", "transfer"], { message: t("validation.select_option") }),
+    merchant: z.string().optional(),
     isInstallment: z.boolean().optional(),
     installmentNumber: z.number({ message: t("validation.number") }).max(99, t("validation.max_installments")).optional(),
     totalInstallments: z.number({ message: t("validation.number") }).max(99, t("validation.max_installments")).optional(),
@@ -82,6 +83,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         ctx.addIssue({
           code: "custom",
           message: t("validation.select_option"),
+          path: ["recurrenceType"]
         });
       }
 
@@ -89,6 +91,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         ctx.addIssue({
           code: "custom",
           message: t("validation.required"),  
+          path: ["recurrenceStartDate"]
         });
       }
     }
@@ -114,6 +117,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
       })(),
       type: transaction?.category?.type || "expense",
       kind: transaction?.kind || undefined,
+      merchant: transaction?.merchant || "",
       isInstallment: transaction?.is_installment || false,
       installmentNumber: transaction?.installment_number || 1,
       totalInstallments: transaction?.total_installments || 1,
@@ -132,11 +136,38 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
   }, [categories, selectedType]);
 
   const kindOptions = useMemo(() => {
-    if (!selectedCard?.cardType) return ["credit", "debit"];
-    if (selectedCard.cardType === "credit") return ["credit"];
-    if (selectedCard.cardType === "debit") return ["debit"];
-    return ["credit", "debit"];
-  }, [selectedCard]);
+    const options = [];
+    
+    if (selectedCard?.cardType === "credit" || selectedCard?.cardType === "credit/debit") {
+      options.push("credit");
+    }
+    
+    if (selectedCard?.cardType === "debit" || selectedCard?.cardType === "credit/debit") {
+      options.push("debit");
+    }
+    
+    if (selectedType === "income") {
+      options.push("deposit", "transfer");
+      const indexCredit = options.indexOf("credit");
+      if (indexCredit > -1) options.splice(indexCredit, 1);
+      const indexDebit = options.indexOf("debit");
+      if (indexDebit > -1) options.splice(indexDebit, 1);
+    } else if (selectedType === "expense") {
+      options.push("withdrawal", "transfer");
+    }
+    
+    if (!selectedCard) {
+      if (selectedType === "income") {
+        if (!options.includes("deposit")) options.push("deposit");
+        if (!options.includes("transfer")) options.push("transfer");
+      } else if (selectedType === "expense") {
+        if (!options.includes("withdrawal")) options.push("withdrawal");
+        if (!options.includes("transfer")) options.push("transfer");
+      }
+    }
+    
+    return [...new Set(options)];
+  }, [selectedCard, selectedType]);
 
   useEffect(() => {
     const errors = form.formState.errors;
@@ -155,6 +186,16 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
     if (!data.isInstallment) {
       delete data.installmentNumber;
       delete data.totalInstallments;
+    }
+
+    if (!data.isRecurring) {
+      delete data.recurrenceType;
+      delete data.recurrenceStartDate;
+      delete data.recurrenceEndDate;
+    }
+
+    if (!data.merchant || data.merchant.trim() === "") {
+      delete data.merchant;
     }
     
     try {

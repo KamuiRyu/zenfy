@@ -68,7 +68,8 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
   }, [transaction.category?.icon]);
 
 
-  const title = transaction.description || transaction.merchant || t('dashboard.transactions.transaction');
+  const title = transaction.description || t('dashboard.transactions.transaction');
+  const merchant = transaction.merchant;
   const subtitle = transaction.category?.name;
   const time = formatDate(transaction.occurred_at);
   const formattedAmount = new Intl.NumberFormat("pt-BR", {
@@ -89,6 +90,11 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
           <div className="font-semibold text-card-foreground truncate text-lg">
             {title}
           </div>
+          {merchant && (
+            <div className="text-sm text-muted-foreground truncate mt-0.5">
+              {merchant}
+            </div>
+          )}
           <div className="text-base text-muted-foreground mt-0.5 font-medium">
             {time}
           </div>

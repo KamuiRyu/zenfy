@@ -161,7 +161,7 @@ export default function TransactionDetailsTab({
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={watch("kind") !== "credit"}
+                    disabled={watch("kind") !== "credit" || watch("isRecurring")}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">

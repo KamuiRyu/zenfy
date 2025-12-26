@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount BIGINT NOT NULL, -- cents
     currency VARCHAR(3) NOT NULL DEFAULT 'BRL',
     category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-    kind VARCHAR(8) NOT NULL CHECK (kind IN ('debit','credit')),
+    kind VARCHAR(8) NOT NULL CHECK (kind IN ('debit','credit', 'deposit', 'withdrawal', 'transfer')),
     merchant VARCHAR(255),
     description TEXT,
     metadata JSONB,

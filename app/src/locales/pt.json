@@ -59,6 +59,9 @@
       "select_card_type": "Selecione o tipo",
       "credit": "Crédito",
       "debit": "Débito",
+      "deposit": "Depósito",
+      "withdrawal": "Saque",
+      "transfer": "Transferência",
       "credit_debit" : "Crédito/Débito",
       "other": "Outro",
       "select_expiry_date": "Selecione a data",
@@ -162,6 +165,8 @@
       "select_category": "Selecione a categoria",
       "description": "Descrição",
       "description_placeholder": "Digite uma descrição para a transação",
+      "merchant": "Comerciante",
+      "merchant_placeholder": "Digite o nome do comerciante ou estabelecimento",
       "amount": "Valor",
       "amount_placeholder": "0.00",
       "card": "Cartão",
@@ -182,6 +187,9 @@
       "credit_debit" : "Crédito/Débito",
       "credit": "Crédito",
       "debit": "Débito",
+      "deposit": "Depósito",
+      "withdrawal": "Retirada",
+      "transfer": "Transferência",
       "select_kind": "Selecione o tipo",
       "basic_info": "Informações Básicas",
       "payment_details": "Detalhes do Pagamento",
@@ -241,6 +249,7 @@
     "select_date": "Selecione uma data",
     "min_value": "Deve ser pelo menos {{count}}",
     "max_value": "Deve ser no máximo {{count}}",
-    "number" : "Deve ser um número"
+    "number" : "Deve ser um número",
+    "installment_recurring_mutual_exclusive": "Uma transação não pode ser parcelada e recorrente ao mesmo tempo"
   }
 }

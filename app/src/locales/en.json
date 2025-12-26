@@ -59,6 +59,9 @@
       "select_card_type": "Select the type",
       "credit": "Credit",
       "debit": "Debit",
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal",
+      "transfer": "Transfer",
       "credit_debit" : "Credit/Debit",
       "other": "Other",
       "select_expiry_date": "Select the date",
@@ -161,6 +164,8 @@
       "select_category": "Select category",
       "description": "Description",
       "description_placeholder": "Enter a description for the transaction",
+      "merchant": "Merchant",
+      "merchant_placeholder": "Enter the merchant or establishment name",
       "amount": "Amount",
       "amount_placeholder": "0.00",
       "card": "Card",
@@ -179,10 +184,12 @@
       "details": "Transaction Details",
       "kind": "Kind",
       "select_kind": "Select kind",
-      
       "credit_debit" : "Credit/Debit",
       "credit": "Credit",
       "debit": "Debit",
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal",
+      "transfer": "Transfer",
       "basic_info": "Basic Information",
       "payment_details": "Payment Information",
       "is_installment": "Is installment",
@@ -242,7 +249,7 @@
     "min_value": "Must be at least {{count}}",
     "max_value": "Must be at most {{count}}",
     "number" : "Must be a number",
-    "max_installments": "Must be at most 99 installments"
-    
+    "max_installments": "Must be at most 99 installments",
+    "installment_recurring_mutual_exclusive": "A transaction cannot be both installment and recurring at the same time"
   }
 }

@@ -7,7 +7,7 @@ type CreateTransactionRequest struct {
 	CategoryUUID string                 `json:"category_uuid" validate:"required"`
 	Amount       int64                  `json:"amount" validate:"required,min=1"`
 	Currency     string                 `json:"currency" validate:"omitempty,len=3"`
-	Kind         string                 `json:"kind" validate:"required,oneof=debit credit"`
+	Kind         string                 `json:"kind" validate:"required,oneof=debit credit deposit withdrawal transfer"`
 	Merchant     *string                `json:"merchant" validate:"omitempty,max=255"`
 	Description  *string                `json:"description" validate:"omitempty,max=1000"`
 	Metadata     map[string]interface{} `json:"metadata" validate:"omitempty"`
@@ -29,7 +29,7 @@ type UpdateTransactionRequest struct {
 	CategoryUUID *string                `json:"category_uuid" validate:"omitempty"`
 	Amount       *int64                 `json:"amount" validate:"omitempty,min=1"`
 	Currency     *string                `json:"currency" validate:"omitempty,len=3"`
-	Kind         *string                `json:"kind" validate:"omitempty,oneof=debit credit"`
+	Kind         *string                `json:"kind" validate:"omitempty,oneof=debit credit deposit withdrawal transfer"`
 	Merchant     *string                `json:"merchant" validate:"omitempty,max=255"`
 	Description  *string                `json:"description" validate:"omitempty,max=1000"`
 	Metadata     map[string]interface{} `json:"metadata" validate:"omitempty"`

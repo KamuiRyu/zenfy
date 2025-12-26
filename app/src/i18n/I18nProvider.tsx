@@ -12,12 +12,16 @@ const MESSAGES: Record<string, Messages> = { en, pt };
   locale: string;
   setLocale: (l: string) => void;
   t: (key: string, ...params: any[]) => string;
+  formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string;
+  numberFormatLocale: string;
+  setNumberFormatLocale: (l: string) => void;
  };
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children, defaultLocale = "en" }: { children: React.ReactNode; defaultLocale?: string }) {
   const [locale, setLocale] = useState<string>(defaultLocale);
+  const [numberFormatLocale, setNumberFormatLocale] = useState<string>('pt-BR');
 
   useEffect(() => {
     if (!defaultLocale && typeof navigator !== "undefined") {
@@ -46,7 +50,11 @@ export function I18nProvider({ children, defaultLocale = "en" }: { children: Rea
     return key;
   };
 
-  const value = useMemo(() => ({ locale, setLocale, t }), [locale]);
+  const formatNumber = (value: number, options?: Intl.NumberFormatOptions) => {
+    return new Intl.NumberFormat(numberFormatLocale, options).format(value);
+  };
+
+  const value = useMemo(() => ({ locale, setLocale, t, formatNumber, numberFormatLocale, setNumberFormatLocale }), [locale, numberFormatLocale]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }

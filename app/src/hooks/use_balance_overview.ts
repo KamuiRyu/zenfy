@@ -35,7 +35,6 @@ export default function useBalanceOverview(cardUuid?: string) {
       const url = `transactions/balance-overview?card_uuid=${cardUuid}`;
       const response = await request(url, "", {}, abortControllerRef.current.signal);
       
-      // Handle the API response structure: { type, code, message, data: { balance, total_income, ... } }
       if (response && response.data) {
         setBalanceOverview(response.data);
       } else {
