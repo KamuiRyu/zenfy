@@ -16,5 +16,5 @@ const mapCardData = (c: any): CardData => ({
 });
 
 export default function useCardsData(autoFetch: boolean = true) {
-  return useApiData<CardData>(cardService, "getCards", mapCardData, autoFetch);
+  return useApiData<CardData>(cardService as Record<string, (...args: unknown[]) => Promise<unknown>>, "getCards", mapCardData, autoFetch);
 }

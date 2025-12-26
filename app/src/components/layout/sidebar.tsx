@@ -4,15 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BarChart3, Wallet, Layers, Calendar, Settings, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Sidebar() {
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(true);
   const pathname = usePathname() || "/";
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <aside className="fixed top-0 h-screen w-20 flex flex-col items-center py-6 bg-sidebar transition-colors duration-300 flex-shrink-0 z-50" >

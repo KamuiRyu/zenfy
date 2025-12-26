@@ -41,11 +41,11 @@ export default function useBalanceOverview(cardUuid?: string) {
         setBalanceOverview(null);
         setError('Failed to parse balance overview data');
       }
-    } catch (err: any) {
-      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.name === 'CanceledError' || err.name === 'AbortError')) {
         return;
       }
-      setError(err.message || "Failed to fetch balance overview");
+      setError(err instanceof Error ? err.message : "Failed to fetch balance overview");
     } finally {
       setLoading(false);
     }

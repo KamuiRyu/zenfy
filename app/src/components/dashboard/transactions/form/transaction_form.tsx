@@ -33,7 +33,7 @@ import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./transaction_info_tab";
 import TransactionDetailsTab from "./transaction_details_tab";
 import TransactionRecurringTab from "./transaction_recurring_tab";
-import { TransactionType } from "@/types/transactions";
+import { TransactionData, TransactionType } from "@/types/transactions";
 
 interface TransactionFormProps {
   transaction?: TransactionType | null;
@@ -173,16 +173,33 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
   useEffect(() => {
     const errors = form.formState.errors;
     if (errors.description || errors.amount || errors.category_uuid || errors.card_uuid || errors.date || errors.type) {
-      setTimeout(() => setActiveTab("info"), 0);
+      setActiveTab("info");
     } else if (errors.kind) {
-      setTimeout(() => setActiveTab("details"), 0);
+      setActiveTab("details");
     } else if (errors.recurrenceType || errors.recurrenceStartDate || errors.recurrenceEndDate) {
-      setTimeout(() => setActiveTab("recurring"), 0);
+      setActiveTab("recurring");
     }
   }, [form.formState.errors]);
 
   const onSubmit = async () => {
-    const data = form.getValues();
+    const formData = form.getValues();
+
+    const data: TransactionData = {
+      description: formData.description,
+      amount: Math.round(formData.amount * 100),
+      category_uuid: formData.category_uuid,
+      card_uuid: formData.card_uuid,
+      occurred_at: formData.date,
+      kind: formData.kind,
+      merchant: formData.merchant,
+      isInstallment: formData.isInstallment,
+      installmentNumber: formData.installmentNumber,
+      totalInstallments: formData.totalInstallments,
+      isRecurring: formData.isRecurring,
+      recurrenceType: formData.recurrenceType,
+      recurrenceStartDate: formData.recurrenceStartDate,
+      recurrenceEndDate: formData.recurrenceEndDate,
+    };
 
     if (!data.isInstallment) {
       delete data.installmentNumber;
@@ -207,7 +224,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
         window.dispatchEvent(new CustomEvent('transactionAdded'));
       }
       onClose();
-    } catch {
+    } catch (error) {
     }
   };
 

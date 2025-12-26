@@ -1,5 +1,5 @@
 import { request } from "@/services/service_base";
-import { TransactionType } from "@/types/transactions";
+import { TransactionData } from "@/types/transactions";
 
 const base = "/transactions";
 
@@ -30,11 +30,11 @@ export async function getTransaction(id: string) {
   }
 }
 
-export async function createTransaction(payload: Partial<TransactionType>) {
+export async function createTransaction(payload: Partial<TransactionData>) {
   return request(base, "", { method: "POST", data: payload });
 }
 
-export async function updateTransaction(id: string, payload: Partial<TransactionType>) {
+export async function updateTransaction(id: string, payload: Partial<TransactionData>) {
   const response = await request(base, `${id}`, {
     method: "PUT",
     data: payload,

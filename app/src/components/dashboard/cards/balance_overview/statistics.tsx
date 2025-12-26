@@ -163,7 +163,7 @@ export default function Statistics({
                 />
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent formatValue={(value) => formatNumber(value, { style: 'currency', currency: 'BRL' })} />}
+                  content={<ChartTooltipContent formatValue={(value) => formatNumber(Number(value), { style: 'currency', currency: 'BRL' })} />}
                 />
                 <defs>
                   <linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">

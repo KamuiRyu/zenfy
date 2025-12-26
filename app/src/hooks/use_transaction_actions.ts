@@ -2,33 +2,34 @@
 
 import { useState } from "react";
 import transactionService from "@/services/transaction_service";
+import { TransactionData, TransactionType } from "@/types/transactions";
 
 export function useTransactionActions() {
   const [loading, setLoading] = useState(false);
 
-  const createTransaction = async (data: any) => {
+  const createTransaction = async (data: TransactionData) => {
     setLoading(true);
     try {
       const payload = {
         description: data.description,
         merchant: data.merchant,
-        amount: Math.round(parseFloat(data.amount) * 100),
+        amount: Math.round(parseFloat(data.amount.toString()) * 100),
         category_uuid: data.category_uuid,
         card_uuid: data.card_uuid,
-        occurred_at: data.date.toISOString(),
+        occurred_at: data.occurred_at,
         kind: data.kind,
         is_installment: data.isInstallment,
         installment_number: data.installmentNumber,
         total_installments: data.totalInstallments,
         is_recurring: data.isRecurring,
         recurrence_type: data.recurrenceType,
-        recurrence_start_date: data.recurrenceStartDate?.toISOString(),
-        recurrence_end_date: data.recurrenceEndDate?.toISOString(),
+        recurrence_start_date: data.recurrenceStartDate,
+        recurrence_end_date: data.recurrenceEndDate,
       };
 
       const response = await transactionService.createTransaction(payload);
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to create transaction", error);
       throw error;
     } finally {
@@ -36,24 +37,24 @@ export function useTransactionActions() {
     }
   };
 
-  const updateTransaction = async (id: string, data: any) => {
+  const updateTransaction = async (id: string, data: TransactionData) => {
     setLoading(true);
     try {
       const payload = {
         description: data.description,
         merchant: data.merchant,
-        amount: Math.round(parseFloat(data.amount) * 100),
+        amount: Math.round(parseFloat(data.amount.toString()) * 100),
         category_uuid: data.category_uuid,
         card_uuid: data.card_uuid,
-        occurred_at: data.date.toISOString(),
+        occurred_at: data.occurred_at,
         kind: data.kind,
         is_installment: data.isInstallment,
         installment_number: data.installmentNumber,
         total_installments: data.totalInstallments,
         is_recurring: data.isRecurring,
         recurrence_type: data.recurrenceType,
-        recurrence_start_date: data.recurrenceStartDate?.toISOString(),
-        recurrence_end_date: data.recurrenceEndDate?.toISOString(),
+        recurrence_start_date: data.recurrenceStartDate,
+        recurrence_end_date: data.recurrenceEndDate,
       };
       const response = await transactionService.updateTransaction(id, payload);
       return response;

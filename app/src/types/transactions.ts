@@ -8,11 +8,12 @@ export interface TransactionType {
   uuid: string;
   description?: string;
   merchant?: string;
+  category_uuid?: string;
+  card_uuid?: string;
   kind: TransactionKind;
   category?: CategoriesType;
   card?: CardType;
   occurred_at: string;
-  card_uuid?: string;
   amount: number;
   currency: string;
   ocurred_date: string;
@@ -41,4 +42,22 @@ export interface CategoryType {
   id?: number;
   uuid: string;
   name: string;
+}
+
+
+export interface TransactionData {
+  description?: string;
+  merchant?: string;
+  category_uuid: string;
+  card_uuid: string;
+  kind: TransactionKind;
+  occurred_at: Date;
+  amount: number;
+  isInstallment?: boolean;
+  installmentNumber?: number;
+  totalInstallments?: number;
+  isRecurring?: boolean;
+  recurrenceType?: RecurrenceType;
+  recurrenceStartDate?: Date;
+  recurrenceEndDate?: Date;
 }
