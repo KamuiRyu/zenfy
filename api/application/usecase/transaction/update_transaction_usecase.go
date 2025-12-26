@@ -20,10 +20,10 @@ func NewUpdateTransactionUseCase(
 	}
 }
 
-func (uc *UpdateTransactionUseCase) Execute(userID int, transactionID int, input dto.UpdateTransactionRequest) (*dto.TransactionResponse, error) {
+func (uc *UpdateTransactionUseCase) Execute(userID int, transactionUUID string, input dto.UpdateTransactionRequest) (*dto.TransactionResponse, error) {
 	if err := uc.validator.Validate(&input); err != nil {
 		return nil, err
 	}
 
-	return uc.transactionService.UpdateTransaction(userID, transactionID, input)
+	return uc.transactionService.UpdateTransaction(userID, transactionUUID, input)
 }

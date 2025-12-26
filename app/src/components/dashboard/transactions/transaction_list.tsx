@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/useI18n";
 import useTransactions from "@/hooks/use_transactions";
 import TransactionItem from "./transaction_item";
@@ -38,6 +38,16 @@ export default function TransactionList() {
     setFilters(newFilters);
     setPage(0);
   };
+
+  useEffect(() => {
+      const handleTransactionUpdated = () => {
+        refetch();
+      };
+      window.addEventListener('transactionUpdated', handleTransactionUpdated);
+      return () => {
+        window.removeEventListener('transactionUpdated', handleTransactionUpdated);
+      };
+    }, [refetch]);
 
   if (error) {
     return (

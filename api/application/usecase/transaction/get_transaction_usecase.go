@@ -15,6 +15,6 @@ func NewGetTransactionUseCase(transactionService service.TransactionService) *Ge
 	}
 }
 
-func (uc *GetTransactionUseCase) Execute(userID int, transactionID int) (*dto.TransactionResponse, error) {
-	return uc.transactionService.GetTransactionByID(userID, transactionID)
+func (uc *GetTransactionUseCase) Execute(userID int, transactionUUID string) (*dto.TransactionResponse, error) {
+	return uc.transactionService.GetTransactionByUUID(userID, transactionUUID)
 }

@@ -154,7 +154,7 @@ func (r *transactionRepositoryImpl) Update(tx *model.Transaction) error {
 	ctx := context.Background()
 	result, err := r.db.NewUpdate().
 		Model(tx).
-		Column("amount", "currency", "category", "kind", "merchant", "description", "metadata", "occurred_at", "updated_at",
+		Column("amount", "currency", "category_id", "kind", "merchant", "description", "metadata", "occurred_at", "updated_at",
 			"is_recurring", "recurrence_type", "recurrence_end_date",
 			"is_installment", "installment_number", "total_installments").
 		Where("id = ?", tx.ID).
