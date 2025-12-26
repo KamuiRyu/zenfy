@@ -2,7 +2,7 @@
 
 import { useI18n } from "@/i18n/useI18n";
 import { useEffect } from "react";
-import { ejectAxiosInterceptor, setupAxiosInterceptors } from "@services/service_base";
+import { ejectAxiosInterceptor, setupAxiosInterceptors } from "@/services/service_base";
 import { toast } from "sonner";
 
 export function FlashMessageProvider({

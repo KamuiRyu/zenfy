@@ -8,9 +8,11 @@ import TransactionHistoryFooter from "./transaction_history_footer";
 import TransactionFilters from "./transaction_filters";
 import { useSelectedCard } from "@/providers/selected_card_provider";
 import useTransactions from "@/hooks/use_transactions";
+import useCategories from "@/hooks/use_categories";
 import NoTransactions from "./no_transactions";
-import { request } from "@/services/service_base";
 import { useI18n } from "@/i18n/useI18n";
+import TransactionHistoryLoading from "./transaction_history_loading";
+import { useRouter } from "next/navigation";
 
 function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat("pt-BR", {
@@ -31,38 +33,39 @@ export default function TransactionHistory() {
   const { t } = useI18n();
   const { selectedCardUuid, selectedCardLastFour, selectedCardBrand } = useSelectedCard();
   const [page, setPage] = useState(0);
-  const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; search?: string }>({});
+  const [filters, setFilters] = useState<{ dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }>({});
 
-  const handleFiltersChange = (newFilters: { dateFrom?: string; dateTo?: string; type?: string; search?: string }) => {
+  const handleFiltersChange = (newFilters: { dateFrom?: string; dateTo?: string; type?: string; kind?: string; search?: string }) => {
     setFilters(newFilters);
     setPage(0);
   };
-  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [mounted, setMounted] = useState(false);
   const limit = 10;
   const offset = page * limit;
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
-  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted);
+  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted, () => window.dispatchEvent(new CustomEvent('transactionAdded')));
+  const { categories, loading: categoriesLoading } = useCategories();
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState(false);
+  const router = useRouter();
+
+  const mappedCategories = useMemo(() => categories.map(cat => ({ id: parseInt((cat as any).id || '0'), name: cat.name })), [categories]);
+
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await request("/categories", "");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
+    const handleTransactionAdded = () => {
+      refetch();
+      window.dispatchEvent(new CustomEvent('balanceOverviewUpdated'));
     };
-    if (mounted) {
-      fetchCategories();
-    }
-  }, [mounted]);
+    window.addEventListener('transactionAdded', handleTransactionAdded);
+    return () => {
+      window.removeEventListener('transactionAdded', handleTransactionAdded);
+    };
+  }, [refetch]);
 
   useEffect(() => {
     let countdownInterval: NodeJS.Timeout | null = null;
@@ -130,11 +133,11 @@ export default function TransactionHistory() {
 
   if (!mounted) {
     return (
-      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+      <div className="rounded-2xl overflow-hidden">
         <div className="p-6 sm:p-8 ">
-          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} countdown={null} />
+          <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={() => {}} onAdd={() => router.push('/dashboard/transactions/add')} countdown={null} loading={loading}  />
           <div suppressHydrationWarning>
-            <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={[]} />
+            <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
           </div>
           <div className="space-y-10 max-h-160 overflow-y-auto">
             <TransactionGroup
@@ -153,19 +156,25 @@ export default function TransactionHistory() {
   }
 
   return (
-    <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-      <div className="p-6 sm:p-8 ">
-        <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} countdown={countdown} />
+    <div className="overflow-hidden">
+      <div className="rounded-2xl p-6 sm:p-8 ">
+        <TransactionHistoryHeader title={t('dashboard.transaction_history.title')} onRefresh={handleRefresh} onAdd={() => router.push('/dashboard/transactions/add')} countdown={countdown} loading={loading} />
 
         <div suppressHydrationWarning>
-          <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={categories} />
+          <TransactionFilters filters={filters} onFiltersChange={handleFiltersChange} categories={mappedCategories} loading={categoriesLoading} />
         </div>
 
         {error && <div className="text-center py-12 max-h-130 text-destructive">{t('dashboard.transaction_history.error')}: {error}</div>}
 
-        {!loading && !error && (
+        {!selectedCardUuid && !loading && !error && (
+          <div className="max-h-160 overflow-y-auto">
+            <NoTransactions/>
+          </div>
+        )}
+
+        {selectedCardUuid && !loading && !error && (
           <>
-            <div className="space-y-10 max-h-160 overflow-y-auto">
+            <div className="space-y-10 max-h-120 overflow-y-auto">
               {Object.entries(groupedTransactions).map(([date, dayTransactions]) => (
                 <TransactionGroup
                   key={date}
@@ -190,27 +199,8 @@ export default function TransactionHistory() {
           </>
         )}
 
-        {loading && (
-          <div className="space-y-10 max-h-160 overflow-y-auto">
-            <TransactionGroup
-              date={t('dashboard.transaction_history.today')}
-              transactions={[]}
-              formatTime={formatTime}
-              formatCurrency={formatCurrency}
-              selectedCardLastFour={selectedCardLastFour}
-              selectedCardBrand={selectedCardBrand}
-              loading={true}
-            />
-            <TransactionGroup
-              date={t('dashboard.transaction_history.yesterday')}
-              transactions={[]}
-              formatTime={formatTime}
-              formatCurrency={formatCurrency}
-              selectedCardLastFour={selectedCardLastFour}
-              selectedCardBrand={selectedCardBrand}
-              loading={true}
-            />
-          </div>
+        {loading && selectedCardUuid && (
+          <TransactionHistoryLoading />
         )}
       </div>
     </div>

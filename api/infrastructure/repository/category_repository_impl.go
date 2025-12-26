@@ -131,6 +131,29 @@ func (r *categoryRepositoryImpl) Delete(id int) error {
 	return nil
 }
 
+func (r *categoryRepositoryImpl) DeleteByUUID(uuid string) error {
+	ctx := context.Background()
+	result, err := r.db.NewDelete().
+		Model((*model.Category)(nil)).
+		Where("uuid = ?", uuid).
+		Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("category not found")
+	}
+
+	return nil
+}
+
 func (r *categoryRepositoryImpl) FindDefaultCategories() ([]*model.Category, error) {
 	ctx := context.Background()
 	var categories []*model.Category

@@ -14,7 +14,7 @@ import (
 )
 
 type CardHandler struct {
-	addCardUC        *usecase.AddCardUseCase
+	createCardUC     *usecase.CreateCardUseCase
 	getCardsUC       *usecase.GetCardsUseCase
 	getCardUC        *usecase.GetCardUseCase
 	updateCardUC     *usecase.UpdateCardUseCase
@@ -23,7 +23,7 @@ type CardHandler struct {
 }
 
 func NewCardHandler(
-	addCardUC *usecase.AddCardUseCase,
+	createCardUC *usecase.CreateCardUseCase,
 	getCardsUC *usecase.GetCardsUseCase,
 	getCardUC *usecase.GetCardUseCase,
 	updateCardUC *usecase.UpdateCardUseCase,
@@ -31,7 +31,7 @@ func NewCardHandler(
 	setDefaultCardUC *usecase.SetDefaultCardUseCase,
 ) *CardHandler {
 	return &CardHandler{
-		addCardUC:        addCardUC,
+		createCardUC:     createCardUC,
 		getCardsUC:       getCardsUC,
 		getCardUC:        getCardUC,
 		updateCardUC:     updateCardUC,
@@ -48,7 +48,7 @@ func (h *CardHandler) AddCard(c *fiber.Ctx) error {
 		return response.Error(c, fiber.StatusBadRequest, "INVALID_REQUEST", "Invalid request body", nil)
 	}
 
-	card, err := h.addCardUC.Execute(userID, req)
+	card, err := h.createCardUC.Execute(userID, req)
 	if err != nil {
 		println(err)
 		if _, ok := err.(validator.ValidationErrors); ok {

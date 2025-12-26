@@ -25,6 +25,7 @@ func (r *transactionRepositoryImpl) Create(tx *model.Transaction) error {
 		Model(tx).
 		Returning("*").
 		Exec(ctx)
+	fmt.Print(err)
 	return err
 }
 
@@ -35,7 +36,7 @@ func (r *transactionRepositoryImpl) FindByID(id int) (*model.Transaction, error)
 		Model(transaction).
 		Relation("Category").
 		Relation("Card").
-		Where("id = ?", id).
+		Where("transactions.id = ?", id).
 		Scan(ctx)
 
 	if err == sql.ErrNoRows {
@@ -50,9 +51,10 @@ func (r *transactionRepositoryImpl) FindByUUID(uuid string) (*model.Transaction,
 	transaction := &model.Transaction{}
 	err := r.db.NewSelect().
 		Model(transaction).
+		ModelTableExpr("transactions as transaction").
 		Relation("Category").
 		Relation("Card").
-		Where("uuid = ?", uuid).
+		Where("transaction.uuid = ?", uuid).
 		Scan(ctx)
 
 	if err == sql.ErrNoRows {
@@ -103,6 +105,7 @@ func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, da
 	if search != nil {
 		query = query.Where("transaction.description ILIKE ? OR transaction.merchant ILIKE ?", "%"+*search+"%", "%"+*search+"%")
 	}
+
 	if cardID != nil {
 		query = query.Where("transaction.card_id = ?", *cardID)
 	}
@@ -152,8 +155,8 @@ func (r *transactionRepositoryImpl) Update(tx *model.Transaction) error {
 	result, err := r.db.NewUpdate().
 		Model(tx).
 		Column("amount", "currency", "category", "kind", "merchant", "description", "metadata", "occurred_at", "updated_at",
-			"is_recurring", "recurrence_type", "recurrence_interval", "recurrence_end_date",
-			"is_installment", "installment_number", "total_installments", "original_transaction_id").
+			"is_recurring", "recurrence_type", "recurrence_end_date",
+			"is_installment", "installment_number", "total_installments").
 		Where("id = ?", tx.ID).
 		Exec(ctx)
 
@@ -237,7 +240,6 @@ func (r *transactionRepositoryImpl) ListInstallments(originalTransactionID int) 
 	var transactions []*model.Transaction
 	err := r.db.NewSelect().
 		Model(&transactions).
-		Where("original_transaction_id = ?", originalTransactionID).
 		Order("installment_number ASC").
 		Scan(ctx)
 

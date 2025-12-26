@@ -24,6 +24,7 @@ func (r *cardRepositoryImpl) Create(card *model.Card) error {
 		Model(card).
 		Returning("*").
 		Exec(ctx)
+	fmt.Print(err)
 	return err
 }
 

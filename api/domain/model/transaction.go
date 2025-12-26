@@ -47,16 +47,15 @@ type Transaction struct {
 	Card     *Card     `json:"card,omitempty" bun:"rel:belongs-to,join:card_id=id"`
 
 	// Recurring fields
-	IsRecurring        bool            `json:"is_recurring" bun:"is_recurring,notnull,default:false"`
-	RecurrenceType     *RecurrenceType `json:"recurrence_type" bun:"recurrence_type"`
-	RecurrenceInterval int             `json:"recurrence_interval" bun:"recurrence_interval,default:1"`
-	RecurrenceEndDate  *time.Time      `json:"recurrence_end_date" bun:"recurrence_end_date"`
+	IsRecurring         bool            `json:"is_recurring" bun:"is_recurring,notnull,default:false"`
+	RecurrenceType      *RecurrenceType `json:"recurrence_type" bun:"recurrence_type"`
+	RecurrenceStartDate *time.Time      `json:"recurrence_start_date" bun:"recurrence_start_date"`
+	RecurrenceEndDate   *time.Time      `json:"recurrence_end_date" bun:"recurrence_end_date"`
 
 	// Installment fields
-	IsInstallment         bool `json:"is_installment" bun:"is_installment,notnull,default:false"`
-	InstallmentNumber     *int `json:"installment_number" bun:"installment_number"`
-	TotalInstallments     *int `json:"total_installments" bun:"total_installments"`
-	OriginalTransactionID *int `json:"original_transaction_id" bun:"original_transaction_id"`
+	IsInstallment     bool `json:"is_installment" bun:"is_installment,notnull,default:false"`
+	InstallmentNumber *int `json:"installment_number" bun:"installment_number"`
+	TotalInstallments *int `json:"total_installments" bun:"total_installments"`
 }
 
 // NewTransaction creates a new transaction instance
@@ -71,31 +70,29 @@ func NewTransaction(
 	occurredAt time.Time,
 	isRecurring bool,
 	recurrenceType *RecurrenceType,
-	recurrenceInterval int,
+	recurrenceStartDate *time.Time,
 	recurrenceEndDate *time.Time,
 	isInstallment bool,
 	installmentNumber, totalInstallments *int,
-	originalTransactionID *int,
 ) *Transaction {
 	return &Transaction{
-		UserID:                userID,
-		CardID:                cardID,
-		CategoryID:            categoryID,
-		Uuid:                  uuid,
-		Amount:                amount,
-		Currency:              currency,
-		Kind:                  kind,
-		Merchant:              merchant,
-		Description:           description,
-		Metadata:              metadata,
-		OccurredAt:            occurredAt,
-		IsRecurring:           isRecurring,
-		RecurrenceType:        recurrenceType,
-		RecurrenceInterval:    recurrenceInterval,
-		RecurrenceEndDate:     recurrenceEndDate,
-		IsInstallment:         isInstallment,
-		InstallmentNumber:     installmentNumber,
-		TotalInstallments:     totalInstallments,
-		OriginalTransactionID: originalTransactionID,
+		UserID:              userID,
+		CardID:              cardID,
+		CategoryID:          categoryID,
+		Uuid:                uuid,
+		Amount:              amount,
+		Currency:            currency,
+		Kind:                kind,
+		Merchant:            merchant,
+		Description:         description,
+		Metadata:            metadata,
+		OccurredAt:          occurredAt,
+		IsRecurring:         isRecurring,
+		RecurrenceType:      recurrenceType,
+		RecurrenceStartDate: recurrenceStartDate,
+		RecurrenceEndDate:   recurrenceEndDate,
+		IsInstallment:       isInstallment,
+		InstallmentNumber:   installmentNumber,
+		TotalInstallments:   totalInstallments,
 	}
 }

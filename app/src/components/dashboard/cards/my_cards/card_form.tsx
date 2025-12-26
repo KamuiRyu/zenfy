@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n/useI18n";
 
 interface CardFormProps {
   mode: "add" | "edit";
@@ -19,6 +20,7 @@ interface CardFormProps {
 }
 
 export default function CardForm({ mode, cardId, initialValues, onSuccess }: CardFormProps) {
+  const { t } = useI18n();
   const [holderName, setHolderName] = useState(initialValues?.holderName || "");
   const [lastFour, setLastFour] = useState(initialValues?.lastFour || "");
   const [expiry, setExpiry] = useState(initialValues?.expiry || "");
@@ -39,44 +41,44 @@ export default function CardForm({ mode, cardId, initialValues, onSuccess }: Car
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold mb-2">
-        {mode === "add" ? "Adicionar Cartão" : "Editar Cartão"}
+        {mode === "add" ? t("dashboard.cards.add_card") : t("dashboard.cards.edit_card")}
       </h2>
       <Input
-        placeholder="Nome do titular"
+        placeholder={t("dashboard.cards.holder_name")}
         value={holderName}
         onChange={e => setHolderName(e.target.value)}
         required
       />
       <Input
-        placeholder="Últimos 4 dígitos"
+        placeholder={t("dashboard.cards.last_four")}
         value={lastFour}
         maxLength={4}
         onChange={e => setLastFour(e.target.value.replace(/\D/g, ""))}
         required
       />
       <Input
-        placeholder="Validade (MM/AA)"
+        placeholder={t("dashboard.cards.expiry")}
         value={expiry}
         onChange={e => setExpiry(e.target.value)}
         required
       />
       <Input
-        placeholder="Bandeira (Visa, Mastercard...)"
+        placeholder={t("dashboard.cards.brand")}
         value={brand}
         onChange={e => setBrand(e.target.value)}
       />
       <Input
-        placeholder="Banco"
+        placeholder={t("dashboard.cards.bank")}
         value={bank}
         onChange={e => setBank(e.target.value)}
       />
       <Input
-        placeholder="Apelido (opcional)"
+        placeholder={t("dashboard.cards.nickname")}
         value={nickname}
         onChange={e => setNickname(e.target.value)}
       />
       <Button type="submit" disabled={loading} className="mt-2">
-        {loading ? "Salvando..." : mode === "add" ? "Adicionar" : "Salvar"}
+        {loading ? t("dashboard.cards.saving") : mode === "add" ? t("dashboard.cards.add") : t("dashboard.cards.save")}
       </Button>
     </form>
   );

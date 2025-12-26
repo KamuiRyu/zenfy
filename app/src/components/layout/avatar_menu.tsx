@@ -10,9 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
-import { Skeleton } from "../ui/skeleton";
 import { useI18n } from "@/i18n/useI18n";
-import { Button } from "../ui/button";
 import { ConfirmDialog } from "../base/confirm_dialog";
 
 export default function AvatarMenu({
@@ -25,7 +23,7 @@ export default function AvatarMenu({
   const { t } = useI18n();
 
   return (
-    <DropdownMenu open={avatar !== null ? undefined : false}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="rounded-full p-0 bg-transparent hover:bg-transparent focus:outline-none focus:ring-0">
           {avatar ? (
@@ -35,7 +33,9 @@ export default function AvatarMenu({
               className="w-10 h-10 rounded-full object-cover"
             />
           ) : (
-            <Skeleton className="w-10 h-10 rounded-full" />
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-lg">
+              {displayName?.charAt(0).toUpperCase() || "?"}
+            </div>
           )}
         </button>
       </DropdownMenuTrigger>

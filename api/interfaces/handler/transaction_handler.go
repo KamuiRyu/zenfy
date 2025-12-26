@@ -110,12 +110,7 @@ func (h *TransactionHandler) DeleteTransaction(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
 	transactionIDStr := c.Params("id")
-	transactionID, err := strconv.Atoi(transactionIDStr)
-	if err != nil {
-		return response.Error(c, fiber.StatusBadRequest, "INVALID_TRANSACTION_ID", "Invalid transaction ID", nil)
-	}
-
-	err = h.deleteTransactionUC.Execute(userID, transactionID)
+	err := h.deleteTransactionUC.ExecuteByUUID(userID, transactionIDStr)
 	if err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "TRANSACTION_DELETE_FAILED", err.Error(), nil)
 	}
@@ -259,4 +254,22 @@ func (h *TransactionHandler) GetTransactionSummaryByCard(c *fiber.Ctx) error {
 	}
 
 	return response.Success(c, fiber.StatusOK, summary, "Transaction summary fetched successfully")
+}
+
+func (h *TransactionHandler) GetBalanceOverview(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int)
+
+	var cardID *int
+	if cardUUID := c.Query("card_uuid"); cardUUID != "" {
+		if card, err := h.cardRepo.FindByUUID(cardUUID); err == nil && card != nil && card.UserID == userID {
+			cardID = &card.ID
+		}
+	}
+
+	balanceOverview, err := h.getTransactionSummaryUC.ExecuteBalanceOverview(userID, cardID)
+	if err != nil {
+		return response.Error(c, fiber.StatusInternalServerError, "FETCH_BALANCE_FAILED", "Failed to fetch balance overview", nil)
+	}
+
+	return response.Success(c, fiber.StatusOK, balanceOverview, "Balance overview fetched successfully")
 }

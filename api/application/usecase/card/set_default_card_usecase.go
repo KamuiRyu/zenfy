@@ -1,40 +1,17 @@
 package usecase
 
-import (
-	"fmt"
-	"strconv"
-
-	"zenfy-api/domain/repository"
-)
+import "zenfy-api/application/service"
 
 type SetDefaultCardUseCase struct {
-	cardRepo repository.CardRepository
+	cardService service.CardService
 }
 
-func NewSetDefaultCardUseCase(cardRepo repository.CardRepository) *SetDefaultCardUseCase {
+func NewSetDefaultCardUseCase(cardService service.CardService) *SetDefaultCardUseCase {
 	return &SetDefaultCardUseCase{
-		cardRepo: cardRepo,
+		cardService: cardService,
 	}
 }
 
 func (uc *SetDefaultCardUseCase) Execute(userID int, cardUUID string) error {
-	card, err := uc.cardRepo.FindByUUID(cardUUID)
-	if err != nil {
-		if idInt, perr := strconv.Atoi(cardUUID); perr == nil {
-			card, err = uc.cardRepo.FindByID(idInt)
-		}
-		if err != nil {
-			return err
-		}
-		if card.UserID != userID {
-			return fmt.Errorf("UNAUTHORIZED_ACTION")
-		}
-		return uc.cardRepo.SetDefault(userID, card.ID)
-	}
-
-	if card.UserID != userID {
-		return fmt.Errorf("UNAUTHORIZED_ACTION")
-	}
-
-	return uc.cardRepo.SetDefault(userID, card.ID)
+	return uc.cardService.SetDefaultCard(userID, cardUUID)
 }

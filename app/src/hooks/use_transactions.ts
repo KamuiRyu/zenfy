@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useRef, useCallback } from "react";
 import transactionService from "@/services/transaction_service";
 
 type Transaction = {
@@ -30,12 +30,10 @@ type Transaction = {
   updated_at: string;
   is_recurring: boolean;
   recurrence_type?: string;
-  recurrence_interval?: number;
   recurrence_end_date?: string;
   is_installment: boolean;
   installment_number?: number;
   total_installments?: number;
-  original_transaction_id?: number;
 };
 
 type TransactionsState = {
@@ -49,6 +47,7 @@ type TransactionFilters = {
   dateTo?: string;
   categoryId?: number;
   type?: string;
+  kind?: string;
   cardUuid?: string;
   search?: string;
 };
@@ -77,19 +76,19 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
   }
 }
 
-export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean) {
+export default function useTransactions(limit?: number, offset?: number, filters?: TransactionFilters, mounted?: boolean, onRefetch?: () => void) {
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (mounted && filters?.cardUuid) {
-      fetchTransactions();
-    } else if (mounted) {
-      dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
-      dispatch({ type: 'SET_LOADING', payload: true });
+  const fetchTransactions = useCallback(async () => {
+    // Cancel previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  }, [filters, limit, offset, mounted]);
 
-  async function fetchTransactions() {
+    abortControllerRef.current = new AbortController();
+
     dispatch({ type: 'SET_ERROR', payload: null });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
@@ -100,10 +99,12 @@ export default function useTransactions(limit?: number, offset?: number, filters
       if (filters?.dateTo) params.date_to = filters.dateTo;
       if (filters?.categoryId) params.category_id = filters.categoryId;
       if (filters?.type) params.type = filters.type;
+      if (filters?.kind) params.kind = filters.kind;
       if (filters?.cardUuid) params.card_uuid = filters.cardUuid;
       if (filters?.search) params.search = filters.search;
 
-      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search);
+      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, abortControllerRef.current.signal);
+
       const payload =
         resp && typeof resp === "object" && "data" in resp
           ? (resp as any).data
@@ -123,12 +124,39 @@ export default function useTransactions(limit?: number, offset?: number, filters
 
       dispatch({ type: 'SET_TRANSACTIONS', payload: transactionsArray });
     } catch (err: any) {
-      console.error("Failed to load transactions", err);
+      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+        return;
+      }
       dispatch({ type: 'SET_ERROR', payload: err?.message || "Failed to load transactions" });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }
+  }, [limit, offset, filters]);
+
+  useEffect(() => {
+    
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    if (mounted) {
+      debounceTimeoutRef.current = setTimeout(() => {
+        fetchTransactions();
+      }, 100);
+    } else {
+      dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [filters, limit, offset, mounted, fetchTransactions]);
 
   return {
     transactions: state.transactions,

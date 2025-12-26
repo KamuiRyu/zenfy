@@ -1,44 +1,20 @@
 package usecase
 
 import (
-	"time"
-
 	"zenfy-api/application/dto"
-	"zenfy-api/domain/repository"
+	"zenfy-api/application/service"
 )
 
 type GetCategoriesUseCase struct {
-	categoryRepo repository.CategoryRepository
+	categoryService service.CategoryService
 }
 
-func NewGetCategoriesUseCase(categoryRepo repository.CategoryRepository) *GetCategoriesUseCase {
+func NewGetCategoriesUseCase(categoryService service.CategoryService) *GetCategoriesUseCase {
 	return &GetCategoriesUseCase{
-		categoryRepo: categoryRepo,
+		categoryService: categoryService,
 	}
 }
 
 func (uc *GetCategoriesUseCase) Execute(userID int) ([]dto.CategoryResponse, error) {
-	categories, err := uc.categoryRepo.ListByUser(userID)
-	if err != nil {
-		return nil, err
-	}
-
-	responses := make([]dto.CategoryResponse, len(categories))
-	for i, category := range categories {
-		responses[i] = dto.CategoryResponse{
-			ID:          category.ID,
-			Uuid:        category.Uuid,
-			UserID:      category.UserID,
-			Name:        category.Name,
-			Type:        category.Type,
-			Description: category.Description,
-			Color:       category.Color,
-			Icon:        category.Icon,
-			IsDefault:   category.IsDefault,
-			CreatedAt:   category.CreatedAt.Format(time.RFC3339),
-			UpdatedAt:   category.UpdatedAt.Format(time.RFC3339),
-		}
-	}
-
-	return responses, nil
+	return uc.categoryService.GetCategoriesByUser(userID)
 }

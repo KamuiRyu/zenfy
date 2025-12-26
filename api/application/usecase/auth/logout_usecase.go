@@ -1,26 +1,17 @@
 package usecase
 
 import (
-	"database/sql"
-
-	"zenfy-api/domain/repository"
+	"zenfy-api/application/service"
 )
 
 type LogoutUseCase struct {
-	refreshRepo repository.RefreshTokenRepository
+	authService service.AuthService
 }
 
-func NewLogoutUseCase(refreshRepo repository.RefreshTokenRepository) *LogoutUseCase {
-	return &LogoutUseCase{refreshRepo: refreshRepo}
+func NewLogoutUseCase(authService service.AuthService) *LogoutUseCase {
+	return &LogoutUseCase{authService: authService}
 }
 
 func (uc *LogoutUseCase) Execute(token string) error {
-	if uc.refreshRepo == nil || token == "" {
-		return nil
-	}
-	_, err := uc.refreshRepo.Consume(token)
-	if err != nil && err != sql.ErrNoRows {
-		return err
-	}
-	return nil
+	return uc.authService.Logout(token)
 }

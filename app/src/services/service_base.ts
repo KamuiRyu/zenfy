@@ -54,16 +54,21 @@ export function ejectAxiosInterceptor(interceptorId: number) {
 export async function request(
   base: string,
   path: string,
-  opts: AxiosRequestConfig = {}
+  opts: AxiosRequestConfig = {},
+  signal?: AbortSignal
 ) {
   try {
-    const fullPath = path.startsWith("/") ? path : `${base}/${path}`;
+    const fullPath = path ? (path.startsWith("/") ? path : `${base}/${path}`) : base;
     const response = await apiClient.request({
       url: fullPath,
+      signal,
       ...opts,
     });
     return response.data;
   } catch (error: any) {
+    if (error.name === 'CanceledError' || error.name === 'AbortError') {
+      throw error;
+    }
     const err: any = new Error("API error");
     err.status = error.response?.status;
     err.body = error.response?.data;

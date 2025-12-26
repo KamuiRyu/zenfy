@@ -7,7 +7,7 @@ interface TransactionHistoryEmptyProps {
 
 export default function TransactionHistoryEmpty({ title, message }: TransactionHistoryEmptyProps) {
   return (
-    <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
+    <div className="rounded-2xl p-8 ">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-card-foreground">{title}</h2>
       </div>

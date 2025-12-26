@@ -27,17 +27,16 @@ type Transaction = {
   updated_at: string;
   is_recurring: boolean;
   recurrence_type?: string;
-  recurrence_interval?: number;
+  recurrence_start_date?: string;
   recurrence_end_date?: string;
   is_installment: boolean;
   installment_number?: number;
   total_installments?: number;
-  original_transaction_id?: number;
 };
 
 const base = "/transactions";
 
-export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string) {
+export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string, kind?: string, signal?: AbortSignal) {
   const params = new URLSearchParams();
   if (limit) params.append("limit", limit.toString());
   if (offset) params.append("offset", offset.toString());
@@ -47,7 +46,8 @@ export async function getTransactions(limit?: number, offset?: number, cardUuid?
   if (categoryId) params.append("category_id", categoryId.toString());
   if (type) params.append("type", type);
   if (search) params.append("search", search);
-  return request(base, `?${params.toString()}`);
+  if (kind) params.append("kind", kind);
+  return request(base, `?${params.toString()}`, {}, signal);
 }
 
 export async function getTransactionsByCard(cardUuid: string, limit?: number, offset?: number) {

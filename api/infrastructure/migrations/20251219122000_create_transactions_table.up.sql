@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount BIGINT NOT NULL, -- cents
     currency VARCHAR(3) NOT NULL DEFAULT 'BRL',
     category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-    kind VARCHAR(8) NOT NULL CHECK (kind IN ('debit','credit')),
+    kind VARCHAR(8) NOT NULL CHECK (kind IN ('debit','credit', 'deposit', 'withdrawal', 'transfer')),
     merchant VARCHAR(255),
     description TEXT,
     metadata JSONB,
@@ -17,15 +17,14 @@ CREATE TABLE IF NOT EXISTS transactions (
 
     -- Recurring fields
     is_recurring BOOLEAN NOT NULL DEFAULT false,
-    recurrence_type VARCHAR(20), -- daily, weekly, monthly, yearly
-    recurrence_interval INTEGER DEFAULT 1, -- every N days/weeks/months/years
+    recurrence_type VARCHAR(20),
+    recurrence_interval INTEGER DEFAULT 1,
     recurrence_end_date TIMESTAMPTZ,
 
     -- Installment fields
     is_installment BOOLEAN NOT NULL DEFAULT false,
     installment_number INTEGER,
     total_installments INTEGER,
-    original_transaction_id INTEGER REFERENCES transactions(id) ON DELETE SET NULL
 );
 
 -- Indexes

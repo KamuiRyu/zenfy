@@ -13,14 +13,31 @@ import { useRouter } from "next/navigation";
 import CardPreview from "../form/card_preview";
 import { CardForm } from "../form/card_form";
 import { useForm } from "react-hook-form";
-import { cardFormSchema, CardFormSchema } from "../form/card_form.schema";
+import { CardFormSchema } from "../form/card_form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useI18n } from "@/i18n/useI18n";
 
 export default function EditCardDialog({
   cardId,
 }: {
   cardId: string | number;
 }) {
+  const { t } = useI18n();
+
+  const cardFormSchema = z.object({
+    lastFour: z.string().length(4, t("validation.exact_length", { count: 4 })),
+    brand: z.string().min(1, t("validation.select_option")),
+    holderName: z.string().min(1, t("validation.required")),
+    bank: z.string().min(1, t("validation.select_option")),
+    expiryDate: z.date({ message: t("validation.select_date") }),
+    cardType: z.string().min(1, t("validation.select_option")),
+    billingDay: z.string().min(1, t("validation.select_option")),
+    billingDayDate: z.date().optional(),
+    nickname: z.string().optional(),
+    isDefault: z.boolean().optional(),
+  });
+
   const [loading, setLoading] = useState(false);
   const [card, setCard] = useState<any>(null);
   const [fetching, setFetching] = useState(true);
@@ -33,13 +50,11 @@ export default function EditCardDialog({
       try {
         const fetchedCard = await cardService.getCard(cardId);
         if (!fetchedCard) {
-          toast.error("Cartão não encontrado");
           router.back();
           return;
         }
         setCard(fetchedCard);
       } catch (error) {
-        toast.error("Falha ao carregar o cartão.");
         router.back();
       } finally {
         setFetching(false);
@@ -96,7 +111,6 @@ export default function EditCardDialog({
 
   async function handleSubmit(data: CardFormSchema) {
     if (!card) {
-      toast.error("Cartão não encontrado");
       return;
     }
 
@@ -118,9 +132,9 @@ export default function EditCardDialog({
         is_default: data.isDefault,
         nickname: data.nickname,
       });
+      window.dispatchEvent(new Event('refetchCards'));
       router.back();
     } catch (err: any) {
-      toast.error("Erro ao atualizar cartão");
     } finally {
       setLoading(false);
     }
@@ -140,12 +154,12 @@ export default function EditCardDialog({
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle>Editar Cartão</DialogTitle>
+          <DialogTitle>{t("dashboard.cards.edit_card")}</DialogTitle>
         </DialogHeader>
         {fetching ? (
           <div className="flex items-center justify-center min-h-[200px] gap-2">
             <Spinner className="w-6 h-6" />
-            <span>Carregando cartão...</span>
+            <span>{t("dashboard.cards.loading_card")}</span>
           </div>
         ) : (
           card && (
@@ -157,7 +171,7 @@ export default function EditCardDialog({
               formState={form.formState}
               loading={loading}
               onSubmit={handleSubmit}
-              submitLabel="Salvar"
+              submitLabel={t("dashboard.cards.save")}
               renderPreview={(values) => (
                 <CardPreview
                   lastFour={values.lastFour || ""}

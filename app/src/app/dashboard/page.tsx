@@ -1,6 +1,7 @@
+"use client";
+
 import StatCard from "@/components/dashboard/stat_card";
 import ChartCard from "@/components/dashboard/chart_card";
-import ActivityCard from "@/components/dashboard/activity_card";
 import { WelcomeMessage } from "@/components/dashboard/welcome_message";
 
 export default function DashboardPage() {
@@ -45,31 +46,14 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <ChartCard title="Sale">
-                    <div className="h-full bg-gradient-to-b from-blue-50 to-transparent rounded-lg" />
-                  </ChartCard>
                   <ChartCard title="Payments">
-                    <div className="h-full bg-gradient-to-b from-yellow-50 to-transparent rounded-lg" />
+                    <div className="h-full bg-gradient-to-b from-yellow-50 to-transparent rounded-lg flex items-center justify-center">
+                      <span className="text-muted-foreground">Payment chart coming soon</span>
+                    </div>
                   </ChartCard>
                 </div>
               </div>
 
-              <aside className="lg:col-span-4 flex flex-col gap-4">
-                <ActivityCard />
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                  <h3 className="font-medium mb-3">Goals</h3>
-                  <div className="flex flex-col gap-3">
-                    <div className="bg-gray-50 p-3 rounded-md">
-                      Business Funding{" "}
-                      <div className="text-sm text-muted-foreground">70%</div>
-                    </div>
-                    <div className="bg-pink-50 p-3 rounded-md">
-                      Top Up Balance{" "}
-                      <div className="text-sm text-muted-foreground">70%</div>
-                    </div>
-                  </div>
-                </div>
-              </aside>
             </div>
           </main>
         </div>
