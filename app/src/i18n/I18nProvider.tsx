@@ -43,8 +43,17 @@ export function I18nProvider({ children, defaultLocale = "en" }: { children: Rea
     if (typeof cur === "string") {
       let out = cur;
       if (params && params.length) {
-        for (const param of params) {
-          out = out.replace(/%[ds]/, String(param));
+        const param = params[0];
+        if (typeof param === "object" && param !== null) {
+          // Interpolate object like { count: 4 }
+          Object.entries(param as Record<string, unknown>).forEach(([k, v]) => {
+            out = out.replace(new RegExp(`{{${k}}}`, 'g'), String(v));
+          });
+        } else {
+          // Fallback to old style %d %s
+          for (const p of params) {
+            out = out.replace(/%[ds]/, String(p));
+          }
         }
       }
       return out;

@@ -29,7 +29,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { TransactionFormData } from "./transaction_form.schema";
+import { TransactionFormData } from "../transaction_form.schema";
 import { useEffect } from "react";
 
 interface TransactionDetailsTabProps {

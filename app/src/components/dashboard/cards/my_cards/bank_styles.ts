@@ -25,7 +25,7 @@ export function bankStylesFor(bankName?: string): BankStyle {
   case "c6":
   case "c6 bank": 
   case "c6bank":
-    return { gradient: "bg-gradient-to-br from-gray-800 to-gray-600 text-white", neutral: "bg-gray-50 text-gray-700" };
+    return { gradient: "bg-gradient-to-br from-black to-gray-900 text-white", neutral: "bg-gray-50 text-black" };
   case "sicredi":
     return { gradient: "bg-gradient-to-br from-green-700 to-green-500 text-white", neutral: "bg-green-50 text-green-700" };
   case "picpay":
