@@ -27,7 +27,7 @@ import useCategories from "@/hooks/use_categories";
 import useCards from "@/hooks/use_cards";
 import { TransactionFormData } from "@/components/dashboard/transactions/form/transaction_form.schema";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { CardBrand } from "../../cards/my_cards/card_brand";
 import { bankStylesFor } from "../../cards/my_cards/bank_styles";
 import TransactionInfoTab from "./tabs/transaction_info_tab";
