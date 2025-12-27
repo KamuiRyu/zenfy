@@ -79,7 +79,12 @@
       "error_adding_card": "Erro ao adicionar cartão",
       "error_updating_card": "Erro ao atualizar cartão",
       "loading_card": "Carregando cartão...",
-      "loading_cards": "Carregando cartões..."
+      "loading_cards": "Carregando cartões...",
+      "tabs": {
+        "basic": "Informações Básicas",
+        "details": "Detalhes",
+        "settings": "Configurações"
+      }
     },
     "transaction_history": {
       "title": "Histórico de Transações",

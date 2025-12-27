@@ -21,6 +21,7 @@ export default function CardCarousel() {
     null
   );
   const [dragging, setDragging] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const isDragging = useRef(false);
@@ -81,10 +82,11 @@ export default function CardCarousel() {
     startX.current = e.clientX;
     startScroll.current = containerRef.current?.scrollLeft || 0;
     setDragging(false);
+    setIsPressed(true);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!containerRef.current) return;
+    if (!isPressed || !containerRef.current) return;
     const deltaX = e.clientX - startX.current;
     if (Math.abs(deltaX) > 5) {
       isDragging.current = true;
@@ -94,6 +96,7 @@ export default function CardCarousel() {
   };
 
   const onPointerUp = () => {
+    setIsPressed(false);
     if (isDragging.current) {
       setDragging(false);
     }
@@ -149,9 +152,10 @@ export default function CardCarousel() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onPointerLeave={onPointerUp}
         className={`flex gap-4 overflow-x-auto pb-2 scroll-smooth items-center ${
           dragging ? "cursor-grabbing" : "cursor-grab"
-        }`}
+        } ${isPressed ? "select-none" : ""}`}
         style={{
           paddingLeft: 64,
           paddingRight: 56,
@@ -215,7 +219,7 @@ export default function CardCarousel() {
                 bank={it.bank}
                 selected={idx === selectedIndex}
                 isDragging={dragging}
-                onClick={() => selectIndex(idx)}
+                onClick={() => !isPressed && selectIndex(idx)}
                 onEdit={() => handleEdit(it.id)}
                 onDelete={() => handleDelete(it.id)}
                 ref={(el) => {

@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { TransactionFormData } from "./transaction_form.schema";
+import { TransactionFormData } from "../transaction_form.schema";
 import { CategoryType } from "@/types/transactions";
 
 interface TransactionInfoTabProps {

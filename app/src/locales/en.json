@@ -79,7 +79,12 @@
       "error_adding_card": "Error adding card",
       "error_updating_card": "Error updating card",
       "loading_card": "Loading card...",
-      "loading_cards": "Loading cards..."
+      "loading_cards": "Loading cards...",
+      "tabs": {
+        "basic": "Basic Information",
+        "details": "Details",
+        "settings": "Settings"
+      }
     },
     "transaction_history": {
       "title": "Transaction History",

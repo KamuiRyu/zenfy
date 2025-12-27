@@ -28,7 +28,7 @@ import { Card, CardContent} from "@/components/ui/card";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { TransactionFormData } from "./transaction_form.schema";
+import { TransactionFormData } from "../transaction_form.schema";
 
 interface TransactionRecurringTabProps {
   control: Control<TransactionFormData>;

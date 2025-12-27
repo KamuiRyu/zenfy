@@ -30,9 +30,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useMemo, useState } from "react";
 import { CardBrand } from "../../cards/my_cards/card_brand";
 import { bankStylesFor } from "../../cards/my_cards/bank_styles";
-import TransactionInfoTab from "./transaction_info_tab";
-import TransactionDetailsTab from "./transaction_details_tab";
-import TransactionRecurringTab from "./transaction_recurring_tab";
+import TransactionInfoTab from "./tabs/transaction_info_tab";
+import TransactionDetailsTab from "./tabs/transaction_details_tab";
+import TransactionRecurringTab from "./tabs/transaction_recurring_tab";
 import { TransactionData, TransactionType } from "@/types/transactions";
 
 interface TransactionFormProps {
@@ -128,6 +128,19 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
       recurrenceEndDate: transaction?.recurrence_end_date ? new Date(transaction.recurrence_end_date) : undefined,
     },
   });
+
+  const getTabWithErrors = () => {
+    const errors = form.formState.errors;
+   
+    const infoFields: (keyof TransactionFormData)[] = ['description', 'category_uuid', 'merchant', 'type'];
+    const detailsFields: (keyof TransactionFormData)[] = ['date', 'kind', 'amount', 'isInstallment', 'installmentNumber', 'totalInstallments'];
+    const recurringFields: (keyof TransactionFormData)[] = ['isRecurring', 'recurrenceType', 'recurrenceStartDate', 'recurrenceEndDate'];
+
+    if (infoFields.some(field => errors[field])) return 'info';
+    if (detailsFields.some(field => errors[field])) return 'details';
+    if (recurringFields.some(field => errors[field])) return 'recurring';
+    return 'info';
+  };
 
   const selectedType = useWatch({ control: form.control, name: "type" });
   const selectedCardUuid = useWatch({ control: form.control, name: "card_uuid" });
@@ -236,7 +249,10 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit, () => {
+          const tab = getTabWithErrors();
+          setActiveTab(tab);
+        })} className="space-y-6">
           <Card className="border-0 shadow-lg bg-transparent">
             <CardContent className="pt-0">
               <FormField
@@ -328,7 +344,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
               <TabsTrigger value="recurring">{t("dashboard.transactions.recurring")}</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="info" className="space-y-6 mt-6">
+            <TabsContent value="info" className="space-y-6 mt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300">
               <TransactionInfoTab
                 control={form.control}
                 categories={categories}
@@ -336,7 +352,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
                 filteredCategories={filteredCategories}
               />
             </TabsContent>
-            <TabsContent value="details" className="space-y-6 mt-6">
+            <TabsContent value="details" className="space-y-6 mt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300">
               <TransactionDetailsTab
                 control={form.control}
                 watch={form.watch}
@@ -344,7 +360,7 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
                 kindOptions={kindOptions}
               />
             </TabsContent>
-            <TabsContent value="recurring" className="space-y-6 mt-6">
+            <TabsContent value="recurring" className="space-y-6 mt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300">
               <TransactionRecurringTab
                 control={form.control}
                 watch={form.watch}
