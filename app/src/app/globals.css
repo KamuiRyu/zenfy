@@ -50,6 +50,19 @@
   font-weight: 500;
 }
 
+.w-color-compact {
+  --compact-background-color: transparent !important;
+}
+
+.w-color-compact .w-color-swatch{
+  margin-bottom: 10px;
+}
+
+.w-color-compact .w-color-editable-input input{
+  margin-left: 5x;
+}
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

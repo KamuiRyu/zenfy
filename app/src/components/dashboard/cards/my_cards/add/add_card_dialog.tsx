@@ -89,7 +89,7 @@ export default function AddCardDialog() {
       }}
     >
       <DialogContent
-        className="w-full max-w-1xl sm:max-w-2xl md:max-w-3xl lg:max-w-1xl p-8"
+        className="!max-w-[50rem]"
         aria-describedby={undefined}
       >
         <DialogHeader>

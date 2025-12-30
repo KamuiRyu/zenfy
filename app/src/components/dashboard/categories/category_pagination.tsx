@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
 
-interface TransactionPaginationProps {
+interface CategoryPaginationProps {
   page: number;
   setPage: (page: number | ((prev: number) => number)) => void;
   hasMore: boolean;
 }
 
-export default function TransactionPagination({ page, setPage, hasMore }: TransactionPaginationProps) {
+export default function CategoryPagination({ page, setPage, hasMore }: CategoryPaginationProps) {
   const { t } = useI18n();
 
   return (

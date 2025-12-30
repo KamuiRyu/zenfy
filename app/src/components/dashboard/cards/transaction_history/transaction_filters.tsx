@@ -131,7 +131,7 @@ export default function TransactionFilters({
       <div className="flex items-center gap-2 mb-3">
         <Filter className="w-4 h-4" />
         <span className="font-medium">
-          {t("dashboard.transaction_history.filters")}
+          {t("filter.title")}
         </span>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
           {format(currentMonth, "MMMM yyyy")}
@@ -139,7 +139,7 @@ export default function TransactionFilters({
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
             <X className="w-4 h-4 mr-1" />
-            {t("dashboard.transaction_history.clear")}
+            {t("filter.clear")}
           </Button>
         )}
       </div>
@@ -147,10 +147,10 @@ export default function TransactionFilters({
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label className="text-sm font-medium">
-            {t("dashboard.transaction_history.search")}
+            {t("filter.search")}
           </label>
           <Input
-            placeholder={t("dashboard.transaction_history.search_placeholder")}
+            placeholder={t("filter.search_placeholder", { entity: t("dashboard.transaction_history.transaction").toLocaleLowerCase() })}
             value={searchValue}
             onChange={(e) => {
               setSearchValue(e.target.value);
@@ -159,7 +159,7 @@ export default function TransactionFilters({
         </div>
         <div>
           <label className="text-sm font-medium">
-            {t("dashboard.transaction_history.date_range")}
+            {t("filter.date_range")}
           </label>
           <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
             <PopoverTrigger asChild>
@@ -208,7 +208,7 @@ export default function TransactionFilters({
 
         <div>
           <label className="text-sm font-medium">
-            {t("dashboard.transaction_history.category")}
+            {t("filter.category")}
           </label>
           <Select
             value={filters.categoryId ? filters.categoryId.toString() : "all"}
@@ -221,7 +221,7 @@ export default function TransactionFilters({
           >
             <SelectTrigger className="w-full">
               <SelectValue
-                placeholder={t("dashboard.transaction_history.all_categories")}
+                placeholder={t("filter.all_categories")}
               />
             </SelectTrigger>
             <SelectContent
@@ -231,7 +231,7 @@ export default function TransactionFilters({
               className="max-h-70"
             >
               <SelectItem value="all">
-                {t("dashboard.transaction_history.all_categories")}
+                {t("filter.all_categories")}
               </SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.uuid} value={cat.uuid}>
@@ -244,7 +244,7 @@ export default function TransactionFilters({
 
         <div>
           <label className="text-sm font-medium">
-            {t("dashboard.transaction_history.type")}
+            {t("filter.type.title")}
           </label>
           <Select
             value={filters.type || "all"}
@@ -254,7 +254,7 @@ export default function TransactionFilters({
           >
             <SelectTrigger className="w-full">
               <SelectValue
-                placeholder={t("dashboard.transaction_history.all_types")}
+                placeholder={t("filter.type.all")}
               />
             </SelectTrigger>
             <SelectContent
@@ -264,13 +264,13 @@ export default function TransactionFilters({
               className="max-h-70"
             >
               <SelectItem value="all">
-                {t("dashboard.transaction_history.all_types")}
+                {t("filter.type.all")}
               </SelectItem>
               <SelectItem value="income">
-                {t("dashboard.transaction_history.income")}
+                {t("filter.type.income")}
               </SelectItem>
               <SelectItem value="expense">
-                {t("dashboard.transaction_history.expense")}
+                {t("filter.type.expense")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -278,7 +278,7 @@ export default function TransactionFilters({
 
         <div>
           <label className="text-sm font-medium">
-            {t("dashboard.transaction_history.kind")}
+            {t("filter.kind.title")}
           </label>
           <Select
             value={filters.kind || "all"}
@@ -288,7 +288,7 @@ export default function TransactionFilters({
           >
             <SelectTrigger className="w-full">
               <SelectValue
-                placeholder={t("dashboard.transaction_history.all_kinds")}
+                placeholder={t("filter.kind.all")}
               />
             </SelectTrigger>
             <SelectContent
@@ -298,22 +298,22 @@ export default function TransactionFilters({
               className="max-h-70"
             >
               <SelectItem value="all">
-                {t("dashboard.transaction_history.all_kinds")}
+                {t("filter.kind.all")}
               </SelectItem>
               <SelectItem value="credit">
-                {t("dashboard.transactions.credit")}
+                {t("filter.kind.credit")}
               </SelectItem>
               <SelectItem value="debit">
-                {t("dashboard.transactions.debit")}
+                {t("filter.kind.debit")}
               </SelectItem>
                <SelectItem value="deposit">
-                {t("dashboard.transactions.deposit")}
+                {t("filter.kind.deposit")}
               </SelectItem>
               <SelectItem value="withdrawal">
-                {t("dashboard.transactions.withdrawal")}
+                {t("filter.kind.withdrawal")}
               </SelectItem>
               <SelectItem value="transfer">
-                {t("dashboard.transactions.transfer")}
+                {t("filter.kind.transfer")}
               </SelectItem>
             </SelectContent>
           </Select>

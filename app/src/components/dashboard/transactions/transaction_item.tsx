@@ -25,40 +25,39 @@ interface TransactionItemProps {
   onDelete: (uuid: string) => void;
 }
 
-export default function TransactionItem({ transaction, onDelete }: TransactionItemProps) {
+export default function TransactionItem({
+  transaction,
+  onDelete,
+}: TransactionItemProps) {
   const { t } = useI18n();
   const { deleteTransaction } = useTransactionActions();
   const router = useRouter();
 
   const isIncome = transaction.category?.type === "income";
-  const amountColor = isIncome ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400";
+  const amountColor = isIncome
+    ? "text-green-600 dark:text-green-400"
+    : "text-red-600 dark:text-red-400";
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return format(date, "dd MMM yyyy 'às' HH:mm", {
-      locale: t('locale') === 'pt' ? ptBR : enUS
+      locale: t("locale") === "pt" ? ptBR : enUS,
     });
   };
 
-  const transactionIcon =React.useMemo(() => {
+  const transactionIcon = React.useMemo(() => {
     const icon: string | undefined = transaction.category?.icon;
     if (icon) {
-      const siIconName: string = `Si${icon
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("")}`;
-
-      const bsIconName: string = `Bs${icon
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("")}`;
-
-      const SiIconComponent: IconComponent | undefined = (SiIcons as Record<string, IconComponent>)[siIconName];
+      const SiIconComponent: IconComponent | undefined = (
+        SiIcons as Record<string, IconComponent>
+      )[icon];
       if (SiIconComponent) {
         return <SiIconComponent className="w-6 h-6 text-white" />;
       }
 
-      const BsIconComponent: IconComponent | undefined = (BsIcons as Record<string, IconComponent>)[bsIconName];
+      const BsIconComponent: IconComponent | undefined = (
+        BsIcons as Record<string, IconComponent>
+      )[icon];
       if (BsIconComponent) {
         return <BsIconComponent className="w-6 h-6 text-white" />;
       }
@@ -66,8 +65,8 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
     return <BsIcons.BsCreditCardFill className="w-6 h-6 text-white" />;
   }, [transaction.category?.icon]);
 
-
-  const title = transaction.description || t('dashboard.transactions.transaction');
+  const title =
+    transaction.description || t("dashboard.transactions.transaction");
   const merchant = transaction.merchant;
   const subtitle = transaction.category?.name;
   const time = formatDate(transaction.occurred_at);
@@ -110,8 +109,11 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
       </div>
 
       <div className="hidden lg:flex justify-center flex-shrink-0">
-        <span className="px-3 py-1 rounded-full text-sm font-medium border truncate w-[120px] text-center " title={subtitle || t("dashboard.transaction_history.general")}>
-            {subtitle || t("dashboard.transaction_history.general")}
+        <span
+          className="px-3 py-1 rounded-full text-sm font-medium border truncate w-[120px] text-center "
+          title={subtitle || t("dashboard.transaction_history.general")}
+        >
+          {subtitle || t("dashboard.transaction_history.general")}
         </span>
       </div>
 
@@ -125,7 +127,9 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push(`/dashboard/transactions/edit/${transaction.uuid}`)}
+          onClick={() =>
+            router.push(`/dashboard/transactions/edit/${transaction.uuid}`)
+          }
           className="h-8 w-8 p-0"
         >
           <Edit2 className="w-4 h-4" />
@@ -138,8 +142,7 @@ export default function TransactionItem({ transaction, onDelete }: TransactionIt
             try {
               await deleteTransaction(transaction.uuid);
               onDelete(transaction.uuid);
-            } catch {
-            }
+            } catch {}
           }}
           trigger={
             <Button

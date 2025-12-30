@@ -62,10 +62,10 @@ export default function TransactionInfoTab({
                       className="max-h-70"
                     >
                       <SelectItem value="income">
-                        {t("dashboard.transaction_history.income")}
+                        {t("dashboard.transactions.income")}
                       </SelectItem>
                       <SelectItem value="expense">
-                        {t("dashboard.transaction_history.expense")}
+                        {t("dashboard.transactions.expense")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -82,7 +82,7 @@ export default function TransactionInfoTab({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    {t("dashboard.transaction_history.category")} *
+                    {t("dashboard.transactions.category")} *
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}

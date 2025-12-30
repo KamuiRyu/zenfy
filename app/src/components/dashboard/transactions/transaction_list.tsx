@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+
+
 export default function TransactionList() {
   const { t } = useI18n();
   const [page, setPage] = useState(0);
@@ -70,7 +72,7 @@ export default function TransactionList() {
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-end mb-6">
-            <Button onClick={() => router.push("/dashboard/transactions/add")}>
+            <Button onClick={() => router.push("/dashboard/transactions/add")} disabled={loading}>
               <Plus className="w-4 h-4 mr-2" />
               {t("dashboard.transactions.add_transaction")}
             </Button>
@@ -89,7 +91,7 @@ export default function TransactionList() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg"
+                  className="flex items-center justify-between p-4 rounded-lg"
                 >
                   <div className="flex items-center space-x-4">
                     <Skeleton className="w-12 h-12 rounded-full" />

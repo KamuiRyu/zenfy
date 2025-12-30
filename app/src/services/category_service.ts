@@ -1,14 +1,5 @@
 import { request } from "@/services/service_base";
-
-type Category = {
-  id?: number;
-  name: string;
-  type: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  is_default?: boolean;
-};
+import { CategoriesType } from "@/types/categories";
 
 const base = "/categories";
 
@@ -25,11 +16,11 @@ export async function getCategory(id: string | number) {
   }
 }
 
-export async function createCategory(payload: Partial<Category>) {
+export async function createCategory(payload: Partial<CategoriesType>) {
   return request(base, "", { method: "POST", data: payload });
 }
 
-export async function updateCategory(id: string | number, payload: Partial<Category>) {
+export async function updateCategory(id: string | number, payload: Partial<CategoriesType>) {
   const response = await request(base, `${id}`, {
     method: "PUT",
     data: payload,

@@ -62,7 +62,7 @@
       "deposit": "Deposit",
       "withdrawal": "Withdrawal",
       "transfer": "Transfer",
-      "credit_debit" : "Credit/Debit",
+      "credit_debit": "Credit/Debit",
       "other": "Other",
       "select_expiry_date": "Select the date",
       "select_billing_day": "Select the day",
@@ -86,6 +86,7 @@
         "settings": "Settings"
       }
     },
+
     "transaction_history": {
       "title": "Transaction History",
       "today": "Today",
@@ -94,28 +95,6 @@
       "last_month": "Last month",
       "older": "Older",
       "error": "Error",
-      "previous": "Previous",
-      "next": "Next",
-      "page": "Page",
-      "filters": "Filters",
-      "clear": "Clear",
-      "search": "Search",
-      "search_placeholder": "Search transactions...",
-      "date_range": "Date Range",
-      "select_date_range": "Select date range",
-      "from_date": "From Date",
-      "to_date": "To Date",
-      "select_date": "Select date",
-      "category": "Category",
-      "all_categories": "All categories",
-      "type": "Type",
-      "all_types": "All types",
-      "kind": "Kind",
-      "select_kind": "Select kind",
-      "all_kinds": "All kinds",
-      "income": "Income",
-      "expense": "Expense",
-      "investment": "Investment",
       "no_transactions_found": "No transactions found",
       "no_transactions_description": "Try adjusting your filters or select another card.",
       "transaction": "Transaction",
@@ -166,6 +145,9 @@
       "no_card": "No card",
       "type": "Type",
       "select_type": "Select type",
+      "income": "Income",
+      "expense": "Expense",
+      "category": "Category",
       "select_category": "Select category",
       "description": "Description",
       "description_placeholder": "Enter a description for the transaction",
@@ -189,7 +171,7 @@
       "details": "Transaction Details",
       "kind": "Kind",
       "select_kind": "Select kind",
-      "credit_debit" : "Credit/Debit",
+      "credit_debit": "Credit/Debit",
       "credit": "Credit",
       "debit": "Debit",
       "deposit": "Deposit",
@@ -212,6 +194,45 @@
       "yearly": "Yearly",
       "select_recurrence_type": "Select recurrence type",
       "recurring": "Recurring"
+    },
+    "categories": {
+      "title": "Categories",
+      "description": "Manage your transaction categories",
+      "my_categories": "My Categories",
+      "categories": "categories",
+      "add": "Add Category",
+      "type": {
+        
+        "income": "Income",
+        "expense": "Expense"
+      },
+      "add_category": "Add Category",
+      "add_description": "Fill in the details below to create a new category",
+      "edit_category": "Edit Category",
+      "edit_description": "Update the category details below",
+      "category": "Category",
+      "name": "Name",
+      "name_placeholder": "Enter category name",
+      "select_type": "Select type",
+      "income": "Income",
+      "expense": "Expense",
+      "description_field": "Description",
+      "description_placeholder": "Enter a description (optional)",
+      "color": "Color",
+      "icon": "Icon",
+      "icon_placeholder": "Enter icon name (optional)",
+      "confirm_delete": "Confirm Deletion",
+      "delete_description": "Are you sure you want to delete this category? This action cannot be undone. All transactions associated with this category will not be deleted, but will no longer be linked to this category.",
+      "no_categories_found": "No categories found",
+      "no_categories_description": "You don't have any categories registered yet.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "saving": "Saving...",
+      "save": "Save",
+      "create": "Create",
+      "error":{
+        "name_already_exists": "A category with this name already exists  "
+      }
     }
   },
   "field": {
@@ -236,11 +257,52 @@
     "TRANSACTION_UPDATED_SUCCESSFULLY": "Transaction updated successfully",
     "TRANSACTION_UPDATE_FAILED": "Failed to update transaction",
     "TRANSACTION_DELETED_SUCCESSFULLY": "Transaction deleted successfully",
-    "TRANSACTION_DELETED_FAILED": "Failed to delete transaction"
+    "TRANSACTION_DELETED_FAILED": "Failed to delete transaction",
+    "CATEGORY_CREATED_SUCCESSFULLY": "Category created successfully",
+    "CATEGORY_CREATION_FAILED": "Failed to create category",
+    "CATEGORY_UPDATED_SUCCESSFULLY": "Category updated successfully",
+    "CATEGORY_UPDATE_FAILED": "Failed to update category",
+    "CATEGORY_DELETED_SUCCESSFULLY": "Category deleted successfully",
+    "CATEGORY_DELETED_FAILED": "Failed to delete category"
   },
   "server": {
     "INVALID_CREDENTIALS": "Invalid credentials",
     "VALIDATION_ERROR": "There were validation errors with the request."
+  },
+  "filter": {
+    "title": "Filters",
+    "clear": "Clear",
+    "search": "Search",
+    "search_placeholder": "Search {{entity}}...",
+    "select_option": "Select an option",
+    "type": {
+      "title": "Type",
+      "all": "All types",
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "kind": {
+      "title": "Kind",
+      "select_kind": "Select kind",
+      "all": "All kinds",
+      "credit": "Credit",
+      "debit": "Debit",
+      "deposit": "Deposit",
+      "withdrawal": "Withdrawal",
+      "transfer": "Transfer"
+    },
+    "date_range": "Period",
+    "select_date_range": "Select period",
+    "from_date": "Start date",
+    "to_date": "End date",
+    "select_date": "Select date",
+    "category": "Category",
+    "all_categories": "All categories"
   },
   "validation": {
     "REQUIRED_FIELD": "This field is required",
@@ -253,8 +315,21 @@
     "select_date": "Select a date",
     "min_value": "Must be at least {{count}}",
     "max_value": "Must be at most {{count}}",
-    "number" : "Must be a number",
+    "number": "Must be a number",
     "max_installments": "Must be at most 99 installments",
     "installment_recurring_mutual_exclusive": "A transaction cannot be both installment and recurring at the same time"
+  },
+
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "update": "Update",
+    "confirm": "Confirm"
   }
 }

@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  const isAuth = Boolean(token);
+  const isAuth = token ? (!token.expiresAt || Date.now() < token.expiresAt * 1000) : false;
 
   const isLoginPage = pathname === '/login' || pathname === '/login/';
   const isDashboard = pathname === '/dashboard' || pathname.startsWith('/dashboard/');

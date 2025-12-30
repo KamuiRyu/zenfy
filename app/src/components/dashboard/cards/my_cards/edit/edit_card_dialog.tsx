@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import cardService from "@/services/card_service";
+import { CardTypes } from "@/types/cards";
 import { useRouter } from "next/navigation";
 import CardPreview from "../form/card_preview";
 import { CardForm } from "../form/card_form";
@@ -140,12 +141,12 @@ export default function EditCardDialog({
         expiry_year: data.expiryDate
           ? data.expiryDate.getFullYear()
           : undefined,
-        card_type: data.cardType,
+        card_type: data.cardType as CardTypes,
         billing_day: Number(data.billingDay),
         is_default: data.isDefault,
         nickname: data.nickname,
       });
-      window.dispatchEvent(new Event('refetchCards'));
+      window.dispatchEvent(new Event("refetchCards"));
       router.back();
     } catch {
     } finally {

@@ -1,11 +1,8 @@
 package router
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"zenfy-api/application/service"
@@ -43,7 +40,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	api := app.Group("/api")
 
 	auth := api.Group("/auth")
-	auth.Use(limiter.New(limiter.Config{
+	/*auth.Use(limiter.New(limiter.Config{
 		Max:        5,
 		Expiration: 15 * time.Minute,
 		KeyGenerator: func(c *fiber.Ctx) string {
@@ -56,7 +53,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 				"message": "Too many login attempts. Please try again later.",
 			})
 		},
-	}))
+	}))*/
 	auth.Post("/login", authHandler.Login)
 	auth.Get("/verify", authHandler.Verify)
 	auth.Post("/resend", authHandler.Resend)
@@ -94,6 +91,7 @@ func NewRouter(authHandler *handlerpkg.AuthHandler, userHandler *handlerpkg.User
 	categories.Use(authMiddleware)
 	categories.Post("/", categoryHandler.CreateCategory)
 	categories.Get("/", categoryHandler.GetCategories)
+	categories.Get("/:uuid", categoryHandler.GetCategory)
 	categories.Put("/:uuid", categoryHandler.UpdateCategory)
 	categories.Delete("/:uuid", categoryHandler.DeleteCategory)
 
