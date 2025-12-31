@@ -14,6 +14,8 @@ import (
 type CategoryService interface {
 	CreateCategory(userID int, req dto.CreateCategoryRequest) (*dto.CategoryResponse, error)
 	GetCategoriesByUser(userID int) ([]dto.CategoryResponse, error)
+	GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error)
+	GetCategoryByUUID(userID int, categoryUUID string) (*dto.CategoryResponse, error)
 	UpdateCategory(userID int, categoryUUID string, req dto.UpdateCategoryRequest) (*dto.CategoryResponse, error)
 	DeleteCategory(userID int, categoryUUID string) error
 }
@@ -71,6 +73,35 @@ func (s *categoryService) GetCategoriesByUser(userID int) ([]dto.CategoryRespons
 	}
 
 	return responses, nil
+}
+
+func (s *categoryService) GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error) {
+	categories, err := s.categoryRepo.ListByUserWithFilters(userID, filters)
+	if err != nil {
+		return nil, fmt.Errorf("INTERNAL_ERROR")
+	}
+
+	responses := make([]dto.CategoryResponse, len(categories))
+	for i, category := range categories {
+		responses[i] = *s.toResponse(category)
+	}
+
+	return responses, nil
+}
+
+func (s *categoryService) GetCategoryByUUID(userID int, categoryUUID string) (*dto.CategoryResponse, error) {
+	category, err := s.categoryRepo.FindByUUID(categoryUUID)
+	if err != nil {
+		return nil, fmt.Errorf("INTERNAL_ERROR")
+	}
+	if category == nil {
+		return nil, fmt.Errorf("CATEGORY_NOT_FOUND")
+	}
+	if (category.UserID != nil && *category.UserID != userID) && !category.IsDefault {
+		return nil, fmt.Errorf("CATEGORY_DOES_NOT_BELONG_TO_USER")
+	}
+
+	return s.toResponse(category), nil
 }
 
 func (s *categoryService) UpdateCategory(userID int, categoryUUID string, req dto.UpdateCategoryRequest) (*dto.CategoryResponse, error) {

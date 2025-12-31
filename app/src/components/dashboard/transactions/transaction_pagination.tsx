@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
@@ -24,11 +23,11 @@ export default function TransactionPagination({ page, setPage, hasMore }: Transa
           className="flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />
-          {t('dashboard.transaction_history.previous')}
+          {t('filter.pagination.previous')}
         </Button>
 
         <span className="text-sm text-muted-foreground px-4">
-          {t('dashboard.transaction_history.page')} {page + 1}
+          {t('filter.pagination.page')} {page + 1}
         </span>
 
         <Button
@@ -37,7 +36,7 @@ export default function TransactionPagination({ page, setPage, hasMore }: Transa
           disabled={!hasMore}
           className="flex items-center gap-2"
         >
-          {t('dashboard.transaction_history.next')}
+          {t('filter.pagination.next')}
           <ChevronRight className="w-4 h-4" />
         </Button>
       </div>

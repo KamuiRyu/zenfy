@@ -161,8 +161,9 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 	kindStr := c.Query("kind")
 	searchStr := c.Query("search")
 	typeStr := c.Query("type")
+	recurringStr := c.Query("recurring")
 
-	if dateFromStr != "" || dateToStr != "" || categoryIDStr != "" || kindStr != "" || searchStr != "" || typeStr != "" {
+	if dateFromStr != "" || dateToStr != "" || categoryIDStr != "" || kindStr != "" || searchStr != "" || typeStr != "" || recurringStr != "" {
 		filters = &usecase.TransactionFilters{}
 		if dateFromStr != "" {
 			if parsed, err := time.Parse(time.RFC3339, dateFromStr); err == nil {
@@ -187,6 +188,13 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 		}
 		if typeStr != "" {
 			filters.Type = &typeStr
+		}
+		if recurringStr != "" {
+			recurringBool := false
+			if recurringStr == "yes" {
+				recurringBool = true
+			}
+			filters.Recurring = &recurringBool
 		}
 	}
 

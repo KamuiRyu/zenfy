@@ -85,6 +85,7 @@ func main() {
 	getTransactionSummaryUC := transactionusecase.NewGetTransactionSummaryUseCase(transactionSvc)
 	createCategoryUC := categoryusecase.NewCreateCategoryUseCase(categorySvc, validationSvc)
 	getCategoriesUC := categoryusecase.NewGetCategoriesUseCase(categorySvc)
+	getCategoriyUC := categoryusecase.NewGetCategoriyUseCase(categorySvc)
 	updateCategoryUC := categoryusecase.NewUpdateCategoryUseCase(categorySvc, validationSvc)
 	deleteCategoryUC := categoryusecase.NewDeleteCategoryUseCase(categorySvc)
 
@@ -93,7 +94,7 @@ func main() {
 	userHandler := handler.NewUserHandler(createUserUC)
 	cardHandler := handler.NewCardHandler(createCardUC, getCardsUC, getCardUC, updateCardUC, deleteCardUC, setDefaultCardUC)
 	transactionHandler := handler.NewTransactionHandler(createTransactionUC, getTransactionUC, updateTransactionUC, deleteTransactionUC, listTransactionsUC, getTransactionSummaryUC, cardRepo)
-	categoryHandler := handler.NewCategoryHandler(createCategoryUC, getCategoriesUC, updateCategoryUC, deleteCategoryUC)
+	categoryHandler := handler.NewCategoryHandler(createCategoryUC, getCategoriesUC, getCategoriyUC, updateCategoryUC, deleteCategoryUC)
 
 	app := routerpkg.NewRouter(authHandler, userHandler, cardHandler, transactionHandler, categoryHandler, tokenSvc, invalidTokenRepo)
 

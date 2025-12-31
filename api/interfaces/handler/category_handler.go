@@ -14,6 +14,7 @@ import (
 type CategoryHandler struct {
 	createCategoryUseCase *categoryusecase.CreateCategoryUseCase
 	getCategoriesUseCase  *categoryusecase.GetCategoriesUseCase
+	getCategoryUseCase    *categoryusecase.GetCategoriyUseCase
 	updateCategoryUseCase *categoryusecase.UpdateCategoryUseCase
 	deleteCategoryUseCase *categoryusecase.DeleteCategoryUseCase
 }
@@ -21,12 +22,14 @@ type CategoryHandler struct {
 func NewCategoryHandler(
 	createCategoryUseCase *categoryusecase.CreateCategoryUseCase,
 	getCategoriesUseCase *categoryusecase.GetCategoriesUseCase,
+	getCategoryUseCase *categoryusecase.GetCategoriyUseCase,
 	updateCategoryUseCase *categoryusecase.UpdateCategoryUseCase,
 	deleteCategoryUseCase *categoryusecase.DeleteCategoryUseCase,
 ) *CategoryHandler {
 	return &CategoryHandler{
 		createCategoryUseCase: createCategoryUseCase,
 		getCategoriesUseCase:  getCategoriesUseCase,
+		getCategoryUseCase:    getCategoryUseCase,
 		updateCategoryUseCase: updateCategoryUseCase,
 		deleteCategoryUseCase: deleteCategoryUseCase,
 	}
@@ -54,10 +57,48 @@ func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 	return response.Success(c, fiber.StatusCreated, category, "Category created successfully")
 }
 
+func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int)
+
+	categoryUUID := c.Params("uuid")
+	if categoryUUID == "" {
+		return response.Error(c, fiber.StatusBadRequest, "INVALID_CATEGORY_UUID", "Category UUID is required", nil)
+	}
+
+	category, err := h.getCategoryUseCase.Execute(userID, categoryUUID)
+	if err != nil {
+		return response.Error(c, fiber.StatusInternalServerError, "FETCH_CATEGORY_FAILED", err.Error(), nil)
+	}
+
+	return response.Success(c, fiber.StatusOK, category, "Category fetched successfully")
+}
+
 func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
-	categories, err := h.getCategoriesUseCase.Execute(userID)
+	var filters *dto.CategoryFilters
+	typeStr := c.Query("type")
+	searchStr := c.Query("search")
+
+	if typeStr != "" || searchStr != "" {
+		filters = &dto.CategoryFilters{}
+		if typeStr != "" {
+			filters.Type = &typeStr
+		}
+		if searchStr != "" {
+			filters.Search = &searchStr
+		}
+	}
+
+	var categories []dto.CategoryResponse
+	var err error
+
+	if filters != nil {
+		categories, err = h.getCategoriesUseCase.ExecuteWithFilters(userID, filters)
+	} else {
+		categories, err = h.getCategoriesUseCase.Execute(userID)
+	}
+
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_CATEGORIES_FAILED", "Failed to fetch categories", nil)
 	}

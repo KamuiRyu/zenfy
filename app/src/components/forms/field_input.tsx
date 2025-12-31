@@ -26,13 +26,15 @@ export function FieldInput({
       </FieldLabel>
       <FormControl>
         <Input
-          className={cn(error ? "border-red-500" : "", className)}
+          className={"!h-12 " + cn(error ? "border-red-500" : "", className)}
           {...props}
         />
       </FormControl>
-      {error ? (
-        <FormMessage className="text-red-500 text-xs">{error}</FormMessage>
-      ) : null}
+      <div className="min-h-[20px]">
+          {error ? (
+           <FormMessage className="text-red-500 text-xs">{error}</FormMessage>
+        ) : null}
+      </div>
     </FormItem>
   );
 }

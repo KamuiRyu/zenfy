@@ -20,6 +20,7 @@ import { CalendarIcon, Filter, X } from "lucide-react";
 import { format } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
 import useCategories from "@/hooks/use_categories";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TransactionFiltersProps {
   filters: {
@@ -28,6 +29,7 @@ interface TransactionFiltersProps {
     categoryId?: number;
     type?: string;
     kind?: string;
+    recurring?: string;
     search?: string;
   };
   onFiltersChange: (filters: {
@@ -36,18 +38,21 @@ interface TransactionFiltersProps {
     categoryId?: number;
     type?: string;
     kind?: string;
+    recurring?: string;
     search?: string;
   }) => void;
+  loading?: boolean;
 }
 
 export default function TransactionFilters({
   filters,
   onFiltersChange,
+  loading = false,
 }: TransactionFiltersProps) {
   const { t } = useI18n();
   const [openDateRange, setOpenDateRange] = useState(false);
   const [searchValue, setSearchValue] = useState(filters.search || "");
-  const { categories } = useCategories();
+  const { categories, loading: categoriesLoading } = useCategories();
 
   const updateFilter = useCallback(
     (key: string, value: string | number | undefined) => {
@@ -94,27 +99,46 @@ export default function TransactionFilters({
   );
 
   return (
-    <div className="rounded-2xl p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Filter className="w-4 h-4" />
-        <span className="font-medium">
-          {t("dashboard.transaction_history.filters")}
-        </span>
-        {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            <X className="w-4 h-4 mr-1" />
-            {t("dashboard.transaction_history.clear")}
-          </Button>
-        )}
-      </div>
+    <div className="rounded-2xl p-6 bg-card">
+      {loading ? (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4" />
+            <Skeleton className="w-20 h-4" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-4 h-4" />
+            <span className="font-medium">
+              {t("filter.title")}
+            </span>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <X className="w-4 h-4 mr-1" />
+                {t("filter.clear")}
+              </Button>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
-            {t("dashboard.transaction_history.search")}
+            {t("filter.search")}
           </label>
           <Input
-            placeholder={t("dashboard.transaction_history.search_placeholder")}
+            placeholder={t(
+              "filter.search_placeholder", { entity: t("dashboard.transaction_history.transaction").toLowerCase() }
+            )}
             value={searchValue}
             onChange={(e) => {
               setSearchValue(e.target.value);
@@ -124,7 +148,7 @@ export default function TransactionFilters({
 
         <div>
           <label className="text-sm font-medium mb-2 block">
-            {t("dashboard.transaction_history.date_range")}
+            {t("filter.date_range")}
           </label>
           <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
             <PopoverTrigger asChild>
@@ -134,14 +158,14 @@ export default function TransactionFilters({
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filters.dateFrom && filters.dateTo
-                  ? `${format(new Date(filters.dateFrom), "MMM dd")} - ${format(
-                      new Date(filters.dateTo),
+                  ? `${format(
+                      new Date(filters.dateFrom),
                       "MMM dd"
-                    )}`
-                  : t("dashboard.transaction_history.select_date_range")}
+                    )} - ${format(new Date(filters.dateTo), "MMM dd")}`
+                  : t("filter.select_date_range")}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" align="start" side="top">
               <Calendar
                 mode="range"
                 selected={{
@@ -168,108 +192,170 @@ export default function TransactionFilters({
 
         <div>
           <label className="text-sm font-medium mb-2 block">
-            {t("dashboard.transaction_history.category")}
+            {t("filter.category")}
           </label>
-          <Select
-            value={filters.categoryId ? filters.categoryId.toString() : "all"}
-            onValueChange={(value) =>
-              updateFilter(
-                "categoryId",
-                value === "all" ? undefined : parseInt(value)
-              )
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={t("dashboard.transaction_history.all_categories")}
-              />
-            </SelectTrigger>
-            <SelectContent
-              side="bottom"
-              avoidCollisions={false}
-              position="popper"
-              className="max-h-60"
+          {categoriesLoading ? (
+            <Skeleton className="w-full h-10" />
+          ) : (
+            <Select
+              value={filters.categoryId ? filters.categoryId.toString() : "all"}
+              onValueChange={(value) =>
+                updateFilter(
+                  "categoryId",
+                  value === "all" ? undefined : parseInt(value)
+                )
+              }
             >
-              <SelectItem value="all">
-                {t("dashboard.transaction_history.all_categories")}
-              </SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat.uuid} value={cat.uuid}>
-                  {cat.name}
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={t(
+                    "filter.all_categories"
+                  )}
+                />
+              </SelectTrigger>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                position="popper"
+                className="max-h-60"
+              >
+                <SelectItem value="all">
+                  {t("filter.all_categories")}
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.uuid} value={cat.uuid}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div>
           <label className="text-sm font-medium mb-2 block">
-            {t("dashboard.transaction_history.type")}
+            {t("filter.type.title")}
           </label>
-          <Select
-            value={filters.type || "all"}
-            onValueChange={(value) =>
-              updateFilter("type", value === "all" ? undefined : value)
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={t("dashboard.transaction_history.all_types")}
-              />
-            </SelectTrigger>
-            <SelectContent
-              side="bottom"
-              avoidCollisions={false}
-              position="popper"
-              className="max-h-60"
+          {loading && categoriesLoading ? (
+            <Skeleton className="w-full h-10" />
+          ) : (
+            <Select
+              value={filters.type || "all"}
+              onValueChange={(value) =>
+                updateFilter("type", value === "all" ? undefined : value)
+              }
             >
-              <SelectItem value="all">
-                {t("dashboard.transaction_history.all_types")}
-              </SelectItem>
-              <SelectItem value="income">
-                {t("dashboard.transaction_history.income")}
-              </SelectItem>
-              <SelectItem value="expense">
-                {t("dashboard.transaction_history.expense")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={t("filter.type.all")}
+                />
+              </SelectTrigger>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                position="popper"
+                className="max-h-60"
+              >
+                <SelectItem value="all">
+                  {t("filter.type.all")}
+                </SelectItem>
+                <SelectItem value="income">
+                  {t("filter.type.income")}
+                </SelectItem>
+                <SelectItem value="expense">
+                  {t("filter.type.expense")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div>
           <label className="text-sm font-medium mb-2 block">
-            {t("dashboard.transaction_history.kind")}
+            {t("filter.kind.title")}
           </label>
-          <Select
-            value={filters.kind || "all"}
-            onValueChange={(value) =>
-              updateFilter("kind", value === "all" ? undefined : value)
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={t("dashboard.transaction_history.all_kinds")}
-              />
-            </SelectTrigger>
-            <SelectContent
-              side="bottom"
-              avoidCollisions={false}
-              position="popper"
-              className="max-h-60"
+          {loading && categoriesLoading ? (
+            <Skeleton className="w-full h-10" />
+          ) : (
+            <Select
+              value={filters.kind || "all"}
+              onValueChange={(value) =>
+                updateFilter("kind", value === "all" ? undefined : value)
+              }
             >
-              <SelectItem value="all">
-                {t("dashboard.transaction_history.all_kinds")}
-              </SelectItem>
-              <SelectItem value="credit">
-                {t("dashboard.transaction_history.credit")}
-              </SelectItem>
-              <SelectItem value="debit">
-                {t("dashboard.transaction_history.debit")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={t("filter.kind.all")}
+                />
+              </SelectTrigger>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                position="popper"
+                className="max-h-60"
+              >
+                <SelectItem value="all">
+                  {t("filter.kind.all")}
+                </SelectItem>
+                <SelectItem value="credit">
+                  {t("filter.kind.credit")}
+                </SelectItem>
+                <SelectItem value="debit">
+                  {t("filter.kind.debit")}
+                </SelectItem>
+                <SelectItem value="transfer">
+                  {t("filter.kind.transfer")}
+                </SelectItem>
+                <SelectItem value="withdrawal">
+                  {t("filter.kind.withdrawal")}
+                </SelectItem>
+                <SelectItem value="deposit">
+                  {t("filter.kind.deposit")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+         <div>
+          <label className="text-sm font-medium mb-2 block">
+            {t("filter.recurring.title")}
+          </label>
+          {loading && categoriesLoading ? (
+            <Skeleton className="w-full h-10" />
+          ) : (
+            <Select
+              value={filters.recurring || "all"}
+              onValueChange={(value) =>
+                updateFilter("recurring", value === "all" ? undefined : value)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={t("filter.recurring.all")}
+                />
+              </SelectTrigger>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                position="popper"
+                className="max-h-60"
+              >
+                <SelectItem value="all">
+                  {t("filter.recurring.all")}
+                </SelectItem>
+                <SelectItem value="yes">
+                  {t("filter.recurring.yes")}
+                </SelectItem>
+                <SelectItem value="no">
+                  {t("filter.recurring.no")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

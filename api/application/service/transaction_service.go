@@ -20,7 +20,7 @@ type TransactionService interface {
 	DeleteTransactionUUID(userID int, transactionUUID string) error
 	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
 	ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error)
-	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error)
+	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error)
 	ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error)
 	GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error)
 	GetBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error)
@@ -351,7 +351,7 @@ func (s *transactionService) ListTransactionsByCardUUID(userID int, cardUUID str
 }
 
 func (s *transactionService) ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error) {
-	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, nil, nil, nil, nil, nil, nil, nil)
+	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -364,8 +364,8 @@ func (s *transactionService) ListTransactionsByUser(userID int, limit, offset in
 	return responses, nil
 }
 
-func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
-	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryID, kind, search, cardID, typeStr)
+func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
+	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryID, kind, recurring, search, cardID, typeStr)
 	if err != nil {
 		return nil, err
 	}
@@ -428,7 +428,7 @@ func (s *transactionService) GetBalanceOverview(userID int, cardID *int) (*dto.B
 	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
 	endOfMonth := startOfMonth.AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
 
-	transactions, err := s.transactionRepo.ListByUser(userID, 10000, 0, &startOfMonth, &endOfMonth, nil, nil, nil, cardID, nil)
+	transactions, err := s.transactionRepo.ListByUser(userID, 10000, 0, &startOfMonth, &endOfMonth, nil, nil, nil, nil, cardID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -479,7 +479,7 @@ func (s *transactionService) GetBalanceOverview(userID int, cardID *int) (*dto.B
 		monthStart := time.Date(now.Year(), now.Month()-time.Month(i), 1, 0, 0, 0, 0, now.Location())
 		monthEnd := monthStart.AddDate(0, 1, -1).Add(23*time.Hour + 59*time.Minute + 59*time.Second)
 
-		monthTransactions, err := s.transactionRepo.ListByUser(userID, 10000, 0, &monthStart, &monthEnd, nil, nil, nil, cardID, nil)
+		monthTransactions, err := s.transactionRepo.ListByUser(userID, 10000, 0, &monthStart, &monthEnd, nil, nil, nil, nil, cardID, nil)
 		if err != nil {
 			continue
 		}

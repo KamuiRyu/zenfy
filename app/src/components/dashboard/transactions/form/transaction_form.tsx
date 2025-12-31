@@ -368,7 +368,6 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
             </TabsContent>
           </Tabs>
 
-          {/* Actions */}
           <div className="flex justify-end gap-4 pt-8 border-t border-border/50">
             <Button 
               type="button" 

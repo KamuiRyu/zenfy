@@ -1,19 +1,17 @@
 import { request } from "@/services/service_base";
-
-type Category = {
-  id?: number;
-  name: string;
-  type: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  is_default?: boolean;
-};
+import { CategoriesType } from "@/types/categories";
 
 const base = "/categories";
 
-export async function getCategories() {
-  return request(base, "");
+export async function getCategories(filters?: { type?: string; search?: string }) {
+  let queryParams = "";
+  if (filters) {
+    const params = new URLSearchParams();
+    if (filters.type) params.append("type", filters.type);
+    if (filters.search) params.append("search", filters.search);
+    queryParams = `?${params.toString()}`;
+  }
+  return request(base, queryParams);
 }
 
 export async function getCategory(id: string | number) {
@@ -25,11 +23,11 @@ export async function getCategory(id: string | number) {
   }
 }
 
-export async function createCategory(payload: Partial<Category>) {
+export async function createCategory(payload: Partial<CategoriesType>) {
   return request(base, "", { method: "POST", data: payload });
 }
 
-export async function updateCategory(id: string | number, payload: Partial<Category>) {
+export async function updateCategory(id: string | number, payload: Partial<CategoriesType>) {
   const response = await request(base, `${id}`, {
     method: "PUT",
     data: payload,

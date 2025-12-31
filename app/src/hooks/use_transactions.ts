@@ -50,7 +50,8 @@ export default function useTransactions(limit?: number, offset?: number, filters
     abortControllerRef.current = new AbortController();
 
     dispatch({ type: 'SET_ERROR', payload: null });
-    dispatch({ type: 'SET_LOADING', payload: true });
+    // Don't set loading here since it's already set in useEffect
+    // dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const params: TransactionFiltersAPI = {};
       if (limit) params.limit = limit;
@@ -59,11 +60,12 @@ export default function useTransactions(limit?: number, offset?: number, filters
       if (filters?.dateTo) params.date_to = filters.dateTo;
       if (filters?.categoryId) params.category_id = filters.categoryId;
       if (filters?.type) params.type = filters.type;
+      if (filters?.recurring) params.recurring = filters.recurring;
       if (filters?.kind) params.kind = filters.kind;
       if (filters?.cardUuid) params.card_uuid = filters.cardUuid;
       if (filters?.search) params.search = filters.search;
 
-      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, abortControllerRef.current.signal);
+      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, params.recurring, abortControllerRef.current.signal);
 
       const payload =
         resp && typeof resp === "object" && "data" in resp
@@ -94,12 +96,14 @@ export default function useTransactions(limit?: number, offset?: number, filters
   }, [limit, offset, filters]);
 
   useEffect(() => {
-    
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
     if (mounted) {
+      // Set loading to true immediately when filters change
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
       debounceTimeoutRef.current = setTimeout(() => {
         fetchTransactions();
       }, 100);

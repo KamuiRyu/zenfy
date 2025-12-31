@@ -72,6 +72,6 @@ export async function request(
     const err = new Error("API error");
     (err as { status?: number; body?: unknown }).status = (error as { response?: { status?: number } })?.response?.status;
     (err as { status?: number; body?: unknown }).body = (error as { response?: { data?: unknown } })?.response?.data;
-    throw err;
+    return (err as { body?: unknown }).body;
   }
 }

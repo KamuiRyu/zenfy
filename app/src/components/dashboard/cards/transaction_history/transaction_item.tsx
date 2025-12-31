@@ -4,6 +4,12 @@ import * as BsIcons from "react-icons/bs";
 import { CardBrand } from "../my_cards/card_brand";
 import { useI18n } from "@/i18n/useI18n";
 
+interface IconComponentProps {
+  className?: string;
+}
+
+type IconComponent = React.ComponentType<IconComponentProps>;
+
 const TransactionItem = React.memo(function TransactionItem({
   title,
   subtitle,
@@ -33,29 +39,23 @@ const TransactionItem = React.memo(function TransactionItem({
   const amountColor = isIncome ? "text-green-600" : "text-red-600";
 
   const transactionIcon = React.useMemo(() => {
-    if (icon) {
-      const siIconName = `Si${icon
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("")}`;
-
-      const bsIconName = `Bs${icon
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("")}`;
-
-      const SiIconComponent = (SiIcons as Record<string, React.ComponentType<{className?: string}>>)[siIconName];
-      if (SiIconComponent) {
-        return <SiIconComponent className="w-6 h-6 text-white" />;
+      if (icon) {
+        const SiIconComponent: IconComponent | undefined = (
+          SiIcons as Record<string, IconComponent>
+        )[icon];
+        if (SiIconComponent) {
+          return <SiIconComponent className="w-6 h-6 text-white" />;
+        }
+  
+        const BsIconComponent: IconComponent | undefined = (
+          BsIcons as Record<string, IconComponent>
+        )[icon];
+        if (BsIconComponent) {
+          return <BsIconComponent className="w-6 h-6 text-white" />;
+        }
       }
-
-      const BsIconComponent = (BsIcons as Record<string, React.ComponentType<{className?: string}>>)[bsIconName];
-      if (BsIconComponent) {
-        return <BsIconComponent className="w-6 h-6 text-white" />;
-      }
-    }
-    return <BsIcons.BsCreditCardFill className="w-6 h-6 text-white" />;
-  }, [icon]);
+      return <BsIcons.BsCreditCardFill className="w-6 h-6 text-white" />;
+    }, [icon]);
 
   return (
     <div className="group grid grid-cols-[5fr_1fr_1fr_1fr] items-center gap-4 p-4 hover:bg-muted/80 rounded-xl transition-all duration-200">

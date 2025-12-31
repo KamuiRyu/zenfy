@@ -21,6 +21,8 @@ export default function TransactionList() {
     dateTo?: string;
     type?: string;
     search?: string;
+    kind?: string;
+    recurring?: string;
     categoryId?: number;
   }>({});
   const limit = 20;
@@ -40,14 +42,17 @@ export default function TransactionList() {
   };
 
   useEffect(() => {
-      const handleTransactionUpdated = () => {
-        refetch();
-      };
-      window.addEventListener('transactionUpdated', handleTransactionUpdated);
-      return () => {
-        window.removeEventListener('transactionUpdated', handleTransactionUpdated);
-      };
-    }, [refetch]);
+    const handleTransactionUpdated = () => {
+      refetch();
+    };
+    window.addEventListener("transactionUpdated", handleTransactionUpdated);
+    return () => {
+      window.removeEventListener(
+        "transactionUpdated",
+        handleTransactionUpdated
+      );
+    };
+  }, [refetch]);
 
   if (error) {
     return (
@@ -65,45 +70,45 @@ export default function TransactionList() {
       <TransactionFilters
         filters={filters}
         onFiltersChange={handleFiltersChange}
+        loading={loading}
       />
 
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6">
-          <div className="flex items-center justify-end mb-6">
-            <Button onClick={() => router.push("/dashboard/transactions/add")}>
-              <Plus className="w-4 h-4 mr-2" />
-              {t("dashboard.transactions.add_transaction")}
-            </Button>
-          </div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">
-              {t("dashboard.transactions.recent_transactions")}
-            </h2>
-            <span className="text-sm text-muted-foreground">
-              {transactions.length} {t("dashboard.transactions.transactions")}
-            </span>
-          </div>
+          
 
           {loading ? (
-            <div className="space-y-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Skeleton className="w-12 h-12 rounded-full" />
-                    <div className="space-y-2">
-                      <Skeleton className="w-48 h-4" />
-                      <Skeleton className="w-32 h-3" />
-                    </div>
-                  </div>
-                  <div className="text-right space-y-2">
-                    <Skeleton className="w-20 h-4" />
-                    <Skeleton className="w-16 h-3" />
-                  </div>
+            <div className="rounded-2xl overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-end mb-6">
+                  <Skeleton className="w-24 h-10" />
                 </div>
-              ))}
+                <div className="flex items-center justify-between mb-6">
+                  <Skeleton className="w-48 h-6" />
+                  <Skeleton className="w-16 h-4" />
+                </div>
+
+                <div className="space-y-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-4 rounded-lg animate-pulse"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <Skeleton className="w-12 h-12 rounded-full" />
+                        <div className="space-y-2">
+                          <Skeleton className="w-48 h-4" />
+                          <Skeleton className="w-32 h-3" />
+                        </div>
+                      </div>
+                      <div className="text-right space-y-2">
+                        <Skeleton className="w-20 h-4" />
+                        <Skeleton className="w-16 h-3" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : transactions.length === 0 ? (
             <div className="text-center py-12">
@@ -118,6 +123,24 @@ export default function TransactionList() {
               </p>
             </div>
           ) : (
+            <>
+            <div className="flex items-center justify-end mb-6">
+            <Button
+              onClick={() => router.push("/dashboard/transactions/add")}
+              disabled={loading}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              {t("dashboard.transactions.add_transaction")}
+            </Button>
+          </div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold">
+              {t("dashboard.transactions.recent_transactions")}
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {transactions.length} {t("dashboard.transactions.transactions")}
+            </span>
+          </div>
             <div className="space-y-2">
               {transactions.map((transaction) => (
                 <TransactionItem
@@ -127,6 +150,7 @@ export default function TransactionList() {
                 />
               ))}
             </div>
+            </>
           )}
         </div>
 
