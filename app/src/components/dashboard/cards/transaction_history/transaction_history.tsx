@@ -45,11 +45,12 @@ export default function TransactionHistory() {
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
   const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted);
   const { categories, loading: categoriesLoading } = useCategories();
+
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState(false);
   const router = useRouter();
 
-  const mappedCategories = useMemo(() => categories.map(cat => ({ uuid: String((cat as unknown as { id: string | number }).id) || '0', name: cat.name } as CategoryType)), [categories]);
+  const mappedCategories = useMemo(() => categories.map(cat => ({ uuid: cat.uuid || '0', name: cat.name } as CategoryType)), [categories]);
 
 
   useEffect(() => {

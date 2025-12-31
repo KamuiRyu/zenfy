@@ -217,7 +217,7 @@ export default function TransactionFilters({
             onValueChange={(value) =>
               updateFilter(
                 "categoryId",
-                value === "all" ? undefined : parseInt(value)
+                value === "all" ? undefined : value
               )
             }
           >

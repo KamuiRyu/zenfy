@@ -54,10 +54,10 @@ const TransactionGroup = React.memo(function TransactionGroup({ date, transactio
         </span>
       </div>
       <div className="space-y-1">
-        {transactions.map((transaction) => (
-        
+        {transactions.map((transaction, index) => (
+          console.log('Rendering transaction:', transaction),
           <TransactionItem
-            key={transaction.uuid}
+            key={transaction.uuid || `transaction-${index}`}
             title={transaction.description || t("dashboard.transaction_history.transaction")}
             merchant={transaction.merchant}
             subtitle={transaction.category?.name}

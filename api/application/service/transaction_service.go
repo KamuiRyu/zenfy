@@ -365,7 +365,19 @@ func (s *transactionService) ListTransactionsByUser(userID int, limit, offset in
 }
 
 func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
-	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryID, kind, recurring, search, cardID, typeStr)
+	var categoryIDInt *int
+	if categoryID != nil && *categoryID != "" {
+		category, err := s.categoryRepo.FindByUUID(*categoryID)
+		if err != nil {
+			return nil, fmt.Errorf("invalid category UUID: %w", err)
+		}
+		if category.UserID != nil && *category.UserID != userID {
+			return nil, fmt.Errorf("category not found or access denied")
+		}
+		categoryIDInt = &category.ID
+	}
+
+	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryIDInt, kind, recurring, search, cardID, typeStr)
 	if err != nil {
 		return nil, err
 	}

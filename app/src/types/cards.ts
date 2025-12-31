@@ -2,7 +2,6 @@ export type CardTypes = "credit/debit" | "credit" | "debit" | "other";
 
 
 export interface CardType {
-    id?: number;
     card_id?: string;
     uuid: string;
     last_four: string;

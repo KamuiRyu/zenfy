@@ -80,7 +80,7 @@ func (r *transactionRepositoryImpl) ListByCard(cardID int, limit, offset int) ([
 	return transactions, err
 }
 
-func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
+func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
 	ctx := context.Background()
 	var transactions []*model.Transaction
 	query := r.db.NewSelect().
