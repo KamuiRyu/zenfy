@@ -4,7 +4,7 @@ type CreateCategoryRequest struct {
 	Name        string  `json:"name" validate:"required,min=2,max=100"`
 	Type        string  `json:"type" validate:"required,oneof=expense income investment transfer"`
 	Description *string `json:"description" validate:"omitempty,max=500"`
-	Color       *string `json:"color" validate:"omitempty,len=7"` // Hex color like #FF5733
+	Color       *string `json:"color" validate:"required,len=7"`  // Hex color like #FF5733
 	Icon        *string `json:"icon" validate:"omitempty,max=50"` // Icon name or emoji
 }
 
@@ -31,4 +31,14 @@ type CategoryResponse struct {
 type CategoryFilters struct {
 	Type   *string
 	Search *string
+	Limit  *int
+	Offset *int
+}
+
+type PaginatedCategoryResponse struct {
+	Data    []CategoryResponse `json:"data"`
+	Total   int64              `json:"total"`
+	HasMore bool               `json:"has_more"`
+	Limit   int                `json:"limit"`
+	Offset  int                `json:"offset"`
 }

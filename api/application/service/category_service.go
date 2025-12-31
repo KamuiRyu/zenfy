@@ -14,7 +14,7 @@ import (
 type CategoryService interface {
 	CreateCategory(userID int, req dto.CreateCategoryRequest) (*dto.CategoryResponse, error)
 	GetCategoriesByUser(userID int) ([]dto.CategoryResponse, error)
-	GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error)
+	GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) (*dto.PaginatedCategoryResponse, error)
 	GetCategoryByUUID(userID int, categoryUUID string) (*dto.CategoryResponse, error)
 	UpdateCategory(userID int, categoryUUID string, req dto.UpdateCategoryRequest) (*dto.CategoryResponse, error)
 	DeleteCategory(userID int, categoryUUID string) error
@@ -75,8 +75,13 @@ func (s *categoryService) GetCategoriesByUser(userID int) ([]dto.CategoryRespons
 	return responses, nil
 }
 
-func (s *categoryService) GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error) {
+func (s *categoryService) GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) (*dto.PaginatedCategoryResponse, error) {
 	categories, err := s.categoryRepo.ListByUserWithFilters(userID, filters)
+	if err != nil {
+		return nil, fmt.Errorf("INTERNAL_ERROR")
+	}
+
+	total, err := s.categoryRepo.CountByUser(userID, filters)
 	if err != nil {
 		return nil, fmt.Errorf("INTERNAL_ERROR")
 	}
@@ -86,7 +91,28 @@ func (s *categoryService) GetCategoriesByUserWithFilters(userID int, filters *dt
 		responses[i] = *s.toResponse(category)
 	}
 
-	return responses, nil
+	limit := 50 // default limit
+	offset := 0
+	hasMore := false
+
+	if filters != nil {
+		if filters.Limit != nil {
+			limit = *filters.Limit
+		}
+		if filters.Offset != nil {
+			offset = *filters.Offset
+		}
+	}
+
+	hasMore = int64(offset+limit) < total
+
+	return &dto.PaginatedCategoryResponse{
+		Data:    responses,
+		Total:   total,
+		HasMore: hasMore,
+		Limit:   limit,
+		Offset:  offset,
+	}, nil
 }
 
 func (s *categoryService) GetCategoryByUUID(userID int, categoryUUID string) (*dto.CategoryResponse, error) {

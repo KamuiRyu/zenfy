@@ -23,13 +23,13 @@ export default function TransactionList() {
     search?: string;
     kind?: string;
     recurring?: string;
-    categoryId?: number;
+    categoryId?: string;
   }>({});
   const limit = 20;
   const offset = page * limit;
   const router = useRouter();
 
-  const { transactions, loading, error, refetch, fromCache } = useTransactions(
+  const { transactions, loading, error, fromCache } = useTransactions(
     limit,
     offset,
     filters,
@@ -40,19 +40,6 @@ export default function TransactionList() {
     setFilters(newFilters);
     setPage(0);
   };
-
-  useEffect(() => {
-    const handleTransactionUpdated = () => {
-      refetch();
-    };
-    window.addEventListener("transactionUpdated", handleTransactionUpdated);
-    return () => {
-      window.removeEventListener(
-        "transactionUpdated",
-        handleTransactionUpdated
-      );
-    };
-  }, [refetch]);
 
   if (error) {
     return (
@@ -146,7 +133,6 @@ export default function TransactionList() {
                 <TransactionItem
                   key={transaction.uuid}
                   transaction={transaction}
-                  onDelete={() => refetch()}
                 />
               ))}
             </div>

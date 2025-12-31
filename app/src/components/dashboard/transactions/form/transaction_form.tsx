@@ -356,7 +356,6 @@ export default function TransactionForm({ transaction, onClose, preSelectedCard 
               <TransactionDetailsTab
                 control={form.control}
                 watch={form.watch}
-                selectedCardUuid={selectedCardUuid}
                 kindOptions={kindOptions}
               />
             </TabsContent>

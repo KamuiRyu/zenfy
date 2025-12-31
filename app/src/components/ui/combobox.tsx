@@ -1,34 +1,41 @@
-import * as React from "react"
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
-import { List } from 'react-window';
+import * as React from "react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { List, RowComponentProps as ComponentProps } from "react-window";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { Input } from "./input";
 
 interface ComboboxProps {
-  options: { value: string; label: React.ReactNode }[]
-  value?: string
-  onChange: (value: string) => void
-  placeholder?: string
+  options: { value: string; label: React.ReactNode }[];
+  value?: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
 }
 
-export function Combobox({ options, value, onChange, placeholder }: ComboboxProps) {
-  const [open, setOpen] = React.useState(false)
-  const [search, setSearch] = React.useState("")
+export function Combobox({
+  options,
+  value,
+  onChange,
+  placeholder,
+}: ComboboxProps) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
 
-  const filteredOptions = React.useMemo(() => 
-    options.filter(option => 
-      option.value.toLowerCase().includes(search.toLowerCase())
-    ), [options, search]
-  )
+  const filteredOptions = React.useMemo(
+    () =>
+      options.filter((option) =>
+        option.value.toLowerCase().includes(search.toLowerCase())
+      ),
+    [options, search]
+  );
 
-  const loading = search.length > 0
+  const loading = search.length > 0;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,14 +72,34 @@ export function Combobox({ options, value, onChange, placeholder }: ComboboxProp
           rowHeight={45}
           className="border-t scrollbar h-60 overflow-auto"
           rowComponent={RowComponent}
-          rowProps={{ filteredOptions, value, onChange, setOpen, setSearch }}
+          rowProps={{
+            filteredOptions,
+            value,
+            onChange,
+            setOpen,
+            setSearch,
+          }}
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
-function RowComponent({ index, style, filteredOptions, value, onChange, setOpen, setSearch }: any) {
+function RowComponent({
+  index,
+  style,
+  filteredOptions,
+  value,
+  onChange,
+  setOpen,
+  setSearch,
+}: ComponentProps<{
+  value: string | undefined;
+  filteredOptions: { value: string; label: React.ReactNode }[];
+  onChange: (value: string) => void;
+  setOpen: (open: boolean) => void;
+  setSearch: (search: string) => void;
+}>) {
   const option = filteredOptions[index];
   return (
     <div

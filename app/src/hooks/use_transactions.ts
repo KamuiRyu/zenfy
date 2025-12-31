@@ -4,166 +4,27 @@ import { useEffect, useReducer, useRef, useCallback } from "react";
 import transactionService from "@/services/transaction_service";
 import { TransactionFiltersAPI, TransactionFiltersType, TransactionType } from "@/types/transactions";
 
-interface CacheEntry {
-  data: TransactionType[];
-  timestamp: number;
-  filters: TransactionFiltersType;
-}
-
-interface CacheConfig {
-  ttl: number; // Time to live in milliseconds
-  maxEntries: number;
-}
-
-const DEFAULT_CACHE_CONFIG: CacheConfig = {
-  ttl: 5 * 60 * 1000, // 5 minutes
-  maxEntries: 10,
-};
-
-class TransactionCache {
-  private cache: Map<string, CacheEntry> = new Map();
-  private config: CacheConfig;
-
-  constructor(config: CacheConfig = DEFAULT_CACHE_CONFIG) {
-    this.config = config;
-    this.loadFromStorage();
-  }
-
-  private getCacheKey(filters: TransactionFiltersType, limit?: number, offset?: number): string {
-    const filterStr = JSON.stringify({
-      ...filters,
-      limit,
-      offset,
-    });
-    return btoa(filterStr); // Base64 encode for safe storage
-  }
-
-  private loadFromStorage(): void {
-    if (typeof window === 'undefined') return;
-
-    try {
-      const stored = localStorage.getItem('transaction_cache');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Only load entries that haven't expired
-        const now = Date.now();
-        Object.entries(parsed).forEach(([key, entry]: [string, any]) => {
-          if (now - entry.timestamp < this.config.ttl) {
-            this.cache.set(key, entry);
-          }
-        });
-      }
-    } catch (error) {
-      console.warn('Failed to load transaction cache from storage:', error);
-    }
-  }
-
-  private saveToStorage(): void {
-    if (typeof window === 'undefined') return;
-
-    try {
-      // Clean expired entries before saving
-      this.cleanExpired();
-
-      const cacheObject = Object.fromEntries(this.cache);
-      localStorage.setItem('transaction_cache', JSON.stringify(cacheObject));
-    } catch (error) {
-      console.warn('Failed to save transaction cache to storage:', error);
-    }
-  }
-
-  private cleanExpired(): void {
-    const now = Date.now();
-    for (const [key, entry] of this.cache.entries()) {
-      if (now - entry.timestamp > this.config.ttl) {
-        this.cache.delete(key);
-      }
-    }
-  }
-
-  private enforceMaxEntries(): void {
-    if (this.cache.size > this.config.maxEntries) {
-      // Remove oldest entries (simple FIFO)
-      const entries = Array.from(this.cache.entries());
-      entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
-
-      const toRemove = entries.slice(0, this.cache.size - this.config.maxEntries);
-      toRemove.forEach(([key]) => this.cache.delete(key));
-    }
-  }
-
-  get(filters: TransactionFiltersType, limit?: number, offset?: number): TransactionType[] | null {
-    const key = this.getCacheKey(filters, limit, offset);
-    const entry = this.cache.get(key);
-
-    if (entry && Date.now() - entry.timestamp < this.config.ttl) {
-      return entry.data;
-    }
-
-    // Remove expired entry
-    if (entry) {
-      this.cache.delete(key);
-    }
-
-    return null;
-  }
-
-  set(filters: TransactionFiltersType, limit: number | undefined, offset: number | undefined, data: TransactionType[]): void {
-    const key = this.getCacheKey(filters, limit, offset);
-    const entry: CacheEntry = {
-      data,
-      timestamp: Date.now(),
-      filters: { ...filters },
-    };
-
-    this.cache.set(key, entry);
-    this.enforceMaxEntries();
-    this.saveToStorage();
-  }
-
-  invalidate(): void {
-    this.cache.clear();
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('transaction_cache');
-    }
-  }
-
-  // Invalidate cache for specific filters pattern
-  invalidatePattern(pattern: Partial<TransactionFiltersType>): void {
-    for (const [key, entry] of this.cache.entries()) {
-      const matches = Object.entries(pattern).every(([k, v]) => {
-        const filterKey = k as keyof TransactionFiltersType;
-        return entry.filters[filterKey] === v;
-      });
-
-      if (matches) {
-        this.cache.delete(key);
-      }
-    }
-    this.saveToStorage();
-  }
-}
-
-// Global cache instance
-const transactionCache = new TransactionCache();
-
 type TransactionsState = {
   transactions: TransactionType[];
   loading: boolean;
   error: string | null;
   fromCache: boolean;
+  total: number;
+  hasMore: boolean;
 };
 
 type TransactionsAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_TRANSACTIONS'; payload: TransactionType[]; fromCache?: boolean };
+  | { type: 'SET_TRANSACTIONS'; payload: TransactionType[]; total?: number; hasMore?: boolean; fromCache?: boolean };
 
 const initialState: TransactionsState = {
   transactions: [],
   loading: true,
   error: null,
   fromCache: false,
+  total: 0,
+  hasMore: false,
 };
 
 function transactionsReducer(state: TransactionsState, action: TransactionsAction): TransactionsState {
@@ -176,6 +37,8 @@ function transactionsReducer(state: TransactionsState, action: TransactionsActio
       return {
         ...state,
         transactions: action.payload,
+        total: action.total || 0,
+        hasMore: action.hasMore || false,
         fromCache: action.fromCache || false
       };
     default:
@@ -187,6 +50,17 @@ export default function useTransactions(limit?: number, offset?: number, filters
   const [state, dispatch] = useReducer(transactionsReducer, initialState);
   const abortControllerRef = useRef<AbortController | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cacheRef = useRef<Map<string, { data: TransactionType[], timestamp: number }>>(new Map());
+  const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+  const getCacheKey = useCallback((filters?: TransactionFiltersType, limit?: number, offset?: number): string => {
+    const filterStr = JSON.stringify({
+      ...filters,
+      limit,
+      offset,
+    });
+    return btoa(filterStr); // Base64 encode for safe storage
+  }, []);
 
   const fetchTransactions = useCallback(async (useCache: boolean = true) => {
     // Cancel previous request if still pending
@@ -198,14 +72,13 @@ export default function useTransactions(limit?: number, offset?: number, filters
 
     dispatch({ type: 'SET_ERROR', payload: null });
 
-    // Try to get from cache first
-    if (useCache && filters) {
-      const cachedData = transactionCache.get(filters, limit, offset);
-      if (cachedData) {
-        dispatch({ type: 'SET_TRANSACTIONS', payload: cachedData, fromCache: true });
-        dispatch({ type: 'SET_LOADING', payload: false });
-        return;
-      }
+    // Try cache first
+    const cacheKey = getCacheKey(filters, limit, offset);
+    const cachedEntry = cacheRef.current.get(cacheKey);
+    if (useCache && cachedEntry && Date.now() - cachedEntry.timestamp < CACHE_TTL) {
+      dispatch({ type: 'SET_TRANSACTIONS', payload: cachedEntry.data, fromCache: true });
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return;
     }
 
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -231,25 +104,39 @@ export default function useTransactions(limit?: number, offset?: number, filters
           : resp;
 
       let transactionsArray: unknown[] = [];
-      if (Array.isArray(payload)) transactionsArray = payload;
-      else if (payload && typeof payload === "object") {
+      let total = 0;
+      let hasMore = false;
+
+      if (payload && typeof payload === "object" && "data" in payload) {
+        // Paginated response
+        const paginated = payload as { data: unknown[]; total: number; has_more: boolean };
+        transactionsArray = paginated.data;
+        total = paginated.total;
+        hasMore = paginated.has_more;
+      } else if (Array.isArray(payload)) {
+        // Legacy array response
+        transactionsArray = payload;
+        hasMore = transactionsArray.length === limit;
+      } else if (payload && typeof payload === "object") {
+        // Object response
         const keys = Object.keys(payload).filter(
           (k) => String(Number(k)) === String(k)
         );
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
           transactionsArray = keys.map((k) => (payload as Record<string, unknown>)[k]);
-        } else transactionsArray = Object.values(payload as Record<string, unknown>);
+        } else {
+          transactionsArray = Object.values(payload as Record<string, unknown>);
+        }
+        hasMore = transactionsArray.length === limit;
       }
 
       const transactions = transactionsArray as TransactionType[];
 
       // Cache the result
-      if (filters) {
-        transactionCache.set(filters, limit, offset, transactions);
-      }
+      cacheRef.current.set(cacheKey, { data: transactions, timestamp: Date.now() });
 
-      dispatch({ type: 'SET_TRANSACTIONS', payload: transactions });
+      dispatch({ type: 'SET_TRANSACTIONS', payload: transactions, total, hasMore });
     } catch (err: unknown) {
       if (err instanceof Error && (err.name === 'CanceledError' || err.name === 'AbortError')) {
         return;
@@ -258,7 +145,7 @@ export default function useTransactions(limit?: number, offset?: number, filters
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [limit, offset, filters]);
+  }, [limit, offset, filters, CACHE_TTL, getCacheKey]);
 
   useEffect(() => {
     if (debounceTimeoutRef.current) {
@@ -287,24 +174,31 @@ export default function useTransactions(limit?: number, offset?: number, filters
     };
   }, [filters, limit, offset, mounted, fetchTransactions]);
 
-  const refetch = useCallback(() => {
-    // Clear cache for current filters
-    if (filters) {
-      transactionCache.invalidatePattern(filters);
-    }
-    fetchTransactions(false); // Force fresh fetch
-  }, [filters, fetchTransactions]);
+  useEffect(() => {
+    const handleRefetch = () => fetchTransactions(false);
+    window.addEventListener('transactionCreated', handleRefetch);
+    window.addEventListener('transactionUpdated', handleRefetch);
+    window.addEventListener('transactionDeleted', handleRefetch);
+    return () => {
+      window.removeEventListener('transactionCreated', handleRefetch);
+      window.removeEventListener('transactionUpdated', handleRefetch);
+      window.removeEventListener('transactionDeleted', handleRefetch);
+    };
+  }, [fetchTransactions]);
 
-  const invalidateCache = useCallback(() => {
-    transactionCache.invalidate();
-  }, []);
+  const refetch = useCallback(() => {
+    const cacheKey = getCacheKey(filters, limit, offset);
+    cacheRef.current.delete(cacheKey);
+    fetchTransactions(false); 
+  }, [filters, limit, offset, getCacheKey, fetchTransactions]);
 
   return {
     transactions: state.transactions,
     loading: state.loading,
     error: state.error,
     fromCache: state.fromCache,
+    total: state.total,
+    hasMore: state.hasMore,
     refetch,
-    invalidateCache,
   };
 }

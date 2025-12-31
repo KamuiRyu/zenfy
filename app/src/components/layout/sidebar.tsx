@@ -7,8 +7,6 @@ import {
   BarChart3,
   Wallet,
   Tag,
-  Layers,
-  Calendar,
   Settings,
   Receipt,
 } from "lucide-react";

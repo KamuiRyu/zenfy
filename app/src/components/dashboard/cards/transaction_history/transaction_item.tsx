@@ -3,6 +3,7 @@ import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
 import { CardBrand } from "../my_cards/card_brand";
 import { useI18n } from "@/i18n/useI18n";
+import { TransactionKind } from "@/types/transactions";
 
 interface IconComponentProps {
   className?: string;
@@ -18,9 +19,13 @@ const TransactionItem = React.memo(function TransactionItem({
   amount,
   categoryType,
   icon,
+  kind,
   categoryColor,
   selectedCardLastFour,
   selectedCardBrand,
+  isInstallment,
+  installmentNumber,
+  totalInstallments,
 }: {
   title: string;
   subtitle?: string;
@@ -30,9 +35,14 @@ const TransactionItem = React.memo(function TransactionItem({
   amount: string;
   categoryType?: string;
   icon?: string;
+  kind: TransactionKind;
   categoryColor?: string;
   selectedCardLastFour?: string | null;
   selectedCardBrand?: string | null;
+  isInstallment?: boolean;
+  installmentNumber?: number;
+  totalInstallments?: number;
+
 }) {
   const { t } = useI18n();
   const isIncome = categoryType == "income" || categoryType == "refund" || categoryType == "cashback";
@@ -57,6 +67,22 @@ const TransactionItem = React.memo(function TransactionItem({
       return <BsIcons.BsCreditCardFill className="w-6 h-6 text-white" />;
     }, [icon]);
 
+      const formatKind = (kind: TransactionKind) => {
+        const kindLabels = {
+          credit: t("filter.kind.credit"),
+          debit: t("filter.kind.debit"),
+          withdrawal: t("filter.kind.withdrawal"),
+          deposit: t("filter.kind.deposit"),
+          transfer: t("filter.kind.transfer"),
+        };
+        return kindLabels[kind] || kind;
+      };
+    
+      // Format installment info
+      const installmentInfo = isInstallment && installmentNumber && totalInstallments
+        ? `${t("dashboard.transactions.installment")} ${installmentNumber}/${totalInstallments}`
+        : null;
+
   return (
     <div className="group grid grid-cols-[5fr_1fr_1fr_1fr] items-center gap-4 p-4 hover:bg-muted/80 rounded-xl transition-all duration-200">
       <div className="flex items-center gap-4 min-w-0">
@@ -75,6 +101,15 @@ const TransactionItem = React.memo(function TransactionItem({
               {merchant}
             </div>
           )}
+           <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="capitalize">{formatKind(kind)}</span>
+              {installmentInfo && (
+                <>
+                  <span>•</span>
+                  <span>{installmentInfo}</span>
+                </>
+              )}
+            </div>
           <div className="text-base text-muted-foreground mt-0.5 font-medium">
             {time}
           </div>

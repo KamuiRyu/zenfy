@@ -62,6 +62,7 @@
       "deposit": "Deposit",
       "withdrawal": "Withdrawal",
       "transfer": "Transfer",
+      "installment": "Installment",
       "credit_debit": "Credit/Debit",
       "other": "Other",
       "select_expiry_date": "Select the date",
@@ -201,7 +202,8 @@
       },
 
       "select_recurrence_type": "Select recurrence type",
-      "recurring": "Recurring"
+      "recurring": "Recurring",
+      "installment": "Installment"
     },
     "categories": {
       "title": "Categories",

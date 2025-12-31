@@ -43,7 +43,7 @@ export default function TransactionHistory() {
   const limit = 10;
   const offset = page * limit;
   const memoizedFilters = useMemo(() => ({ ...filters, cardUuid: selectedCardUuid || undefined }), [filters, selectedCardUuid]);
-  const { transactions, loading, error, refetch } = useTransactions(limit, offset, memoizedFilters, mounted);
+  const { transactions, loading, error, hasMore } = useTransactions(limit, offset, memoizedFilters, mounted);
   const { categories, loading: categoriesLoading } = useCategories();
 
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -52,17 +52,6 @@ export default function TransactionHistory() {
 
   const mappedCategories = useMemo(() => categories.map(cat => ({ uuid: cat.uuid || '0', name: cat.name } as CategoryType)), [categories]);
 
-
-  useEffect(() => {
-    const handleTransactionAdded = () => {
-      refetch();
-      window.dispatchEvent(new CustomEvent('balanceOverviewUpdated'));
-    };
-    window.addEventListener('transactionAdded', handleTransactionAdded);
-    return () => {
-      window.removeEventListener('transactionAdded', handleTransactionAdded);
-    };
-  }, [refetch]);
 
   useEffect(() => {
     let countdownInterval: NodeJS.Timeout | null = null;
@@ -80,11 +69,10 @@ export default function TransactionHistory() {
     return () => {
       if (countdownInterval) clearInterval(countdownInterval);
     };
-  }, [isCounting, countdown, refetch]);
+  }, [isCounting, countdown]);
 
   const handleRefresh = () => {
     if (!isCounting) {
-      refetch();
       setIsCounting(true);
       setCountdown(5);
     }
@@ -190,7 +178,7 @@ export default function TransactionHistory() {
               <TransactionHistoryFooter
                 page={page}
                 setPage={setPage}
-                hasMore={transactions.length === limit}
+                hasMore={hasMore}
               />
             )}
           </>

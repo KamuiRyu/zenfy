@@ -90,12 +90,10 @@ export default function CategoryList() {
   const hasMore = filteredCategories.length > offset + limit;
 
   useEffect(() => {
-    if (!loading) {
-      setInitialLoading(false);
-    } else {
-      setInitialLoading(true);
+    if (!loading && allCategories.length >= 0) {
+      setTimeout(() => setInitialLoading(false), 0);
     }
-  }, [loading]);
+  }, [loading, allCategories.length]);
 
   useEffect(() => {
     const handleCategoryUpdated = () => {

@@ -152,8 +152,7 @@
       "error_loading": "Erro ao carregar saldo",
       "no_payments": "Nenhum pagamento ainda",
       "no_cards": "Adicione um cartão para visualizar o saldo",
-      "select_card": "Selecione um cartão para visualizar o saldo",
-      "add_transaction": "Adicionar Transação"
+      "select_card": "Selecione um cartão para visualizar o saldo"
     },
     "statistics": {
       "title": "Estatísticas",
@@ -185,9 +184,11 @@
       "general": "Geral",
       "no_card": "Sem cartão",
       "type": "Tipo",
+      "types": {
+        "income": "Receita",
+        "expense": "Despesa"
+      },
       "select_type": "Selecione o tipo",
-      "income": "Receita",
-      "expense": "Despesa",
       "category": "Categoria",
       "select_category": "Selecione a categoria",
       "description": "Descrição",
@@ -211,12 +212,14 @@
       "type_and_category": "Tipo e Categoria",
       "details": "Detalhes da Transação",
       "kind": "Condição",
-      "credit_debit": "Crédito/Débito",
-      "credit": "Crédito",
-      "debit": "Débito",
-      "deposit": "Depósito",
-      "withdrawal": "Retirada",
-      "transfer": "Transferência",
+      "kind_options": {
+        "credit_debit": "Crédito/Débito",
+        "credit": "Crédito",
+        "debit": "Débito",
+        "deposit": "Depósito",
+        "withdrawal": "Retirada",
+        "transfer": "Transferência"
+      },
       "select_kind": "Selecione o tipo",
       "basic_info": "Informações Básicas",
       "payment_details": "Detalhes do Pagamento",
@@ -226,15 +229,19 @@
       "is_recurring": "É recorrente",
       "recurrence_type": "Tipo de recorrência",
       "recurrence_start_date": "Data de início da recorrência",
-      "select_start_date": "Selecione a data de início",
+      "select_recurrence_start_date": "Selecione a data de início da recorrência",
       "recurrence_end_date": "Data de fim da recorrência",
-      "select_end_date": "Selecione a data de fim",
-      "daily": "Diário",
-      "weekly": "Semanal",
-      "monthly": "Mensal",
-      "yearly": "Anual",
+      "select_recurrence_end_date": "Selecione a data de fim da recorrência",
+      "recurrence_types": {
+        "daily": "Diário",
+        "weekly": "Semanal",
+        "monthly": "Mensal",
+        "yearly": "Anual"
+      },
+
       "select_recurrence_type": "Selecione o tipo de recorrência",
-      "recurring": "Recorrente"
+      "recurring": "Recorrente",
+      "installment": "Parcela"
     }
   },
   "field": {
@@ -304,7 +311,13 @@
     "to_date": "Data de fim",
     "select_date": "Selecionar data",
     "category": "Categoria",
-    "all_categories": "Todas as categorias"
+    "all_categories": "Todas as categorias",
+    "recurring": {
+      "title": "Recorrente",
+      "all": "Todos",
+      "yes": "Sim",
+      "no": "ão"
+    }
   },
   "validation": {
     "REQUIRED_FIELD": "Este campo é obrigatório",
@@ -318,6 +331,20 @@
     "min_value": "Deve ser pelo menos {{count}}",
     "max_value": "Deve ser no máximo {{count}}",
     "number": "Deve ser um número",
+    "max_installments": "Deve ser no máximo 99 parcelas",
     "installment_recurring_mutual_exclusive": "Uma transação não pode ser parcelada e recorrente ao mesmo tempo"
+  },
+
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "add": "Adicionar",
+    "update": "Atualizar",
+    "confirm": "Confirmar"
   }
 }

@@ -2,32 +2,10 @@
 
 import { Control, UseFormWatch } from "react-hook-form";
 import { useI18n } from "@/i18n/useI18n";
-import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { TransactionFormData } from "../transaction_form.schema";
 import { FieldSwitch } from "@/components/forms/field_switch";
 import { FieldSelect } from "@/components/forms/field_select";

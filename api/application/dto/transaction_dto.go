@@ -92,3 +92,11 @@ type MonthlyStats struct {
 	TotalIncome  int64  `json:"total_income"`
 	TotalExpense int64  `json:"total_expense"`
 }
+
+type PaginatedTransactionResponse struct {
+	Data    []TransactionResponse `json:"data"`
+	Total   int64                 `json:"total"`
+	HasMore bool                  `json:"has_more"`
+	Limit   int                   `json:"limit"`
+	Offset  int                   `json:"offset"`
+}

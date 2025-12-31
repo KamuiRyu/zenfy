@@ -26,7 +26,7 @@ const categorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   type: z.enum(["income", "expense"]),
   description: z.string().optional(),
-  color: z.string().optional(),
+  color: z.string().min(1, "Cor é obrigatória"),
   icon: z.string().optional(),
 });
 
@@ -43,7 +43,7 @@ export default function CategoryForm({ category, onClose }: CategoryFormProps) {
       name: category?.name || "",
       type: category?.type || "expense",
       description: category?.description || "",
-      color: category?.color || "",
+      color: category?.color || "#FF6B6B",
       icon: category?.icon || "",
     },
   });
@@ -97,7 +97,7 @@ export default function CategoryForm({ category, onClose }: CategoryFormProps) {
 
       window.dispatchEvent(new Event("categoryUpdated"));
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to save category", error);
     }
   };
