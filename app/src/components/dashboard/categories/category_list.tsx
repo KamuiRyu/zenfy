@@ -109,7 +109,7 @@ export default function CategoryList() {
     return (
       <div className="space-y-6 animate-in fade-in-0 duration-500">
         {/* Filters skeleton */}
-        <div className="rounded-2xl p-6 border">
+        <div className="rounded-2xl p-6 bg-card">
           <div className="flex items-center gap-2 mb-4">
             <Skeleton className="w-4 h-4" />
             <Skeleton className="w-20 h-4" />
@@ -126,8 +126,7 @@ export default function CategoryList() {
           </div>
         </div>
 
-        {/* Content skeleton */}
-        <div className="rounded-2xl overflow-hidden border">
+        <div className="rounded-2xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-center justify-end mb-6">
               <Skeleton className="w-24 h-10" />
@@ -141,7 +140,7 @@ export default function CategoryList() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg animate-pulse"
+                  className="flex items-center justify-between p-4 rounded-lg animate-pulse"
                 >
                   <div className="flex items-center space-x-4">
                     <Skeleton className="w-12 h-12 rounded-full" />
