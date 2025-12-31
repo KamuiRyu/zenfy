@@ -12,7 +12,7 @@ import { CardBrand } from "@/components/dashboard/cards/my_cards/card_brand";
 import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
 import { useRouter } from "next/navigation";
-import { TransactionType } from "@/types/transactions";
+import { TransactionKind, TransactionType } from "@/types/transactions";
 
 interface IconComponentProps {
   className?: string;
@@ -22,12 +22,10 @@ type IconComponent = React.ComponentType<IconComponentProps>;
 
 interface TransactionItemProps {
   transaction: TransactionType;
-  onDelete: (uuid: string) => void;
 }
 
 export default function TransactionItem({
   transaction,
-  onDelete,
 }: TransactionItemProps) {
   const { t } = useI18n();
   const { deleteTransaction } = useTransactionActions();
@@ -74,6 +72,23 @@ export default function TransactionItem({
     currency: transaction.currency || "BRL",
   }).format((transaction.amount || 0) / 100);
 
+  // Format kind
+  const formatKind = (kind: TransactionKind) => {
+    const kindLabels = {
+      credit: t("filter.kind.credit"),
+      debit: t("filter.kind.debit"),
+      withdrawal: t("filter.kind.withdrawal"),
+      deposit: t("filter.kind.deposit"),
+      transfer: t("filter.kind.transfer"),
+    };
+    return kindLabels[kind] || kind;
+  };
+
+  // Format installment info
+  const installmentInfo = transaction.is_installment && transaction.installment_number && transaction.total_installments
+    ? `${t("dashboard.transactions.installment")} ${transaction.installment_number}/${transaction.total_installments}`
+    : null;
+
   return (
     <div className="group grid grid-cols-[5fr_1fr_1fr_1fr_auto] items-center gap-4 p-4 hover:bg-muted/80 rounded-xl transition-all duration-200">
       <div className="flex items-center gap-4 min-w-0">
@@ -87,11 +102,22 @@ export default function TransactionItem({
           <div className="font-semibold text-card-foreground truncate text-lg">
             {title}
           </div>
-          {merchant && (
-            <div className="text-sm text-muted-foreground truncate mt-0.5">
-              {merchant}
+          <div className="flex flex-col gap-0.5 mt-0.5">
+            {merchant && (
+              <div className="text-sm text-muted-foreground truncate">
+                {merchant}
+              </div>
+            )}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="capitalize">{formatKind(transaction.kind)}</span>
+              {installmentInfo && (
+                <>
+                  <span>•</span>
+                  <span>{installmentInfo}</span>
+                </>
+              )}
             </div>
-          )}
+          </div>
           <div className="text-base text-muted-foreground mt-0.5 font-medium">
             {time}
           </div>
@@ -140,7 +166,6 @@ export default function TransactionItem({
           onConfirm={async () => {
             try {
               await deleteTransaction(transaction.uuid);
-              onDelete(transaction.uuid);
             } catch {}
           }}
           trigger={

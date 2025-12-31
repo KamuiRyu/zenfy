@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useReducer, ReactNode } from "react";
+import { createContext, useContext, useEffect, useReducer, ReactNode, useRef, useCallback } from "react";
 import categoryService from "@/services/category_service";
 
 type Category = {
@@ -52,22 +52,43 @@ const CategoriesContext = createContext<CategoriesContextType | undefined>(undef
 
 export function CategoriesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(categoriesReducer, initialState);
+  const cacheRef = useRef<{ data: Category[], timestamp: number } | null>(null);
+  const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async (useCache: boolean = true) => {
+    // Try cache first
+    if (useCache && cacheRef.current && Date.now() - cacheRef.current.timestamp < CACHE_TTL) {
+      dispatch({ type: 'SET_CATEGORIES', payload: cacheRef.current.data });
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return;
+    }
+
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
     try {
       const resp = await categoryService.getCategories();
       const payload = resp && typeof resp === "object" && "data" in resp ? resp.data : resp;
       let dataArray: Category[] = [];
-      if (Array.isArray(payload)) dataArray = payload;
-      else if (payload && typeof payload === "object") {
+      
+      if (payload && typeof payload === "object" && "data" in payload) {
+        // Paginated response
+        const paginated = payload as { data: Category[] };
+        dataArray = paginated.data;
+      } else if (Array.isArray(payload)) {
+        // Legacy array response
+        dataArray = payload;
+      } else if (payload && typeof payload === "object") {
+        // Object response
         const keys = Object.keys(payload).filter((k) => String(Number(k)) === String(k));
         if (keys.length) {
           keys.sort((a, b) => Number(a) - Number(b));
           dataArray = keys.map((k) => (payload as Record<string, Category>)[k]);
         } else dataArray = Object.values(payload as Record<string, Category>);
       }
+
+      // Cache the result
+      cacheRef.current = { data: dataArray, timestamp: Date.now() };
+
       dispatch({ type: 'SET_CATEGORIES', payload: dataArray });
     } catch (err: unknown) {
       console.error("Failed to load categories", err);
@@ -75,21 +96,29 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [CACHE_TTL]);
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [fetchCategories]);
 
   useEffect(() => {
-    const handleRefetch = () => fetchCategories();
+    const handleRefetch = () => fetchCategories(false); // Force fresh data after CRUD operations
     window.addEventListener('refetchCategories', handleRefetch);
-    return () => window.removeEventListener('refetchCategories', handleRefetch);
-  }, []);
+    window.addEventListener('categoryCreated', handleRefetch);
+    window.addEventListener('categoryUpdated', handleRefetch);
+    window.addEventListener('categoryDeleted', handleRefetch);
+    return () => {
+      window.removeEventListener('refetchCategories', handleRefetch);
+      window.removeEventListener('categoryCreated', handleRefetch);
+      window.removeEventListener('categoryUpdated', handleRefetch);
+      window.removeEventListener('categoryDeleted', handleRefetch);
+    };
+  }, [fetchCategories]);
 
   const contextValue: CategoriesContextType = {
     ...state,
-    refetch: fetchCategories,
+    refetch: () => fetchCategories(false),
   };
 
   return (

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 
@@ -79,8 +81,10 @@ func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 	var filters *dto.CategoryFilters
 	typeStr := c.Query("type")
 	searchStr := c.Query("search")
+	limitStr := c.Query("limit")
+	offsetStr := c.Query("offset")
 
-	if typeStr != "" || searchStr != "" {
+	if typeStr != "" || searchStr != "" || limitStr != "" || offsetStr != "" {
 		filters = &dto.CategoryFilters{}
 		if typeStr != "" {
 			filters.Type = &typeStr
@@ -88,22 +92,37 @@ func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 		if searchStr != "" {
 			filters.Search = &searchStr
 		}
+		if limitStr != "" {
+			if limit, err := strconv.Atoi(limitStr); err == nil {
+				filters.Limit = &limit
+			}
+		}
+		if offsetStr != "" {
+			if offset, err := strconv.Atoi(offsetStr); err == nil {
+				filters.Offset = &offset
+			}
+		}
 	}
 
-	var categories []dto.CategoryResponse
+	var result interface{}
 	var err error
 
 	if filters != nil {
-		categories, err = h.getCategoriesUseCase.ExecuteWithFilters(userID, filters)
+		result, err = h.getCategoriesUseCase.ExecuteWithFilters(userID, filters)
 	} else {
-		categories, err = h.getCategoriesUseCase.Execute(userID)
+		// Use default pagination for all requests
+		defaultFilters := &dto.CategoryFilters{
+			Limit:  &[]int{50}[0],
+			Offset: &[]int{0}[0],
+		}
+		result, err = h.getCategoriesUseCase.ExecuteWithFilters(userID, defaultFilters)
 	}
 
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_CATEGORIES_FAILED", "Failed to fetch categories", nil)
 	}
 
-	return response.Success(c, fiber.StatusOK, categories, "Categories fetched successfully")
+	return response.Success(c, fiber.StatusOK, result, "Categories fetched successfully")
 }
 
 func (h *CategoryHandler) UpdateCategory(c *fiber.Ctx) error {

@@ -18,19 +18,33 @@ export async function getCard(id: string | number) {
 }
 
 export async function createCard(payload: Partial<CardType>) {
-  return request(base, "", { method: "POST", data: payload });
+  const result = await request(base, "", { method: "POST", data: payload });
+  // Dispatch event to invalidate cards cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('cardCreated'));
+  }
+  return result;
 }
 
 export async function updateCard(id: string | number, payload: Partial<CardType>) {
-  const response = await request(base, `${id}`, {
+  const result = await request(base, `${id}`, {
     method: "PUT",
     data: payload,
   });
-  return response;
+  // Dispatch event to invalidate cards cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('cardUpdated'));
+  }
+  return result;
 }
 
 export async function deleteCard(id: string | number) {
-  return request(base, `${id}`, { method: "DELETE" });
+  const result = await request(base, `${id}`, { method: "DELETE" });
+  // Dispatch event to invalidate cards cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('cardDeleted'));
+  }
+  return result;
 }
 
 const cardService = { getCards, getCard, createCard, updateCard, deleteCard };

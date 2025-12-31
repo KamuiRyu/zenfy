@@ -80,6 +80,57 @@ func (r *transactionRepositoryImpl) ListByCard(cardID int, limit, offset int) ([
 	return transactions, err
 }
 
+func (r *transactionRepositoryImpl) CountByCard(cardID int) (int64, error) {
+	ctx := context.Background()
+	var count int64
+	err := r.db.NewSelect().
+		Model(&model.Transaction{}).
+		Where("card_id = ?", cardID).
+		ColumnExpr("COUNT(*)").
+		Scan(ctx, &count)
+
+	return count, err
+}
+
+func (r *transactionRepositoryImpl) CountByUser(userID int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) (int64, error) {
+	ctx := context.Background()
+	var count int64
+	query := r.db.NewSelect().
+		Model(&model.Transaction{}).
+		Where("user_id = ?", userID)
+
+	if dateFrom != nil {
+		query = query.Where("occurred_at >= ?", *dateFrom)
+	}
+	if dateTo != nil {
+		query = query.Where("occurred_at <= ?", *dateTo)
+	}
+	if categoryID != nil {
+		query = query.Where("category_id = ?", *categoryID)
+	}
+	if kind != nil {
+		query = query.Where("kind = ?", *kind)
+	}
+	if search != nil {
+		query = query.Where("description ILIKE ? OR merchant ILIKE ?", "%"+*search+"%", "%"+*search+"%")
+	}
+	if cardID != nil {
+		query = query.Where("card_id = ?", *cardID)
+	}
+	if typeStr != nil {
+		query = query.Where("category.type = ?", *typeStr)
+	}
+	if recurring != nil {
+		query = query.Where("is_recurring = ?", *recurring)
+	}
+
+	err := query.
+		ColumnExpr("COUNT(*)").
+		Scan(ctx, &count)
+
+	return count, err
+}
+
 func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
 	ctx := context.Background()
 	var transactions []*model.Transaction

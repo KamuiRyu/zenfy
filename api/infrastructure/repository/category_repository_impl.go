@@ -104,11 +104,41 @@ func (r *categoryRepositoryImpl) ListByUserWithFilters(userID int, filters *dto.
 		}
 	}
 
-	err := query.
-		Order("is_default DESC, name ASC").
-		Scan(ctx)
+	query = query.Order("is_default DESC, name ASC")
+
+	if filters != nil && filters.Limit != nil {
+		query = query.Limit(*filters.Limit)
+		if filters.Offset != nil {
+			query = query.Offset(*filters.Offset)
+		}
+	}
+
+	err := query.Scan(ctx)
 
 	return categories, err
+}
+
+func (r *categoryRepositoryImpl) CountByUser(userID int, filters *dto.CategoryFilters) (int64, error) {
+	ctx := context.Background()
+	var count int64
+
+	query := r.db.NewSelect().
+		Model(&model.Category{}).
+		Where("user_id = ? OR user_id IS NULL", userID)
+
+	if filters != nil {
+		if filters.Type != nil {
+			query = query.Where("type = ?", *filters.Type)
+		}
+		if filters.Search != nil && *filters.Search != "" {
+			searchTerm := "%" + strings.ToLower(*filters.Search) + "%"
+			query = query.Where("LOWER(name) LIKE ? OR LOWER(description) LIKE ?", searchTerm, searchTerm)
+		}
+	}
+
+	err := query.ColumnExpr("COUNT(*)").Scan(ctx, &count)
+
+	return count, err
 }
 
 func (r *categoryRepositoryImpl) Update(category *model.Category) error {

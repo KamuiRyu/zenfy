@@ -234,7 +234,8 @@
       "monthly": "Mensal",
       "yearly": "Anual",
       "select_recurrence_type": "Selecione o tipo de recorrência",
-      "recurring": "Recorrente"
+      "recurring": "Recorrente",
+      "installment": "Parcela"
     }
   },
   "field": {

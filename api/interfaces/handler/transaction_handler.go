@@ -217,7 +217,6 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_TRANSACTIONS_FAILED", "Failed to fetch transactions", nil)
 	}
-
 	return response.Success(c, fiber.StatusOK, transactions, "Transactions fetched successfully")
 }
 

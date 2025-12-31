@@ -3,21 +3,24 @@
 import { Control } from "react-hook-form";
 import { useI18n } from "@/i18n/useI18n";
 import {
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+
 } from "@/components/ui/form";
-import { Compact } from "@uiw/react-color";
-import { Combobox } from "@/components/ui/combobox";
 import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
 import { FieldColorPicker } from "@/components/forms/field_colorpicker";
 import { FieldCombobox } from "@/components/forms/field_combobox";
 
+type CategoryFormData = {
+  name: string;
+  type: "income" | "expense";
+  description?: string;
+  color: string;
+  icon?: string;
+};
+
 interface CategoryStyleFormProps {
-  control: Control<any>;
+  control: Control<CategoryFormData>;
   category?: {
     icon?: string;
   };
@@ -182,7 +185,7 @@ const iconOptions = [...siIconOptions, ...bsIconOptions];
 export default function CategoryStyleForm({ control, category }: CategoryStyleFormProps) {
   const { t } = useI18n();
 
-  let finalIconOptions = [...iconOptions];
+  const finalIconOptions = [...iconOptions];
   if (category?.icon && !iconOptions.some(opt => opt.name === category.icon)) {
     let component = null;
     if (SiIcons[category.icon as keyof typeof SiIcons]) {
@@ -210,13 +213,15 @@ export default function CategoryStyleForm({ control, category }: CategoryStyleFo
       <FormField
         control={control}
         name="color"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FieldColorPicker
             label={t("dashboard.categories.color")}
             colors={colors}
+            color={field.value}
             value={field.value}
             onChange={(color) => field.onChange(color.hex)}
             className="rounded-lg"
+            error={fieldState.error?.message}
           />
         )}
       />

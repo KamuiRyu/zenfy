@@ -19,6 +19,6 @@ func (uc *GetCategoriesUseCase) Execute(userID int) ([]dto.CategoryResponse, err
 	return uc.categoryService.GetCategoriesByUser(userID)
 }
 
-func (uc *GetCategoriesUseCase) ExecuteWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error) {
+func (uc *GetCategoriesUseCase) ExecuteWithFilters(userID int, filters *dto.CategoryFilters) (*dto.PaginatedCategoryResponse, error) {
 	return uc.categoryService.GetCategoriesByUserWithFilters(userID, filters)
 }

@@ -66,9 +66,13 @@ const TransactionGroup = React.memo(function TransactionGroup({ date, transactio
             amount={formatCurrency(transaction.amount, transaction.currency)}
             categoryType={transaction.category?.type}
             icon={transaction.category?.icon}
+            kind={transaction.kind}
             categoryColor={transaction.category?.color}
             selectedCardLastFour={selectedCardLastFour}
             selectedCardBrand={selectedCardBrand}
+            isInstallment={transaction.is_installment}
+            installmentNumber={transaction.installment_number}
+            totalInstallments={transaction.total_installments}
           />
         ))}
       </div>

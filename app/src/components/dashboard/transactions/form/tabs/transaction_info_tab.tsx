@@ -2,20 +2,8 @@
 
 import { Control } from "react-hook-form";
 import { useI18n } from "@/i18n/useI18n";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "../transaction_form.schema";

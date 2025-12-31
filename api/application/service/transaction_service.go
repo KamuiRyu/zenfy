@@ -18,10 +18,10 @@ type TransactionService interface {
 	UpdateTransaction(userID int, transactionUUID string, req dto.UpdateTransactionRequest) (*dto.TransactionResponse, error)
 	DeleteTransaction(userID int, transactionID int) error
 	DeleteTransactionUUID(userID int, transactionUUID string) error
-	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
-	ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error)
-	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error)
-	ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error)
+	ListTransactionsByCard(userID int, cardID int, limit, offset int) (*dto.PaginatedTransactionResponse, error)
+	ListTransactionsByUser(userID int, limit, offset int) (*dto.PaginatedTransactionResponse, error)
+	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) (*dto.PaginatedTransactionResponse, error)
+	ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) (*dto.PaginatedTransactionResponse, error)
 	GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error)
 	GetBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error)
 }
@@ -107,7 +107,7 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 		installmentAmount := req.Amount / int64(*req.TotalInstallments)
 		remainder := req.Amount % int64(*req.TotalInstallments)
 
-		for i := 1; i < *req.TotalInstallments; i++ {
+		for i := 0; i < *req.TotalInstallments; i++ {
 			installmentUUID := uuid.New().String()
 			installmentOccurredAt := occurredAt.AddDate(0, i, 0)
 
@@ -133,7 +133,7 @@ func (s *transactionService) CreateTransaction(userID int, req dto.CreateTransac
 				nil,
 				nil,
 				true,
-				&i,
+				&[]int{i + 1}[0],
 				req.TotalInstallments,
 			)
 
@@ -271,7 +271,6 @@ func (s *transactionService) UpdateTransaction(userID int, transactionUUID strin
 	transaction.UpdatedAt = time.Now()
 
 	if err := s.transactionRepo.Update(transaction); err != nil {
-		fmt.Println("Error: ", err)
 		return nil, fmt.Errorf("FAILED_TO_UPDATE_TRANSACTION")
 	}
 
@@ -308,7 +307,7 @@ func (s *transactionService) DeleteTransactionUUID(userID int, transactionUUID s
 	return s.transactionRepo.DeleteByUUID(transactionUUID)
 }
 
-func (s *transactionService) ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error) {
+func (s *transactionService) ListTransactionsByCard(userID int, cardID int, limit, offset int) (*dto.PaginatedTransactionResponse, error) {
 	// Verify card belongs to user
 	card, err := s.cardRepo.FindByID(cardID)
 	if err != nil {
@@ -326,15 +325,28 @@ func (s *transactionService) ListTransactionsByCard(userID int, cardID int, limi
 		return nil, err
 	}
 
+	total, err := s.transactionRepo.CountByCard(cardID)
+	if err != nil {
+		return nil, err
+	}
+
 	responses := make([]dto.TransactionResponse, len(transactions))
 	for i, transaction := range transactions {
 		responses[i] = *s.toResponse(transaction)
 	}
 
-	return responses, nil
+	hasMore := int64(offset+limit) < total
+
+	return &dto.PaginatedTransactionResponse{
+		Data:    responses,
+		Total:   total,
+		HasMore: hasMore,
+		Limit:   limit,
+		Offset:  offset,
+	}, nil
 }
 
-func (s *transactionService) ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error) {
+func (s *transactionService) ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) (*dto.PaginatedTransactionResponse, error) {
 	// Find card by UUID and verify ownership
 	card, err := s.cardRepo.FindByUUID(cardUUID)
 	if err != nil {
@@ -350,8 +362,13 @@ func (s *transactionService) ListTransactionsByCardUUID(userID int, cardUUID str
 	return s.ListTransactionsByCard(userID, card.ID, limit, offset)
 }
 
-func (s *transactionService) ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error) {
+func (s *transactionService) ListTransactionsByUser(userID int, limit, offset int) (*dto.PaginatedTransactionResponse, error) {
 	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, nil, nil, nil, nil, nil, nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	total, err := s.transactionRepo.CountByUser(userID, nil, nil, nil, nil, nil, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -361,10 +378,18 @@ func (s *transactionService) ListTransactionsByUser(userID int, limit, offset in
 		responses[i] = *s.toResponse(transaction)
 	}
 
-	return responses, nil
+	hasMore := int64(offset+limit) < total
+
+	return &dto.PaginatedTransactionResponse{
+		Data:    responses,
+		Total:   total,
+		HasMore: hasMore,
+		Limit:   limit,
+		Offset:  offset,
+	}, nil
 }
 
-func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
+func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) (*dto.PaginatedTransactionResponse, error) {
 	var categoryIDInt *int
 	if categoryID != nil && *categoryID != "" {
 		category, err := s.categoryRepo.FindByUUID(*categoryID)
@@ -382,12 +407,25 @@ func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit
 		return nil, err
 	}
 
+	total, err := s.transactionRepo.CountByUser(userID, dateFrom, dateTo, categoryIDInt, kind, recurring, search, cardID, typeStr)
+	if err != nil {
+		return nil, err
+	}
+
 	responses := make([]dto.TransactionResponse, len(transactions))
 	for i, transaction := range transactions {
 		responses[i] = *s.toResponse(transaction)
 	}
 
-	return responses, nil
+	hasMore := int64(offset+limit) < total
+
+	return &dto.PaginatedTransactionResponse{
+		Data:    responses,
+		Total:   total,
+		HasMore: hasMore,
+		Limit:   limit,
+		Offset:  offset,
+	}, nil
 }
 
 func (s *transactionService) GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error) {

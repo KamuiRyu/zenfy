@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useReducer, ReactNode, useRef } from "react";
+import React, { createContext, useContext, useEffect, useReducer, ReactNode, useRef, useCallback } from "react";
 import cardService from "@/services/card_service";
 import { CardType } from "@/types/cards";
 
@@ -63,7 +63,7 @@ export function CardsProvider({ children }: { children: ReactNode }) {
   const cacheRef = useRef<{ data: Card[], timestamp: number } | null>(null);
   const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
-  const fetchCards = async (useCache: boolean = true) => {
+  const fetchCards = useCallback(async (useCache: boolean = true) => {
     // Try cache first
     if (useCache && cacheRef.current && Date.now() - cacheRef.current.timestamp < CACHE_TTL) {
       dispatch({ type: 'SET_CARDS', payload: cacheRef.current.data, fromCache: true });
@@ -114,17 +114,25 @@ export function CardsProvider({ children }: { children: ReactNode }) {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [CACHE_TTL]);
 
   useEffect(() => {
     fetchCards();
-  }, []);
+  }, [fetchCards]);
 
   useEffect(() => {
     const handleRefetch = () => fetchCards(false); // Force fresh data after CRUD operations
     window.addEventListener('refetchCards', handleRefetch);
-    return () => window.removeEventListener('refetchCards', handleRefetch);
-  }, []);
+    window.addEventListener('cardCreated', handleRefetch);
+    window.addEventListener('cardUpdated', handleRefetch);
+    window.addEventListener('cardDeleted', handleRefetch);
+    return () => {
+      window.removeEventListener('refetchCards', handleRefetch);
+      window.removeEventListener('cardCreated', handleRefetch);
+      window.removeEventListener('cardUpdated', handleRefetch);
+      window.removeEventListener('cardDeleted', handleRefetch);
+    };
+  }, [fetchCards]);
 
   const contextValue: CardsContextType = {
     ...state,

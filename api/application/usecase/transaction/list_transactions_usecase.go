@@ -28,11 +28,11 @@ func NewListTransactionsUseCase(transactionService service.TransactionService) *
 	}
 }
 
-func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error) {
+func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, offset int) (*dto.PaginatedTransactionResponse, error) {
 	return uc.transactionService.ListTransactionsByCard(userID, cardID, limit, offset)
 }
 
-func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, filters *TransactionFilters) ([]dto.TransactionResponse, error) {
+func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, filters *TransactionFilters) (*dto.PaginatedTransactionResponse, error) {
 	var dateFrom, dateTo *time.Time
 	var kind *string
 	var search *string
@@ -53,6 +53,6 @@ func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, 
 	return uc.transactionService.ListTransactionsByUserWithFilters(userID, limit, offset, dateFrom, dateTo, categoryUuid, kind, recurring, search, cardID, typeStr)
 }
 
-func (uc *ListTransactionsUseCase) ExecuteByUserAndCard(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error) {
+func (uc *ListTransactionsUseCase) ExecuteByUserAndCard(userID int, cardUUID string, limit, offset int) (*dto.PaginatedTransactionResponse, error) {
 	return uc.transactionService.ListTransactionsByCardUUID(userID, cardUUID, limit, offset)
 }

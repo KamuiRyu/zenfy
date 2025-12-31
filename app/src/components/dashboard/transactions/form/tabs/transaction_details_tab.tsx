@@ -2,32 +2,9 @@
 
 import { Control, UseFormWatch, useFormContext } from "react-hook-form";
 import { useI18n } from "@/i18n/useI18n";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FormControl,
   FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "../transaction_form.schema";
 import { useEffect } from "react";
@@ -39,14 +16,12 @@ import { FieldSwitch } from "@/components/forms/field_switch";
 interface TransactionDetailsTabProps {
   control: Control<TransactionFormData>;
   watch: UseFormWatch<TransactionFormData>;
-  selectedCardUuid: string;
   kindOptions: string[];
 }
 
 export default function TransactionDetailsTab({
   control,
   watch,
-  selectedCardUuid,
   kindOptions,
 }: TransactionDetailsTabProps) {
   const { t } = useI18n();
