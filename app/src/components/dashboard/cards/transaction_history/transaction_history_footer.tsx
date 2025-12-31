@@ -16,15 +16,15 @@ export default function TransactionHistoryFooter({ page, setPage, hasMore }: Tra
         disabled={page === 0}
         className="px-4 py-2 border border-border rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
       >
-        {t('dashboard.transaction_history.previous')}
+        {t('filter.pagination.previous')}
       </button>
-      <span className="text-sm text-muted-foreground">{t('dashboard.transaction_history.page')} {page + 1}</span>
+      <span className="text-sm text-muted-foreground">{t('filter.pagination.page')} {page + 1}</span>
       <button
         onClick={() => setPage(p => p + 1)}
         disabled={!hasMore}
         className="px-4 py-2 border border-border rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
       >
-        {t('dashboard.transaction_history.next')}
+        {t('filter.pagination.next')}
       </button>
     </div>
   );

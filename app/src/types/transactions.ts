@@ -35,6 +35,7 @@ export interface TransactionFiltersType {
   categoryId?: number;
   type?: string;
   kind?: string;
+  recurring?: string;
   search?: string;
   cardUuid?: string;
 }
@@ -69,6 +70,7 @@ export interface TransactionFiltersAPI extends Filter{
   category_id?: number;
   type?: string;
   kind?: string;
+  recurring?: string;
   search?: string;
   card_uuid?: string;
 }

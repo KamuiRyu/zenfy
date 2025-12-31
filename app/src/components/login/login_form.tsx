@@ -7,9 +7,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { FieldInput } from "@/components/forms/field_input";
 import { Form, FormField } from "@/components/ui/form";
 import { AlertDanger } from "../forms/alert";
+import { FieldInput } from "../forms/field_input";
 import { useI18n } from "@/i18n/useI18n";
 import { translateFormMessage } from "@/lib/utils";
 

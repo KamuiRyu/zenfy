@@ -30,6 +30,7 @@ interface TransactionFiltersProps {
     categoryId?: number;
     type?: string;
     kind?: string;
+    recurring?: string;
     search?: string;
   };
   onFiltersChange: (filters: {
@@ -38,6 +39,7 @@ interface TransactionFiltersProps {
     categoryId?: number;
     type?: string;
     kind?: string;
+    recurring?: string;
     search?: string;
   }) => void;
 }
@@ -299,6 +301,43 @@ export default function TransactionFilters({
                 </SelectItem>
                 <SelectItem value="deposit">
                   {t("filter.kind.deposit")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+         <div>
+          <label className="text-sm font-medium mb-2 block">
+            {t("filter.recurring.title")}
+          </label>
+          {loading ? (
+            <Skeleton className="w-full h-10" />
+          ) : (
+            <Select
+              value={filters.recurring || "all"}
+              onValueChange={(value) =>
+                updateFilter("recurring", value === "all" ? undefined : value)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={t("filter.recurring.all")}
+                />
+              </SelectTrigger>
+              <SelectContent
+                side="bottom"
+                avoidCollisions={false}
+                position="popper"
+                className="max-h-60"
+              >
+                <SelectItem value="all">
+                  {t("filter.recurring.all")}
+                </SelectItem>
+                <SelectItem value="yes">
+                  {t("filter.recurring.yes")}
+                </SelectItem>
+                <SelectItem value="no">
+                  {t("filter.recurring.no")}
                 </SelectItem>
               </SelectContent>
             </Select>

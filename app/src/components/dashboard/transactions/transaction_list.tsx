@@ -23,6 +23,8 @@ export default function TransactionList() {
     dateTo?: string;
     type?: string;
     search?: string;
+    kind?: string;
+    recurring?: string;
     categoryId?: number;
   }>({});
   const limit = 20;

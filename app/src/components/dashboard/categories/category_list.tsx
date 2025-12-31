@@ -174,7 +174,7 @@ export default function CategoryList() {
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          {t("dashboard.transactions.error_loading")}: {error}
+          {t("dashboard.categories.error_loading")}: {error}
         </AlertDescription>
       </Alert>
     );
@@ -235,10 +235,10 @@ export default function CategoryList() {
                 <AlertCircle className="w-8 h-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-medium text-card-foreground mb-2">
-                {t("dashboard.transactions.no_transactions_found")}
+                {t("dashboard.categories.no_categories_found")}
               </h3>
               <p className="text-muted-foreground">
-                {t("dashboard.transactions.no_transactions_description")}
+                {t("dashboard.categories.no_categories_description")}
               </p>
             </div>
           ) : (

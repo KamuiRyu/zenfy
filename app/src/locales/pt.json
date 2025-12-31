@@ -123,7 +123,8 @@
       "save_button": "Salvar",
       "error":{
         "name_already_exists": "A categoria com este nome já existe"
-      }
+      },
+      "error_loading": "Erro ao carregar categorias"
     },
     "transaction_history": {
       "title": "Histórico de Transações",

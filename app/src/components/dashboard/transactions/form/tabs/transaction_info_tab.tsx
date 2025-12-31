@@ -20,6 +20,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "../transaction_form.schema";
 import { CategoryType } from "@/types/transactions";
+import { FieldSelect } from "@/components/forms/field_select";
+import { FieldInput } from "@/components/forms/field_input";
+import { FieldTextarea } from "@/components/forms/field_textarea";
 
 interface TransactionInfoTabProps {
   control: Control<TransactionFormData>;
@@ -43,82 +46,48 @@ export default function TransactionInfoTab({
             <FormField
               control={control}
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    {t("dashboard.transactions.type")} *
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="!h-12 w-full">
-                        <SelectValue
-                          placeholder={t("dashboard.transactions.select_type")}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent
-                      avoidCollisions={false}
-                      position="popper"
-                      className="max-h-70"
-                    >
-                      <SelectItem value="income">
-                        {t("dashboard.transactions.income")}
-                      </SelectItem>
-                      <SelectItem value="expense">
-                        {t("dashboard.transactions.expense")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="min-h-[20px]">
-                    <FormMessage />
-                  </div>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldSelect
+                  label={`${t("dashboard.transactions.type")} *`}
+                  placeholder={t("dashboard.transactions.select_type")}
+                  options={[
+                    {
+                      value: "expense",
+                      label: t("dashboard.transactions.types.expense"),
+                    },
+                    {
+                      value: "income",
+                      label: t("dashboard.transactions.types.income"),
+                    },
+                  ]}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={categoriesLoading}
+                  className="rounded-lg w-full"
+                  name={field.name}
+                  error={fieldState.error?.message || null}
+                />
               )}
             />
 
             <FormField
               control={control}
               name="category_uuid"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    {t("dashboard.transactions.category")} *
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={categoriesLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="!h-12 w-full">
-                        <SelectValue
-                          placeholder={
-                            categoriesLoading
-                              ? t("action.loading")
-                              : t("dashboard.transactions.select_category")
-                          }
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent
-                      avoidCollisions={false}
-                      position="popper"
-                      className="max-h-70"
-                    >
-                      {filteredCategories.map((category) => (
-                        <SelectItem
-                          key={category.uuid}
-                          value={category.uuid.toString()}
-                        >
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="min-h-[20px]">
-                    <FormMessage />
-                  </div>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldSelect
+                  label={t("dashboard.transactions.category")}
+                  placeholder={t("dashboard.transactions.select_category")}
+                  options={filteredCategories.map((category) => ({
+                    value: category.uuid,
+                    label: category.name,
+                  }))}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={categoriesLoading}
+                  className="rounded-lg w-full"
+                  name={field.name}
+                  error={fieldState.error?.message || null}
+                />
               )}
             />
           </div>
@@ -130,47 +99,33 @@ export default function TransactionInfoTab({
           <FormField
             control={control}
             name="merchant"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  {t("dashboard.transactions.merchant")}
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={t(
-                      "dashboard.transactions.merchant_placeholder"
-                    )}
-                    className="min-h-[60px] resize-none !h-auto w-full"
-                    {...field}
-                  />
-                </FormControl>
-                <div className="min-h-[20px]">
-                  <FormMessage />
-                </div>
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <FieldInput
+                label={t("dashboard.transactions.merchant")}
+                type="text"
+                placeholder={t("dashboard.transactions.merchant_placeholder")}
+                {...field}
+                className="rounded-lg p-5 mb-5"
+                name={field.name}
+                error={fieldState.error?.message || null}
+              />
             )}
           />
           <FormField
             control={control}
             name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  {t("dashboard.transactions.description")} *
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={t(
-                      "dashboard.transactions.description_placeholder"
-                    )}
-                    className="min-h-[100px] resize-none !h-auto w-full"
-                    {...field}
-                  />
-                </FormControl>
-                <div className="min-h-[20px]">
-                  <FormMessage />
-                </div>
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <FieldTextarea
+                label={t("dashboard.transactions.description")}
+                placeholder={t(
+                  "dashboard.transactions.description_placeholder"
+                )}
+                {...field}
+                className="rounded-lg p-5"
+                name={field.name}
+                error={fieldState.error?.message || null}
+              
+              />
             )}
           />
         </CardContent>

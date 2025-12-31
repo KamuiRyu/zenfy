@@ -13,6 +13,8 @@ import { Compact } from "@uiw/react-color";
 import { Combobox } from "@/components/ui/combobox";
 import * as SiIcons from "react-icons/si";
 import * as BsIcons from "react-icons/bs";
+import { FieldColorPicker } from "@/components/forms/field_colorpicker";
+import { FieldCombobox } from "@/components/forms/field_combobox";
 
 interface CategoryStyleFormProps {
   control: Control<any>;
@@ -209,18 +211,13 @@ export default function CategoryStyleForm({ control, category }: CategoryStyleFo
         control={control}
         name="color"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("dashboard.categories.color")}</FormLabel>
-            <FormControl>
-              <Compact
-                color={field.value}
-                onChange={(color) => field.onChange(color.hex)}
-                colors={colors}
-                className="!w-full"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FieldColorPicker
+            label={t("dashboard.categories.color")}
+            colors={colors}
+            value={field.value}
+            onChange={(color) => field.onChange(color.hex)}
+            className="rounded-lg"
+          />
         )}
       />
 
@@ -228,18 +225,14 @@ export default function CategoryStyleForm({ control, category }: CategoryStyleFo
         control={control}
         name="icon"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("dashboard.categories.icon")}</FormLabel>
-            <FormControl>
-              <Combobox
-                options={comboboxOptions}
-                value={field.value}
-                onChange={field.onChange}
-                placeholder={t("dashboard.categories.icon_placeholder")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FieldCombobox
+            label={t("dashboard.categories.icon")}
+            options={comboboxOptions}
+            value={field.value}
+            onChange={field.onChange}
+            placeholder={t("dashboard.categories.icon_placeholder")}
+            className="rounded-lg w-full"
+          />
         )}
       />
     </>

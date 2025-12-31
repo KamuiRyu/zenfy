@@ -54,7 +54,6 @@ export default function TransactionItem({
       if (SiIconComponent) {
         return <SiIconComponent className="w-6 h-6 text-white" />;
       }
-
       const BsIconComponent: IconComponent | undefined = (
         BsIcons as Record<string, IconComponent>
       )[icon];

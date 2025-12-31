@@ -1,38 +1,34 @@
 import React from "react";
 import { FieldLabel } from "@ui/field";
-import { Input } from "@ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { FormControl, FormItem, FormMessage } from "@ui/form";
 import { cn } from "@/lib/utils";
 
-type FieldInputProps = React.ComponentProps<typeof Input> & {
+type FieldTextareaProps = React.ComponentProps<typeof Textarea> & {
   label: string;
-  description?: string;
   error?: string | null;
 };
 
-export function FieldInput({
+export function FieldTextarea({
   label,
   error,
   className,
   ...props
-}: FieldInputProps) {
+}: FieldTextareaProps) {
   return (
     <FormItem>
-      <FieldLabel
-        htmlFor={props.id}
-        className={cn(error ? "text-red-500" : "")}
-      >
+      <FieldLabel className={cn(error ? "text-red-500" : "")}>
         {label}
       </FieldLabel>
       <FormControl>
-        <Input
-          className={"!h-12 " + cn(error ? "border-red-500" : "", className)}
+        <Textarea
+          className={cn(error ? "border-red-500" : "", className)}
           {...props}
         />
       </FormControl>
       <div className="min-h-[20px]">
-          {error ? (
-           <FormMessage className="text-red-500 text-xs">{error}</FormMessage>
+        {error ? (
+          <FormMessage className="text-red-500 text-xs">{error}</FormMessage>
         ) : null}
       </div>
     </FormItem>

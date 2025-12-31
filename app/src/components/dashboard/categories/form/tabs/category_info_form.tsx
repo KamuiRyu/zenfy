@@ -18,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { FieldInput } from "@/components/forms/field_input";
+import { FieldSelect } from "@/components/forms/field_select";
+import { FieldTextarea } from "@/components/forms/field_textarea";
 
 interface CategoryInfoFormProps {
   control: Control<any>;
@@ -31,17 +34,16 @@ export default function CategoryInfoForm({ control }: CategoryInfoFormProps) {
       <FormField
         control={control}
         name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("dashboard.categories.name")}</FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t("dashboard.categories.name_placeholder")}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+        render={({ field, fieldState }) => (
+          <FieldInput
+            label={t("dashboard.categories.name")}
+            type="text"
+            id="email"
+            placeholder={t("dashboard.categories.name_placeholder")}
+            {...field}
+            error={fieldState.error?.message}
+            className="rounded-lg p-5"
+          />
         )}
       />
 
@@ -49,31 +51,23 @@ export default function CategoryInfoForm({ control }: CategoryInfoFormProps) {
         control={control}
         name="type"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("dashboard.categories.select_type")}</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={t("dashboard.categories.select_type")}
-                  />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent
-                side="bottom"
-                avoidCollisions={false}
-                position="popper"
-              >
-                <SelectItem value="income">
-                  {t("dashboard.categories.type.income")}
-                </SelectItem>
-                <SelectItem value="expense">
-                  {t("dashboard.categories.type.expense")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
+          <FieldSelect
+            label={t("dashboard.categories.select_type")}
+            placeholder={t("dashboard.categories.select_type")}
+            options={[
+              {
+                value: "expense",
+                label: t("dashboard.categories.type.expense"),
+              },
+              {
+                value: "income",
+                label: t("dashboard.categories.type.income"),
+              },
+            ]}
+            value={field.value}
+            onValueChange={field.onChange}
+            className="rounded-lg w-full"
+          />
         )}
       />
 
@@ -81,18 +75,12 @@ export default function CategoryInfoForm({ control }: CategoryInfoFormProps) {
         control={control}
         name="description"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("dashboard.categories.description")}</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder={t(
-                  "dashboard.categories.description_placeholder"
-                )}
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FieldTextarea 
+            label={t("dashboard.categories.description")}
+            placeholder={t("dashboard.categories.description_placeholder")}
+            {...field}
+            className="rounded-lg p-5"
+          />
         )}
       />
     </>

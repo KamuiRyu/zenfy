@@ -144,9 +144,11 @@
       "general": "General",
       "no_card": "No card",
       "type": "Type",
+      "types": {
+        "income": "Income",
+        "expense": "Expense"
+      },
       "select_type": "Select type",
-      "income": "Income",
-      "expense": "Expense",
       "category": "Category",
       "select_category": "Select category",
       "description": "Description",
@@ -170,13 +172,16 @@
       "type_and_category": "Type and Category",
       "details": "Transaction Details",
       "kind": "Kind",
+      "kind_options": {
+        "credit_debit": "Credit/Debit",
+        "credit": "Credit",
+        "debit": "Debit",
+        "deposit": "Deposit",
+        "withdrawal": "Withdrawal",
+        "transfer": "Transfer"
+      },
       "select_kind": "Select kind",
-      "credit_debit": "Credit/Debit",
-      "credit": "Credit",
-      "debit": "Debit",
-      "deposit": "Deposit",
-      "withdrawal": "Withdrawal",
-      "transfer": "Transfer",
+
       "basic_info": "Basic Information",
       "payment_details": "Payment Information",
       "is_installment": "Is installment",
@@ -188,10 +193,13 @@
       "select_recurrence_start_date": "Select recurrence start date",
       "recurrence_end_date": "Recurrence end date",
       "select_recurrence_end_date": "Select recurrence end date",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "monthly": "Monthly",
-      "yearly": "Yearly",
+      "recurrence_types": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      },
+
       "select_recurrence_type": "Select recurrence type",
       "recurring": "Recurring"
     },
@@ -202,7 +210,6 @@
       "categories": "categories",
       "add": "Add Category",
       "type": {
-        
         "income": "Income",
         "expense": "Expense"
       },
@@ -230,9 +237,10 @@
       "saving": "Saving...",
       "save": "Save",
       "create": "Create",
-      "error":{
+      "error": {
         "name_already_exists": "A category with this name already exists  "
-      }
+      },
+      "error_loading": "Error loading categories"
     }
   },
   "field": {
@@ -302,7 +310,13 @@
     "to_date": "End date",
     "select_date": "Select date",
     "category": "Category",
-    "all_categories": "All categories"
+    "all_categories": "All categories",
+    "recurring": {
+      "title": "Recurring",
+      "all": "All",
+      "yes": "Yes",
+      "no": "No"
+    }
   },
   "validation": {
     "REQUIRED_FIELD": "This field is required",

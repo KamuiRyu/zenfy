@@ -31,6 +31,10 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { TransactionFormData } from "../transaction_form.schema";
 import { useEffect } from "react";
+import { FieldInput } from "@/components/forms/field_input";
+import { FieldCalendar } from "@/components/forms/field_calendar";
+import { FieldSelect } from "@/components/forms/field_select";
+import { FieldSwitch } from "@/components/forms/field_switch";
 
 interface TransactionDetailsTabProps {
   control: Control<TransactionFormData>;
@@ -64,67 +68,37 @@ export default function TransactionDetailsTab({
             <FormField
               control={control}
               name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.amount")} *</FormLabel>
-                  <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder={t("dashboard.transactions.amount_placeholder")}
-                        className="!h-12 w-full"
-                        value={field.value?.toString() || ""}
-                        onChange={e => {
-                          const val = parseInt(e.target.value);
-                          field.onChange(isNaN(val) ? 0 : val);
-                        }}
-                        name={field.name}
-                      />
-                  </FormControl>
-                  <div className="min-h-[20px]"><FormMessage /></div>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldInput
+                  {...field}
+                  label={`${t("dashboard.transactions.amount")} *`}
+                  type="number"
+                  step="0.01"
+                  placeholder={t("dashboard.transactions.amount_placeholder")}
+                  value={field.value?.toString() || ""}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    field.onChange(isNaN(val) ? 0 : val);
+                  }}
+                  className="w-full"
+                  error={fieldState.error?.message || null}
+                  name={field.name}
+                />
               )}
             />
 
             <FormField
               control={control}
               name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.date")} *</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full pl-3 text-left font-normal !h-12 ",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>{t("dashboard.transactions.select_date")}</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-full" align="start" side="top">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date("1900-01-01")
-                        }
-                        buttonVariant="ghost"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <div className="min-h-[20px]"><FormMessage /></div>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldCalendar
+                  label={`${t("dashboard.transactions.date")} *`}
+                  placeholder={t("dashboard.transactions.select_date")}
+                  value={field.value ? new Date(field.value) : undefined}
+                  onChange={(date) => field.onChange(date)}
+                  error={fieldState.error?.message || null}
+                  disabled={(date) => date < new Date("1900-01-01")}
+                />
               )}
             />
           </div>
@@ -132,46 +106,35 @@ export default function TransactionDetailsTab({
           <FormField
             control={control}
             name="kind"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">{t("dashboard.transactions.kind")} *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value || ""} disabled={!selectedCardUuid}>
-                  <FormControl>
-                    <SelectTrigger className="!h-12 w-full">
-                      <SelectValue placeholder={t("dashboard.transactions.select_kind")} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent avoidCollisions={false} position="popper" className="max-h-70">
-                    {kindOptions.map((kind) => (
-                      <SelectItem key={kind} value={kind}>
-                        {t(`dashboard.transactions.${kind}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="min-h-[20px]"><FormMessage /></div>
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <FieldSelect
+                label={`${t("dashboard.transactions.kind")} *`}
+                placeholder={t("dashboard.transactions.select_kind")}
+                options={kindOptions.map((kindOption) => ({
+                  value: kindOption,
+                  label: t(`dashboard.transactions.kind_options.${kindOption}`),
+                }))}
+                error={fieldState.error?.message || null}
+                value={field.value}
+                onValueChange={field.onChange}
+                className="rounded-lg w-full"
+                name={field.name}
+              />
             )}
           />
 
           <FormField
             control={control}
             name="isInstallment"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={watch("kind") !== "credit" || watch("isRecurring")}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    {t("dashboard.transactions.is_installment")}
-                  </FormLabel>
-                </div>
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <FieldSwitch
+                label={t("dashboard.transactions.is_installment")}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                disabled={watch("kind") !== "credit" || watch("isRecurring")}
+                error={fieldState.error?.message || null}
+                name={field.name}
+              />
             )}
           />
 
@@ -180,45 +143,41 @@ export default function TransactionDetailsTab({
               <FormField
                 control={control}
                 name="installmentNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.installment_number")} *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="pl-10 !h-12 w-full"
-                        value={field.value?.toString() || ""}
-                        onChange={e => {
-                          const val = parseInt(e.target.value);
-                          field.onChange(isNaN(val) ? 1 : val);
-                        }}
-                        name={field.name}
-                      />
-                    </FormControl>
-                    <div className="min-h-[20px]"><FormMessage /></div>
-                  </FormItem>
+                render={({ field, fieldState }) => (
+                  <FieldInput
+                    label={`${t(
+                      "dashboard.transactions.installment_number"
+                    )} *`}
+                    type="number"
+                    className="pl-10 w-full"
+                    value={field.value?.toString() || ""}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      field.onChange(isNaN(val) ? 1 : val);
+                    }}
+                    name={field.name}
+                    error={fieldState.error?.message || null}
+                  />
                 )}
               />
               <FormField
                 control={control}
                 name="totalInstallments"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.total_installments")} *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        className="pl-10 !h-12 w-full"
-                        value={field.value?.toString() || ""}
-                        onChange={e => {
-                          const val = parseInt(e.target.value);
-                          field.onChange(isNaN(val) ? 1 : val);
-                        }}
-                        name={field.name}
-                      />
-                    </FormControl>
-                    <div className="min-h-[20px]"><FormMessage /></div>
-                  </FormItem>
+                render={({ field, fieldState }) => (
+                  <FieldInput
+                    label={`${t(
+                      "dashboard.transactions.total_installments"
+                    )} *`}
+                    type="number"
+                    className="pl-10 w-full"
+                    value={field.value?.toString() || ""}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      field.onChange(isNaN(val) ? 1 : val);
+                    }}
+                    name={field.name}
+                    error={fieldState.error?.message || null}
+                  />
                 )}
               />
             </div>

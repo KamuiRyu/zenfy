@@ -80,7 +80,7 @@ func (r *transactionRepositoryImpl) ListByCard(cardID int, limit, offset int) ([
 	return transactions, err
 }
 
-func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
+func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error) {
 	ctx := context.Background()
 	var transactions []*model.Transaction
 	query := r.db.NewSelect().
@@ -111,6 +111,10 @@ func (r *transactionRepositoryImpl) ListByUser(userID int, limit, offset int, da
 	}
 	if typeStr != nil {
 		query = query.Where("category.type = ?", *typeStr)
+	}
+
+	if recurring != nil {
+		query = query.Where("transaction.is_recurring = ?", *recurring)
 	}
 
 	err := query.

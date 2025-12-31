@@ -24,11 +24,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TransactionFormData } from "../transaction_form.schema";
+import { FieldSwitch } from "@/components/forms/field_switch";
+import { FieldSelect } from "@/components/forms/field_select";
+import { FieldCalendar } from "@/components/forms/field_calendar";
 
 interface TransactionRecurringTabProps {
   control: Control<TransactionFormData>;
@@ -47,21 +50,14 @@ export default function TransactionRecurringTab({
         <FormField
           control={control}
           name="isRecurring"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={watch("isInstallment")}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  {t("dashboard.transactions.is_recurring")}
-                </FormLabel>
-              </div>
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <FieldSwitch
+              label={t("dashboard.transactions.is_recurring")}
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              name={field.name}
+              error={fieldState.error?.message || null}
+            />
           )}
         />
 
@@ -70,24 +66,38 @@ export default function TransactionRecurringTab({
             <FormField
               control={control}
               name="recurrenceType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_type")} *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || ""}>
-                    <FormControl>
-                      <SelectTrigger className="!h-12 w-full">
-                        <SelectValue placeholder={t("dashboard.transactions.select_recurrence_type")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent avoidCollisions={false} position="popper" className="max-h-70">
-                      <SelectItem value="daily">{t("dashboard.transactions.daily")}</SelectItem>
-                      <SelectItem value="weekly">{t("dashboard.transactions.weekly")}</SelectItem>
-                      <SelectItem value="monthly">{t("dashboard.transactions.monthly")}</SelectItem>
-                      <SelectItem value="yearly">{t("dashboard.transactions.yearly")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="min-h-[20px]"><FormMessage /></div>
-                </FormItem>
+              render={({ field, fieldState }) => (
+                <FieldSelect
+                  label={`${t("dashboard.transactions.recurrence_type")} *`}
+                  placeholder={t(
+                    "dashboard.transactions.select_recurrence_type"
+                  )}
+                  options={[
+                    {
+                      value: "daily",
+                      label: t("dashboard.transactions.recurrence_types.daily"),
+                    },
+                    {
+                      value: "weekly",
+                      label: t("dashboard.transactions.recurrence_types.weekly"),
+                    },
+                    {
+                      value: "monthly",
+                      label: t(
+                        "dashboard.transactions.recurrence_types.monthly"
+                      ),
+                    },
+                    {
+                      value: "yearly",
+                      label: t("dashboard.transactions.recurrence_types.yearly"),
+                    },
+                  ]}
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  className="rounded-lg w-full"
+                  name={field.name}
+                  error={fieldState.error?.message || null}
+                />
               )}
             />
 
@@ -95,92 +105,42 @@ export default function TransactionRecurringTab({
               <FormField
                 control={control}
                 name="recurrenceStartDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_start_date")} *</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal !h-12 ",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>{t("dashboard.transactions.select_recurrence_start_date")}</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0 w-full" align="start" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date("1900-01-01")
-                          }
-                          fromYear={new Date().getFullYear()}
-                          toYear={new Date().getFullYear() + 20}
-                          fromMonth={new Date()}
-                          captionLayout="dropdown"
-                          buttonVariant="ghost"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <div className="min-h-[20px]"><FormMessage /></div>
-                  </FormItem>
+                render={({ field, fieldState }) => (
+                  <FieldCalendar
+                    label={`${t(
+                      "dashboard.transactions.recurrence_start_date"
+                    )} *`}
+                    placeholder={t(
+                      "dashboard.transactions.select_recurrence_start_date"
+                    )}
+                    value={field.value ? new Date(field.value) : undefined}
+                    onChange={(date) => field.onChange(date)}
+                    error={fieldState.error?.message || null}
+                    disabled={(date) => date < new Date("1900-01-01")}
+                    fromYear={new Date().getFullYear()}
+                    toYear={new Date().getFullYear() + 20}
+                    fromMonth={new Date()}
+                  />
                 )}
               />
 
               <FormField
                 control={control}
                 name="recurrenceEndDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-sm font-medium">{t("dashboard.transactions.recurrence_end_date")}</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal !h-12 ",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>{t("dashboard.transactions.select_recurrence_end_date")}</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="p-0 w-full" align="start" side="top">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date()
-                          }
-                          fromYear={new Date().getFullYear()}
-                          toYear={new Date().getFullYear() + 20}
-                          fromMonth={new Date()}
-                          captionLayout="dropdown"
-                          buttonVariant="ghost"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <div className="min-h-[20px]"><FormMessage /></div>
-                  </FormItem>
+                render={({ field, fieldState }) => (
+                  <FieldCalendar
+                    label={t("dashboard.transactions.recurrence_end_date")}
+                    placeholder={t(
+                      "dashboard.transactions.select_recurrence_end_date"
+                    )}
+                    value={field.value ? new Date(field.value) : undefined}
+                    onChange={(date) => field.onChange(date)}
+                    disabled={(date) => date < new Date("1900-01-01")}
+                    fromYear={new Date().getFullYear()}
+                    toYear={new Date().getFullYear() + 20}
+                    fromMonth={new Date()}
+                    error={fieldState.error?.message || null}
+                  />
                 )}
               />
             </div>

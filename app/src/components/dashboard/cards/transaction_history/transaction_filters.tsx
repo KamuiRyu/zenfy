@@ -121,7 +121,7 @@ export default function TransactionFilters({
     <div className="p-4 rounded-2xl">
       <div className="h-10 bg-muted animate-pulse rounded w-1/3 mb-4"></div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="h-10 bg-muted animate-pulse rounded" />
         ))}
       </div>
@@ -200,6 +200,8 @@ export default function TransactionFilters({
                 }}
                 buttonVariant="ghost"
                 numberOfMonths={1}
+                month={new Date()}
+                hideNavigation
                 defaultMonth={currentMonth}
               />
             </PopoverContent>
@@ -315,6 +317,41 @@ export default function TransactionFilters({
               <SelectItem value="transfer">
                 {t("filter.kind.transfer")}
               </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+         <div>
+          <label className="text-sm font-medium">
+            {t("filter.recurring.title")}
+          </label>
+          <Select
+            value={filters.recurring || "all"}
+            onValueChange={(value) =>
+              updateFilter("recurring", value === "all" ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={t("filter.recurring.all")}
+              />
+            </SelectTrigger>
+            <SelectContent
+              side="bottom"
+              avoidCollisions={false}
+              position="popper"
+              className="max-h-70"
+            >
+              <SelectItem value="all">
+                {t("filter.recurring.all")}
+              </SelectItem>
+              <SelectItem value="yes">
+                {t("filter.recurring.yes")}
+              </SelectItem>
+              <SelectItem value="no">
+                {t("filter.recurring.no")}
+              </SelectItem>
+
             </SelectContent>
           </Select>
         </div>

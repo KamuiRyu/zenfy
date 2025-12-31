@@ -59,11 +59,12 @@ export default function useTransactions(limit?: number, offset?: number, filters
       if (filters?.dateTo) params.date_to = filters.dateTo;
       if (filters?.categoryId) params.category_id = filters.categoryId;
       if (filters?.type) params.type = filters.type;
+      if (filters?.recurring) params.recurring = filters.recurring;
       if (filters?.kind) params.kind = filters.kind;
       if (filters?.cardUuid) params.card_uuid = filters.cardUuid;
       if (filters?.search) params.search = filters.search;
 
-      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, abortControllerRef.current.signal);
+      const resp = await transactionService.getTransactions(params.limit, params.offset, params.card_uuid, params.date_from, params.date_to, params.category_id, params.type, params.search, params.kind, params.recurring, abortControllerRef.current.signal);
 
       const payload =
         resp && typeof resp === "object" && "data" in resp

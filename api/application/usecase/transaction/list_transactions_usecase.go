@@ -16,6 +16,7 @@ type TransactionFilters struct {
 	DateTo     *time.Time
 	CategoryID *int
 	Kind       *string
+	Recurring  *bool
 	Search     *string
 	CardID     *int
 	Type       *string
@@ -38,16 +39,18 @@ func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, 
 	var search *string
 	var cardID *int
 	var typeStr *string
+	var recurring *bool
 	if filters != nil {
 		dateFrom = filters.DateFrom
 		dateTo = filters.DateTo
 		categoryID = filters.CategoryID
 		kind = filters.Kind
+		recurring = filters.Recurring
 		search = filters.Search
 		cardID = filters.CardID
 		typeStr = filters.Type
 	}
-	return uc.transactionService.ListTransactionsByUserWithFilters(userID, limit, offset, dateFrom, dateTo, categoryID, kind, search, cardID, typeStr)
+	return uc.transactionService.ListTransactionsByUserWithFilters(userID, limit, offset, dateFrom, dateTo, categoryID, kind, recurring, search, cardID, typeStr)
 }
 
 func (uc *ListTransactionsUseCase) ExecuteByUserAndCard(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error) {
