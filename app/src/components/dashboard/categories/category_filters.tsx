@@ -16,12 +16,12 @@ import useCategories from "@/hooks/use_categories";
 
 interface CategoryFiltersProps {
   filters: {
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     search?: string;
   };
   onFiltersChange: (filters: {
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     search?: string;
   }) => void;

@@ -17,9 +17,7 @@ type UpdateCategoryRequest struct {
 }
 
 type CategoryResponse struct {
-	ID          int     `json:"id"`
 	Uuid        string  `json:"uuid"`
-	UserID      *int    `json:"user_id"`
 	Name        string  `json:"name"`
 	Type        string  `json:"type"`
 	Description *string `json:"description"`

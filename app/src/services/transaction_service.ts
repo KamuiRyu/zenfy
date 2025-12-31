@@ -3,7 +3,7 @@ import { TransactionData } from "@/types/transactions";
 
 const base = "/transactions";
 
-export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string, kind?: string, recurring?: string, signal?: AbortSignal) {
+export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: string, type?: string, search?: string, kind?: string, recurring?: string, signal?: AbortSignal) {
   const params = new URLSearchParams();
   if (limit) params.append("limit", limit.toString());
   if (offset) params.append("offset", offset.toString());

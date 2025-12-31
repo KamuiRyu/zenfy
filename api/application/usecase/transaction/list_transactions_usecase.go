@@ -14,7 +14,7 @@ type ListTransactionsUseCase struct {
 type TransactionFilters struct {
 	DateFrom   *time.Time
 	DateTo     *time.Time
-	CategoryID *int
+	CategoryID *string
 	Kind       *string
 	Recurring  *bool
 	Search     *string
@@ -34,7 +34,7 @@ func (uc *ListTransactionsUseCase) ExecuteByCard(userID int, cardID int, limit, 
 
 func (uc *ListTransactionsUseCase) ExecuteByUser(userID int, limit, offset int, filters *TransactionFilters) ([]dto.TransactionResponse, error) {
 	var dateFrom, dateTo *time.Time
-	var categoryID *int
+	var categoryID *string
 	var kind *string
 	var search *string
 	var cardID *int

@@ -23,7 +23,7 @@ export default function CategoryList() {
     dateTo?: string;
     type?: string;
     search?: string;
-    categoryId?: number;
+    categoryId?: string;
   }>({});
   const [initialLoading, setInitialLoading] = useState(true);
   const [filteringLoading, setFilteringLoading] = useState(false);

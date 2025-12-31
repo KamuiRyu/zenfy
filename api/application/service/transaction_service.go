@@ -20,7 +20,7 @@ type TransactionService interface {
 	DeleteTransactionUUID(userID int, transactionUUID string) error
 	ListTransactionsByCard(userID int, cardID int, limit, offset int) ([]dto.TransactionResponse, error)
 	ListTransactionsByUser(userID int, limit, offset int) ([]dto.TransactionResponse, error)
-	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error)
+	ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error)
 	ListTransactionsByCardUUID(userID int, cardUUID string, limit, offset int) ([]dto.TransactionResponse, error)
 	GetTransactionSummaryByCard(userID int, cardID int, startDate, endDate *time.Time) ([]dto.TransactionSummaryResponse, error)
 	GetBalanceOverview(userID int, cardID *int) (*dto.BalanceOverviewResponse, error)
@@ -364,7 +364,7 @@ func (s *transactionService) ListTransactionsByUser(userID int, limit, offset in
 	return responses, nil
 }
 
-func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
+func (s *transactionService) ListTransactionsByUserWithFilters(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]dto.TransactionResponse, error) {
 	transactions, err := s.transactionRepo.ListByUser(userID, limit, offset, dateFrom, dateTo, categoryID, kind, recurring, search, cardID, typeStr)
 	if err != nil {
 		return nil, err
@@ -566,7 +566,6 @@ func (s *transactionService) toResponse(transaction *model.Transaction) *dto.Tra
 	if transaction.Category != nil {
 		response.Category = &dto.CategoryResponse{
 			Uuid:        transaction.Category.Uuid,
-			UserID:      transaction.Category.UserID,
 			Name:        transaction.Category.Name,
 			Type:        transaction.Category.Type,
 			Description: transaction.Category.Description,

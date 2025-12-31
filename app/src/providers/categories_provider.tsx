@@ -70,7 +70,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
       }
       dataArray = dataArray.map(category => ({
         ...category,
-        is_default: !category.user_id
       }));
       dispatch({ type: 'SET_CATEGORIES', payload: dataArray });
     } catch (err: unknown) {

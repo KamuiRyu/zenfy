@@ -26,7 +26,7 @@ interface TransactionFiltersProps {
   filters: {
     dateFrom?: string;
     dateTo?: string;
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     kind?: string;
     recurring?: string;
@@ -35,7 +35,7 @@ interface TransactionFiltersProps {
   onFiltersChange: (filters: {
     dateFrom?: string;
     dateTo?: string;
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     kind?: string;
     recurring?: string;
@@ -198,11 +198,11 @@ export default function TransactionFilters({
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
-              value={filters.categoryId ? filters.categoryId.toString() : "all"}
+              value={filters.categoryId || "all"}
               onValueChange={(value) =>
                 updateFilter(
                   "categoryId",
-                  value === "all" ? undefined : parseInt(value)
+                  value === "all" ? undefined : value
                 )
               }
             >

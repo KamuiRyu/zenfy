@@ -11,7 +11,7 @@ type TransactionRepository interface {
 	FindByID(id int) (*model.Transaction, error)
 	FindByUUID(uuid string) (*model.Transaction, error)
 	ListByCard(cardID int, limit, offset int) ([]*model.Transaction, error)
-	ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *int, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error)
+	ListByUser(userID int, limit, offset int, dateFrom, dateTo *time.Time, categoryID *string, kind *string, recurring *bool, search *string, cardID *int, typeStr *string) ([]*model.Transaction, error)
 	SummaryByCategory(cardID int, from, to time.Time) (map[int]int64, error)
 	Update(tx *model.Transaction) error
 	Delete(id int) error
