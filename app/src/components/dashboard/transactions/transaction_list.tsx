@@ -29,7 +29,7 @@ export default function TransactionList() {
   const offset = page * limit;
   const router = useRouter();
 
-  const { transactions, loading, error, refetch } = useTransactions(
+  const { transactions, loading, error, refetch, fromCache } = useTransactions(
     limit,
     offset,
     filters,
@@ -70,7 +70,7 @@ export default function TransactionList() {
       <TransactionFilters
         filters={filters}
         onFiltersChange={handleFiltersChange}
-        loading={loading}
+        loading={loading || fromCache}
       />
 
       <div className="rounded-2xl overflow-hidden">

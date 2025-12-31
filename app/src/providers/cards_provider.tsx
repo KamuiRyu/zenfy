@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useReducer, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useReducer, ReactNode, useRef } from "react";
 import cardService from "@/services/card_service";
 import { CardType } from "@/types/cards";
 
@@ -20,17 +20,19 @@ type CardsState = {
   cards: Card[];
   loading: boolean;
   error: string | null;
+  fromCache: boolean;
 };
 
 type CardsAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_CARDS'; payload: Card[] };
+  | { type: 'SET_CARDS'; payload: Card[]; fromCache?: boolean };
 
 const initialState: CardsState = {
   cards: [],
   loading: true,
   error: null,
+  fromCache: false,
 };
 
 function cardsReducer(state: CardsState, action: CardsAction): CardsState {
@@ -38,9 +40,13 @@ function cardsReducer(state: CardsState, action: CardsAction): CardsState {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':
-      return { ...state, error: action.payload };
+      return { ...state, error: action.payload, fromCache: false };
     case 'SET_CARDS':
-      return { ...state, cards: action.payload };
+      return {
+        ...state,
+        cards: action.payload,
+        fromCache: action.fromCache || false
+      };
     default:
       return state;
   }
@@ -54,8 +60,17 @@ const CardsContext = createContext<CardsContextType | undefined>(undefined);
 
 export function CardsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cardsReducer, initialState);
+  const cacheRef = useRef<{ data: Card[], timestamp: number } | null>(null);
+  const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
-  const fetchCards = async () => {
+  const fetchCards = async (useCache: boolean = true) => {
+    // Try cache first
+    if (useCache && cacheRef.current && Date.now() - cacheRef.current.timestamp < CACHE_TTL) {
+      dispatch({ type: 'SET_CARDS', payload: cacheRef.current.data, fromCache: true });
+      dispatch({ type: 'SET_LOADING', payload: false });
+      return;
+    }
+
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
     try {
@@ -88,6 +103,10 @@ export function CardsProvider({ children }: { children: ReactNode }) {
         cardType: c.card_type ?? "",
         
       }));
+
+      // Cache the result
+      cacheRef.current = { data: mappedCards, timestamp: Date.now() };
+
       dispatch({ type: 'SET_CARDS', payload: mappedCards });
     } catch (err: unknown) {
       console.error("Failed to load cards", err);
@@ -102,14 +121,14 @@ export function CardsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const handleRefetch = () => fetchCards();
+    const handleRefetch = () => fetchCards(false); // Force fresh data after CRUD operations
     window.addEventListener('refetchCards', handleRefetch);
     return () => window.removeEventListener('refetchCards', handleRefetch);
   }, []);
 
   const contextValue: CardsContextType = {
     ...state,
-    refetch: fetchCards,
+    refetch: () => fetchCards(false),
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
 import { Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoriesType } from "@/types/categories";
@@ -27,12 +27,6 @@ export default function CategoryItem({
   onEdit,
 }: CategoryItemProps) {
   const { t } = useI18n();
-
-  const deleteCategory = async (uuid: string) => {
-    await fetch(`/api/categories/${uuid}`, {
-      method: "DELETE",
-    });
-  };
 
   const categoryIcon = React.useMemo(() => {
     const icon: string | undefined = category?.icon;
@@ -90,12 +84,7 @@ export default function CategoryItem({
             <ConfirmDialog
               title={t("dashboard.categories.confirm_delete")}
               description={t("dashboard.categories.delete_description")}
-              onConfirm={async () => {
-                try {
-                  await deleteCategory(category.uuid);
-                  onDelete(category.uuid);
-                } catch {}
-              }}
+              onConfirm={() => onDelete(category.uuid)}
               trigger={
                 <Button
                   variant="ghost"

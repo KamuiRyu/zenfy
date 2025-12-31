@@ -23,6 +23,7 @@ const CardItem = React.forwardRef<
     isDragging?: boolean;
     onEdit?: (e?: React.SyntheticEvent) => void;
     onDelete?: () => void;
+    disabled?: boolean;
   }
 >(
   (
@@ -38,6 +39,7 @@ const CardItem = React.forwardRef<
       isDragging = false,
       onEdit,
       onDelete,
+      disabled = false,
     },
     ref
   ) => {
@@ -64,7 +66,7 @@ const CardItem = React.forwardRef<
         role="button"
         tabIndex={0}
         onClick={(e) => {
-          if (isDragging) {
+          if (isDragging || disabled) {
             e.preventDefault();
             e.stopPropagation();
             return;
@@ -72,13 +74,13 @@ const CardItem = React.forwardRef<
           onClick?.();
         }}
         onKeyDown={(e) => {
-          if ((e.key === "Enter" || e.key === " ") && !isDragging) {
+          if ((e.key === "Enter" || e.key === " ") && !isDragging && !disabled) {
             e.preventDefault();
             onClick?.();
           }
         }}
         aria-pressed={selected}
-        className={`min-w-[420px] h-64 rounded-2xl pb-8 px-8 flex flex-col justify-between transition-all duration-300 ring-4 ring-transparent cursor-pointer ${base} ${selectedClasses} ${
+        className={`min-w-[420px] h-64 rounded-2xl pb-8 px-8 flex flex-col justify-between transition-all duration-300 ring-4 ring-transparent ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${base} ${selectedClasses} ${
           selected ? "scale-100" : "scale-95"
         }`}
         style={
@@ -91,7 +93,7 @@ const CardItem = React.forwardRef<
         }
       >
         <div className="flex items-center gap-3 absolute z-10 top-2 left-4">
-          {onEdit && (
+          {onEdit && !disabled && (
             <span
               role="button"
               tabIndex={0}
@@ -108,7 +110,7 @@ const CardItem = React.forwardRef<
               <Edit2 className="w-4 h-4" />
             </span>
           )}
-          {onDelete && (
+          {onDelete && !disabled && (
             <ConfirmDialog
               onConfirm={() => onDelete?.()}
               title={t("dashboard.cards.confirm_delete")}

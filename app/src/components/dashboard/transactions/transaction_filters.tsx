@@ -100,7 +100,7 @@ export default function TransactionFilters({
 
   return (
     <div className="rounded-2xl p-6 bg-card">
-      {loading ? (
+      {loading && categoriesLoading? (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Skeleton className="w-4 h-4" />

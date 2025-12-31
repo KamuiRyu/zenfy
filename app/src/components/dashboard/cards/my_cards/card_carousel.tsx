@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import cardService from "@/services/card_service";
 
 export default function CardCarousel() {
-  const { cards, loading } = useCards();
+  const { cards, loading, fromCache } = useCards();
   const { setSelectedCard } = useSelectedCard();
   const router = useRouter();
   const { t } = useI18n();
@@ -41,9 +41,11 @@ export default function CardCarousel() {
 
   const hasSetDefault = useRef(false);
   useEffect(() => {
-    if (!hasSetDefault.current && cards.length > 0 && !loading) {
+    const hasValidSelection = selectedCardId !== null && cards.some(card => card.id === selectedCardId);
+    
+    if (cards.length > 0 && !loading && (!hasValidSelection || !hasSetDefault.current)) {
       const defaultCard = cards.find((card) => card.isDefault) || cards[0];
-      if (defaultCard) {
+      if (defaultCard && (!hasValidSelection || defaultCard.id !== selectedCardId)) {
         setTimeout(() => {
           setSelectedCardId(defaultCard.id ?? null);
           setSelectedCard(defaultCard.id ? String(defaultCard.id) : null, defaultCard.lastFour, defaultCard.brand);
@@ -51,7 +53,7 @@ export default function CardCarousel() {
         hasSetDefault.current = true;
       }
     }
-  }, [cards, loading, setSelectedCard]);
+  }, [cards, loading, setSelectedCard, selectedCardId]);
 
 
   const selectIndex = useCallback(
@@ -124,9 +126,9 @@ export default function CardCarousel() {
         <button
           onClick={prev}
           aria-label={t("dashboard.cards.previous_card")}
-          disabled={selectedIndex <= 0}
+          disabled={selectedIndex <= 0 || loading || fromCache}
           className={`flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover: bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
-            selectedIndex <= 0 ? "opacity-40 pointer-events-none" : ""
+            selectedIndex <= 0 || loading || fromCache ? "opacity-40 pointer-events-none" : ""
           }`}
         >
           <ChevronLeft className="w-5 h-5" />
@@ -136,9 +138,9 @@ export default function CardCarousel() {
       <button
         onClick={next}
         aria-label={t("dashboard.cards.next_card")}
-        disabled={selectedIndex >= cards.length - 1}
+        disabled={selectedIndex >= cards.length - 1 || loading || fromCache}
         className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-11 h-11 rounded-full border border-muted bg-card text-card-foreground hover:bg-muted hover:text-primary focus:outline-none transition-colors duration-300 ${
-          selectedIndex >= cards.length - 1
+          selectedIndex >= cards.length - 1 || loading || fromCache
             ? "opacity-40 pointer-events-none"
             : ""
         }`}
@@ -222,6 +224,7 @@ export default function CardCarousel() {
                 onClick={() => !isPressed && selectIndex(idx)}
                 onEdit={() => handleEdit(it.id)}
                 onDelete={() => handleDelete(it.id)}
+                disabled={loading || fromCache}
                 ref={(el) => {
                   itemRefs.current[idx + 1] = el;
                 }}
