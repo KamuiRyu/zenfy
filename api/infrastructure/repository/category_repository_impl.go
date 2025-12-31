@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/uptrace/bun"
 
+	"zenfy-api/application/dto"
 	"zenfy-api/domain/model"
 )
 
@@ -78,6 +80,31 @@ func (r *categoryRepositoryImpl) ListByUser(userID int) ([]*model.Category, erro
 	err := r.db.NewSelect().
 		Model(&categories).
 		Where("user_id = ? OR user_id IS NULL", userID).
+		Order("is_default DESC, name ASC").
+		Scan(ctx)
+
+	return categories, err
+}
+
+func (r *categoryRepositoryImpl) ListByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]*model.Category, error) {
+	ctx := context.Background()
+	var categories []*model.Category
+
+	query := r.db.NewSelect().
+		Model(&categories).
+		Where("user_id = ? OR user_id IS NULL", userID)
+
+	if filters != nil {
+		if filters.Type != nil {
+			query = query.Where("type = ?", *filters.Type)
+		}
+		if filters.Search != nil && *filters.Search != "" {
+			searchTerm := "%" + strings.ToLower(*filters.Search) + "%"
+			query = query.Where("LOWER(name) LIKE ? OR LOWER(description) LIKE ?", searchTerm, searchTerm)
+		}
+	}
+
+	err := query.
 		Order("is_default DESC, name ASC").
 		Scan(ctx)
 

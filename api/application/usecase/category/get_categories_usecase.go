@@ -18,3 +18,7 @@ func NewGetCategoriesUseCase(categoryService service.CategoryService) *GetCatego
 func (uc *GetCategoriesUseCase) Execute(userID int) ([]dto.CategoryResponse, error) {
 	return uc.categoryService.GetCategoriesByUser(userID)
 }
+
+func (uc *GetCategoriesUseCase) ExecuteWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error) {
+	return uc.categoryService.GetCategoriesByUserWithFilters(userID, filters)
+}

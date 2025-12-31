@@ -1,12 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -16,8 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { CalendarIcon, Filter, X } from "lucide-react";
-import { format } from "date-fns";
+import { Filter, X } from "lucide-react";
 import { useI18n } from "@/i18n/useI18n";
 import useCategories from "@/hooks/use_categories";
 import { Skeleton } from "@/components/ui/skeleton";

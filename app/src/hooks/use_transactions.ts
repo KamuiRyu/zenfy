@@ -50,7 +50,8 @@ export default function useTransactions(limit?: number, offset?: number, filters
     abortControllerRef.current = new AbortController();
 
     dispatch({ type: 'SET_ERROR', payload: null });
-    dispatch({ type: 'SET_LOADING', payload: true });
+    // Don't set loading here since it's already set in useEffect
+    // dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const params: TransactionFiltersAPI = {};
       if (limit) params.limit = limit;
@@ -95,12 +96,14 @@ export default function useTransactions(limit?: number, offset?: number, filters
   }, [limit, offset, filters]);
 
   useEffect(() => {
-    
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
 
     if (mounted) {
+      // Set loading to true immediately when filters change
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
       debounceTimeoutRef.current = setTimeout(() => {
         fetchTransactions();
       }, 100);

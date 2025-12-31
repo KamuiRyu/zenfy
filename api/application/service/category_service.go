@@ -14,6 +14,7 @@ import (
 type CategoryService interface {
 	CreateCategory(userID int, req dto.CreateCategoryRequest) (*dto.CategoryResponse, error)
 	GetCategoriesByUser(userID int) ([]dto.CategoryResponse, error)
+	GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error)
 	GetCategoryByUUID(userID int, categoryUUID string) (*dto.CategoryResponse, error)
 	UpdateCategory(userID int, categoryUUID string, req dto.UpdateCategoryRequest) (*dto.CategoryResponse, error)
 	DeleteCategory(userID int, categoryUUID string) error
@@ -62,6 +63,20 @@ func (s *categoryService) CreateCategory(userID int, req dto.CreateCategoryReque
 
 func (s *categoryService) GetCategoriesByUser(userID int) ([]dto.CategoryResponse, error) {
 	categories, err := s.categoryRepo.ListByUser(userID)
+	if err != nil {
+		return nil, fmt.Errorf("INTERNAL_ERROR")
+	}
+
+	responses := make([]dto.CategoryResponse, len(categories))
+	for i, category := range categories {
+		responses[i] = *s.toResponse(category)
+	}
+
+	return responses, nil
+}
+
+func (s *categoryService) GetCategoriesByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]dto.CategoryResponse, error) {
+	categories, err := s.categoryRepo.ListByUserWithFilters(userID, filters)
 	if err != nil {
 		return nil, fmt.Errorf("INTERNAL_ERROR")
 	}

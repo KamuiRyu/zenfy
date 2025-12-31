@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"zenfy-api/application/dto"
 	"zenfy-api/domain/model"
 )
 
@@ -10,6 +11,7 @@ type CategoryRepository interface {
 	FindByUUID(uuid string) (*model.Category, error)
 	FindByNameAndUserID(name string, userID int) (*model.Category, error)
 	ListByUser(userID int) ([]*model.Category, error)
+	ListByUserWithFilters(userID int, filters *dto.CategoryFilters) ([]*model.Category, error)
 	Update(category *model.Category) error
 	Delete(id int) error
 	DeleteByUUID(uuid string) error

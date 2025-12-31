@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import useCategories from "@/hooks/use_categories";
+import useCategories, { useFilteredCategories } from "@/hooks/use_categories";
 import { CategoriesType } from "@/types/categories";
 import categoryService from "@/services/category_service";
 
@@ -32,16 +32,24 @@ export default function CategoryList() {
   const offset = page * limit;
   const router = useRouter();
 
-  const { categories: allCategories, loading, error, refetch } = useCategories();
+  const { refetch } = useCategories();
+  const { categories: apiFilteredCategories, loading: filteredLoading, error: filteredError, refetch: refetchFiltered } = useFilteredCategories();
 
-  const handleFiltersChange = (newFilters: typeof filters) => {
+  const handleFiltersChange = async (newFilters: typeof filters) => {
     setFilteringLoading(true);
     setFilters(newFilters);
     setPage(0);
-    
-    setTimeout(() => {
+
+    try {
+      await refetchFiltered({
+        type: newFilters.type && newFilters.type !== "all" ? newFilters.type : undefined,
+        search: newFilters.search || undefined,
+      });
+    } catch (error) {
+      console.error("Failed to filter categories", error);
+    } finally {
       setFilteringLoading(false);
-    }, 300);
+    }
   };
 
   const handleEdit = (uuid: string) => {
@@ -60,22 +68,8 @@ export default function CategoryList() {
   };
 
   const filteredCategories = useMemo(() => {
-    let filtered = allCategories.filter(category => !category.is_default);
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(category =>
-        category.name.toLowerCase().includes(searchLower) ||
-        (category.description && category.description.toLowerCase().includes(searchLower))
-      );
-    }
-
-    if (filters.type && filters.type !== "all") {
-      filtered = filtered.filter(category => category.type === filters.type);
-    }
-
-    return filtered;
-  }, [allCategories, filters.search, filters.type]);
+    return apiFilteredCategories.filter(category => !category.is_default);
+  }, [apiFilteredCategories]);
 
   const paginatedCategories = useMemo(() => {
     const start = offset;
@@ -94,12 +88,12 @@ export default function CategoryList() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !minLoadingTime) {
+    if (!filteredLoading && !minLoadingTime) {
       setInitialLoading(false);
     } else {
       setInitialLoading(true);
     }
-  }, [loading, minLoadingTime]);
+  }, [filteredLoading, minLoadingTime]);
 
   useEffect(() => {
       const handleCategoryUpdated = () => {
@@ -169,12 +163,12 @@ export default function CategoryList() {
     );
   }
 
-  if (error) {
+  if (filteredError) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          {t("dashboard.categories.error_loading")}: {error}
+          {t("dashboard.categories.error_loading")}: {filteredError}
         </AlertDescription>
       </Alert>
     );
@@ -194,7 +188,7 @@ export default function CategoryList() {
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-end mb-6">
-            <Button onClick={handleAdd} disabled={loading || filteringLoading}>
+            <Button onClick={handleAdd} disabled={filteredLoading || filteringLoading}>
               <Plus className="w-4 h-4 mr-2" />
               {t("dashboard.categories.add")}
             </Button>
@@ -208,7 +202,7 @@ export default function CategoryList() {
             </span>
           </div>
 
-          {loading || filteringLoading ? (
+          {filteredLoading || filteringLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div

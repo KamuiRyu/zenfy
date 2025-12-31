@@ -21,7 +21,6 @@ import { format } from "date-fns";
 import { useI18n } from "@/i18n/useI18n";
 import useCategories from "@/hooks/use_categories";
 import { Skeleton } from "@/components/ui/skeleton";
-import { en } from "zod/v4/locales";
 
 interface TransactionFiltersProps {
   filters: {
@@ -42,16 +41,18 @@ interface TransactionFiltersProps {
     recurring?: string;
     search?: string;
   }) => void;
+  loading?: boolean;
 }
 
 export default function TransactionFilters({
   filters,
   onFiltersChange,
+  loading = false,
 }: TransactionFiltersProps) {
   const { t } = useI18n();
   const [openDateRange, setOpenDateRange] = useState(false);
   const [searchValue, setSearchValue] = useState(filters.search || "");
-  const { categories, loading } = useCategories();
+  const { categories, loading: categoriesLoading } = useCategories();
 
   const updateFilter = useCallback(
     (key: string, value: string | number | undefined) => {
@@ -99,92 +100,101 @@ export default function TransactionFilters({
 
   return (
     <div className="rounded-2xl p-6 bg-card">
-      <div className="flex items-center gap-2 mb-4">
-        <Filter className="w-4 h-4" />
-        <span className="font-medium">
-          {t("filter.title")}
-        </span>
-        {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            <X className="w-4 h-4 mr-1" />
-            {t("filter.clear")}
-          </Button>
-        )}
-      </div>
+      {loading ? (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-4 h-4" />
+            <Skeleton className="w-20 h-4" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+            <Skeleton className="w-full h-10" />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-4 h-4" />
+            <span className="font-medium">
+              {t("filter.title")}
+            </span>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <X className="w-4 h-4 mr-1" />
+                {t("filter.clear")}
+              </Button>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
             {t("filter.search")}
           </label>
-          {loading ? (
-            <Skeleton className="w-full h-10" />
-          ) : (
-            <Input
-              placeholder={t(
-                "filter.search_placeholder", { entity: t("dashboard.transaction_history.transaction").toLocaleLowerCase() }
-              )}
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-              }}
-            />
-          )}
+          <Input
+            placeholder={t(
+              "filter.search_placeholder", { entity: t("dashboard.transaction_history.transaction").toLowerCase() }
+            )}
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+          />
         </div>
 
         <div>
           <label className="text-sm font-medium mb-2 block">
             {t("filter.date_range")}
           </label>
-          {loading ? (
-            <Skeleton className="w-full h-10" />
-          ) : (
-            <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {filters.dateFrom && filters.dateTo
-                    ? `${format(
-                        new Date(filters.dateFrom),
-                        "MMM dd"
-                      )} - ${format(new Date(filters.dateTo), "MMM dd")}`
-                    : t("filter.select_date_range")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start" side="top">
-                <Calendar
-                  mode="range"
-                  selected={{
-                    from: filters.dateFrom
-                      ? new Date(filters.dateFrom)
-                      : undefined,
-                    to: filters.dateTo ? new Date(filters.dateTo) : undefined,
-                  }}
-                  onSelect={(range) => {
-                    if (range?.from && range?.to) {
-                      const newFilters = { ...filters };
-                      newFilters.dateFrom = range.from.toISOString();
-                      newFilters.dateTo = range.to.toISOString();
+          <Popover open={openDateRange} onOpenChange={setOpenDateRange}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {filters.dateFrom && filters.dateTo
+                  ? `${format(
+                      new Date(filters.dateFrom),
+                      "MMM dd"
+                    )} - ${format(new Date(filters.dateTo), "MMM dd")}`
+                  : t("filter.select_date_range")}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start" side="top">
+              <Calendar
+                mode="range"
+                selected={{
+                  from: filters.dateFrom
+                    ? new Date(filters.dateFrom)
+                    : undefined,
+                  to: filters.dateTo ? new Date(filters.dateTo) : undefined,
+                }}
+                onSelect={(range) => {
+                  if (range?.from && range?.to) {
+                    const newFilters = { ...filters };
+                    newFilters.dateFrom = range.from.toISOString();
+                    newFilters.dateTo = range.to.toISOString();
 
-                      onFiltersChange(newFilters);
-                      setOpenDateRange(false);
-                    }
-                  }}
-                  numberOfMonths={1}
-                />
-              </PopoverContent>
-            </Popover>
-          )}
+                    onFiltersChange(newFilters);
+                    setOpenDateRange(false);
+                  }
+                }}
+                numberOfMonths={1}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div>
           <label className="text-sm font-medium mb-2 block">
             {t("filter.category")}
           </label>
-          {loading ? (
+          {categoriesLoading ? (
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
@@ -226,7 +236,7 @@ export default function TransactionFilters({
           <label className="text-sm font-medium mb-2 block">
             {t("filter.type.title")}
           </label>
-          {loading ? (
+          {loading && categoriesLoading ? (
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
@@ -264,7 +274,7 @@ export default function TransactionFilters({
           <label className="text-sm font-medium mb-2 block">
             {t("filter.kind.title")}
           </label>
-          {loading ? (
+          {loading && categoriesLoading ? (
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
@@ -310,7 +320,7 @@ export default function TransactionFilters({
           <label className="text-sm font-medium mb-2 block">
             {t("filter.recurring.title")}
           </label>
-          {loading ? (
+          {loading && categoriesLoading ? (
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
@@ -344,6 +354,8 @@ export default function TransactionFilters({
           )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

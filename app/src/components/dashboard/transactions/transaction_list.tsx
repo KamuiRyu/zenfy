@@ -69,6 +69,7 @@ export default function TransactionList() {
       <TransactionFilters
         filters={filters}
         onFiltersChange={handleFiltersChange}
+        loading={loading}
       />
 
       <div className="rounded-2xl overflow-hidden">

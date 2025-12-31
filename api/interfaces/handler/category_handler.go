@@ -76,7 +76,29 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 	userID := c.Locals("userID").(int)
 
-	categories, err := h.getCategoriesUseCase.Execute(userID)
+	var filters *dto.CategoryFilters
+	typeStr := c.Query("type")
+	searchStr := c.Query("search")
+
+	if typeStr != "" || searchStr != "" {
+		filters = &dto.CategoryFilters{}
+		if typeStr != "" {
+			filters.Type = &typeStr
+		}
+		if searchStr != "" {
+			filters.Search = &searchStr
+		}
+	}
+
+	var categories []dto.CategoryResponse
+	var err error
+
+	if filters != nil {
+		categories, err = h.getCategoriesUseCase.ExecuteWithFilters(userID, filters)
+	} else {
+		categories, err = h.getCategoriesUseCase.Execute(userID)
+	}
+
 	if err != nil {
 		return response.Error(c, fiber.StatusInternalServerError, "FETCH_CATEGORIES_FAILED", "Failed to fetch categories", nil)
 	}

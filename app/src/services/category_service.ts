@@ -3,8 +3,15 @@ import { CategoriesType } from "@/types/categories";
 
 const base = "/categories";
 
-export async function getCategories() {
-  return request(base, "");
+export async function getCategories(filters?: { type?: string; search?: string }) {
+  let queryParams = "";
+  if (filters) {
+    const params = new URLSearchParams();
+    if (filters.type) params.append("type", filters.type);
+    if (filters.search) params.append("search", filters.search);
+    queryParams = `?${params.toString()}`;
+  }
+  return request(base, queryParams);
 }
 
 export async function getCategory(id: string | number) {
