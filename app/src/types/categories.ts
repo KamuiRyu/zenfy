@@ -1,7 +1,6 @@
 export type CategoryType = "expense" | "income";
 
 export interface CategoriesType {
-    id: number;
     uuid: string;
     name: string;
     type: CategoryType;

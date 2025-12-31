@@ -26,7 +26,7 @@ interface TransactionFiltersProps {
   filters: {
     dateFrom?: string;
     dateTo?: string;
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     kind?: string;
     recurring?: string;
@@ -35,7 +35,7 @@ interface TransactionFiltersProps {
   onFiltersChange: (filters: {
     dateFrom?: string;
     dateTo?: string;
-    categoryId?: number;
+    categoryId?: string;
     type?: string;
     kind?: string;
     recurring?: string;
@@ -100,7 +100,7 @@ export default function TransactionFilters({
 
   return (
     <div className="rounded-2xl p-6 bg-card">
-      {loading ? (
+      {loading && categoriesLoading? (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Skeleton className="w-4 h-4" />
@@ -198,11 +198,11 @@ export default function TransactionFilters({
             <Skeleton className="w-full h-10" />
           ) : (
             <Select
-              value={filters.categoryId ? filters.categoryId.toString() : "all"}
+              value={filters.categoryId || "all"}
               onValueChange={(value) =>
                 updateFilter(
                   "categoryId",
-                  value === "all" ? undefined : parseInt(value)
+                  value === "all" ? undefined : value
                 )
               }
             >

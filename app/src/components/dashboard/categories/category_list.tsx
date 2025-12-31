@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import useCategories, { useFilteredCategories } from "@/hooks/use_categories";
+import useCategories from "@/hooks/use_categories";
 import { CategoriesType } from "@/types/categories";
 import categoryService from "@/services/category_service";
 
@@ -23,33 +23,29 @@ export default function CategoryList() {
     dateTo?: string;
     type?: string;
     search?: string;
-    categoryId?: number;
+    categoryId?: string;
   }>({});
   const [initialLoading, setInitialLoading] = useState(true);
-  const [minLoadingTime, setMinLoadingTime] = useState(true);
   const [filteringLoading, setFilteringLoading] = useState(false);
   const limit = 20;
   const offset = page * limit;
   const router = useRouter();
 
-  const { refetch } = useCategories();
-  const { categories: apiFilteredCategories, loading: filteredLoading, error: filteredError, refetch: refetchFiltered } = useFilteredCategories();
+  const {
+    categories: allCategories,
+    loading,
+    error,
+    refetch,
+  } = useCategories();
 
-  const handleFiltersChange = async (newFilters: typeof filters) => {
+  const handleFiltersChange = (newFilters: typeof filters) => {
     setFilteringLoading(true);
     setFilters(newFilters);
     setPage(0);
 
-    try {
-      await refetchFiltered({
-        type: newFilters.type && newFilters.type !== "all" ? newFilters.type : undefined,
-        search: newFilters.search || undefined,
-      });
-    } catch (error) {
-      console.error("Failed to filter categories", error);
-    } finally {
+    setTimeout(() => {
       setFilteringLoading(false);
-    }
+    }, 300);
   };
 
   const handleEdit = (uuid: string) => {
@@ -57,19 +53,33 @@ export default function CategoryList() {
   };
 
   const handleDelete = async (uuid: string) => {
-    if (confirm(t("dashboard.categories.confirm_delete"))) {
-      try {
-        await categoryService.deleteCategory(uuid);
-        refetch();
-      } catch (error) {
-        console.error("Failed to delete category", error);
-      }
+    try {
+      await categoryService.deleteCategory(uuid);
+      refetch();
+    } catch (error) {
+      console.error("Failed to delete category", error);
     }
   };
 
   const filteredCategories = useMemo(() => {
-    return apiFilteredCategories.filter(category => !category.is_default);
-  }, [apiFilteredCategories]);
+    let filtered = allCategories.filter((category) => !category.is_default);
+
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(
+        (category) =>
+          category.name.toLowerCase().includes(searchLower) ||
+          (category.description &&
+            category.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    if (filters.type && filters.type !== "all") {
+      filtered = filtered.filter((category) => category.type === filters.type);
+    }
+
+    return filtered;
+  }, [allCategories, filters.search, filters.type]);
 
   const paginatedCategories = useMemo(() => {
     const start = offset;
@@ -80,30 +90,22 @@ export default function CategoryList() {
   const hasMore = filteredCategories.length > offset + limit;
 
   useEffect(() => {
-    const minTimer = setTimeout(() => {
-      setMinLoadingTime(false);
-    }, 800);
-
-    return () => clearTimeout(minTimer);
-  }, []);
-
-  useEffect(() => {
-    if (!filteredLoading && !minLoadingTime) {
+    if (!loading) {
       setInitialLoading(false);
     } else {
       setInitialLoading(true);
     }
-  }, [filteredLoading, minLoadingTime]);
+  }, [loading]);
 
   useEffect(() => {
-      const handleCategoryUpdated = () => {
-        refetch();
-      };
-      window.addEventListener('categoryUpdated', handleCategoryUpdated);
-      return () => {
-        window.removeEventListener('categoryUpdated', handleCategoryUpdated);
-      };
-    }, [refetch]);
+    const handleCategoryUpdated = () => {
+      refetch();
+    };
+    window.addEventListener("categoryUpdated", handleCategoryUpdated);
+    return () => {
+      window.removeEventListener("categoryUpdated", handleCategoryUpdated);
+    };
+  }, [refetch]);
 
   if (initialLoading) {
     return (
@@ -162,19 +164,19 @@ export default function CategoryList() {
     );
   }
 
-  if (filteredError) {
+  if (error) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          {t("dashboard.categories.error_loading")}: {filteredError}
+          {t("dashboard.categories.error_loading")}: {error}
         </AlertDescription>
       </Alert>
     );
   }
 
   function handleAdd(): void {
-    router.push('/dashboard/categories/add');
+    router.push("/dashboard/categories/add");
   }
 
   return (
@@ -182,12 +184,13 @@ export default function CategoryList() {
       <CategoryFilters
         filters={filters}
         onFiltersChange={handleFiltersChange}
+        loading={filteringLoading || filteringLoading}
       />
 
       <div className="rounded-2xl overflow-hidden">
         <div className="p-6">
           <div className="flex items-center justify-end mb-6">
-            <Button onClick={handleAdd} disabled={filteredLoading || filteringLoading}>
+            <Button onClick={handleAdd} disabled={loading || filteringLoading}>
               <Plus className="w-4 h-4 mr-2" />
               {t("dashboard.categories.add")}
             </Button>
@@ -201,7 +204,7 @@ export default function CategoryList() {
             </span>
           </div>
 
-          {filteredLoading || filteringLoading ? (
+          {loading || filteringLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
@@ -249,11 +252,7 @@ export default function CategoryList() {
         </div>
 
         {filteredCategories.length > 0 && (
-          <CategoryPagination
-            page={page}
-            setPage={setPage}
-            hasMore={hasMore}
-          />
+          <CategoryPagination page={page} setPage={setPage} hasMore={hasMore} />
         )}
       </div>
     </div>

@@ -68,10 +68,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
           dataArray = keys.map((k) => (payload as Record<string, Category>)[k]);
         } else dataArray = Object.values(payload as Record<string, Category>);
       }
-      dataArray = dataArray.map(category => ({
-        ...category,
-        is_default: !category.user_id
-      }));
       dispatch({ type: 'SET_CATEGORIES', payload: dataArray });
     } catch (err: unknown) {
       console.error("Failed to load categories", err);

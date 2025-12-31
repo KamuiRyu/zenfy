@@ -3,7 +3,7 @@ import { TransactionData } from "@/types/transactions";
 
 const base = "/transactions";
 
-export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: number, type?: string, search?: string, kind?: string, recurring?: string, signal?: AbortSignal) {
+export async function getTransactions(limit?: number, offset?: number, cardUuid?: string, dateFrom?: string, dateTo?: string, categoryId?: string, type?: string, search?: string, kind?: string, recurring?: string, signal?: AbortSignal) {
   const params = new URLSearchParams();
   if (limit) params.append("limit", limit.toString());
   if (offset) params.append("offset", offset.toString());
@@ -32,19 +32,33 @@ export async function getTransaction(id: string) {
 }
 
 export async function createTransaction(payload: Partial<TransactionData>) {
-  return request(base, "", { method: "POST", data: payload });
+  const result = await request(base, "", { method: "POST", data: payload });
+  // Dispatch event to invalidate balance overview cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('transactionCreated'));
+  }
+  return result;
 }
 
 export async function updateTransaction(id: string, payload: Partial<TransactionData>) {
-  const response = await request(base, `${id}`, {
+  const result = await request(base, `${id}`, {
     method: "PUT",
     data: payload,
   });
-  return response;
+  // Dispatch event to invalidate balance overview cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('transactionUpdated'));
+  }
+  return result;
 }
 
 export async function deleteTransaction(id: string) {
-  return request(base, `${id}`, { method: "DELETE" });
+  const result = await request(base, `${id}`, { method: "DELETE" });
+  // Dispatch event to invalidate balance overview cache
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('transactionDeleted'));
+  }
+  return result;
 }
 
 const transactionService = {

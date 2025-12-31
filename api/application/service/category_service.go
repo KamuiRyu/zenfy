@@ -187,9 +187,7 @@ func (s *categoryService) validateExpiryDate(month, year int) error {
 
 func (s *categoryService) toResponse(category *model.Category) *dto.CategoryResponse {
 	return &dto.CategoryResponse{
-		ID:          category.ID,
 		Uuid:        category.Uuid,
-		UserID:      category.UserID,
 		Name:        category.Name,
 		Type:        category.Type,
 		Description: category.Description,

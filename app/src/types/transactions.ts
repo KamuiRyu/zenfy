@@ -32,7 +32,7 @@ export interface TransactionType {
 export interface TransactionFiltersType {
   dateFrom?: string;
   dateTo?: string;
-  categoryId?: number;
+  categoryId?: string;
   type?: string;
   kind?: string;
   recurring?: string;
@@ -41,7 +41,6 @@ export interface TransactionFiltersType {
 }
 
 export interface CategoryType {
-  id?: number;
   uuid: string;
   name: string;
 }
@@ -67,7 +66,7 @@ export interface TransactionData {
 export interface TransactionFiltersAPI extends Filter{
   date_from?: string;
   date_to?: string;
-  category_id?: number;
+  category_id?: string;
   type?: string;
   kind?: string;
   recurring?: string;

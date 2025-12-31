@@ -176,9 +176,7 @@ func (h *TransactionHandler) ListTransactionsByUser(c *fiber.Ctx) error {
 			}
 		}
 		if categoryIDStr != "" {
-			if parsed, err := strconv.Atoi(categoryIDStr); err == nil {
-				filters.CategoryID = &parsed
-			}
+			filters.CategoryID = &categoryIDStr
 		}
 		if kindStr != "" {
 			filters.Kind = &kindStr
